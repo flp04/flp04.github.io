@@ -752,37 +752,23 @@
     let url = `https://api.weatherapi.com/v1/forecast.json?key=${API_KEY}&q=${location}&days=${days}&lang=pt`
     
     try {
-      let y = 'https://api.football-data.org/v4/teams/65/matches?status=FINISHED&limit=1'
-      let x = { params: {
-        from: "2020-03-12",
-        to: "2020-03-13" },  headers: { 'Access-Control-Allow-Origin': '*', "X-Auth-Token": 'bef4843a927541c5b894ff0c1d3c78ae' } }
-      let response = await axios.get(y, x)
-      console.log(response)
-      console.log('y')
+      let response = await axios.get(url)
+      console.log(response.data.forecast.forecastday[0].day.maxtemp_c)
+      temperatura_atual = response.data.current.temp_c
+      previsao_amanha = { maxima : response.data.forecast.forecastday[0].day.maxtemp_c , minima : response.data.forecast.forecastday[0].day.mintemp_c }
+      temperatura_maxima = response.data.forecast.forecastday[0].day.maxtemp_c
+      temperatura_minima = response.data.forecast.forecastday[0].day.mintemp_c
+      local = response.data.location.name
+      document.getElementById('temperatura-atual-titulo').innerText = `Temperatura atual em ${local} ${temperatura_atual}`
+      document.getElementById('temperatura-atual-texto').innerText = response.data.forecast.forecastday[0].day.condition.text
+      document.getElementById('previsao-amanha-titulo').innerText = 'Previsão para Amanhã'
+      document.getElementById('previsao-amanha-maxima').innerText = 'Máxima: ' + previsao_amanha.maxima
+      document.getElementById('previsao-amanha-minima').innerText = 'Mínima: ' + previsao_amanha.minima
+      document.getElementById('temperatura-maxima').innerText = 'Temperatura máxima: ' + temperatura_maxima
+      document.getElementById('temperatura-minima').innerText = 'Temperatura mínima: ' + temperatura_minima
     } catch (error) {
-      console.log('c')
       console.log(error)
     }
-
-    // try {
-    //   let response = await axios.get(url)
-    //   console.log(response.data.forecast.forecastday[0].day.maxtemp_c)
-    //   temperatura_atual = response.data.current.temp_c
-    //   previsao_amanha = { maxima : response.data.forecast.forecastday[0].day.maxtemp_c , minima : response.data.forecast.forecastday[0].day.mintemp_c }
-    //   temperatura_maxima = response.data.forecast.forecastday[0].day.maxtemp_c
-    //   temperatura_minima = response.data.forecast.forecastday[0].day.mintemp_c
-    //   local = response.data.location.name
-    //   document.getElementById('temperatura-atual-titulo').innerText = `Temperatura atual em ${local} ${temperatura_atual}`
-    //   document.getElementById('temperatura-atual-texto').innerText = response.data.forecast.forecastday[0].day.condition.text
-    //   document.getElementById('previsao-amanha-titulo').innerText = 'Previsão para Amanhã'
-    //   document.getElementById('previsao-amanha-maxima').innerText = 'Máxima: ' + previsao_amanha.maxima
-    //   document.getElementById('previsao-amanha-minima').innerText = 'Mínima: ' + previsao_amanha.minima
-    //   document.getElementById('temperatura-maxima').innerText = 'Temperatura máxima: ' + temperatura_maxima
-    //   document.getElementById('temperatura-minima').innerText = 'Temperatura mínima: ' + temperatura_minima
-    // } catch (error) {
-    //   console.log(error)
-    // }
-
   }
   getClima()
   document.getElementById('titulo').innerText = `Temperatura atual: ${temperatura_atual}`
