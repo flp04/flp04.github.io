@@ -30,6 +30,7 @@
   <link href="assets/css/main.css" rel="stylesheet">
 
   <script src="https://unpkg.com/axios/dist/axios.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/vue@2.6.14"></script>
 
   <!-- =======================================================
   * Template Name: ZenBlog
@@ -46,11 +47,12 @@
   <header id="header" class="header d-flex align-items-center fixed-top">
     <div class="container-fluid container-xl d-flex align-items-center justify-content-between">
 
-      <a href="index.html" class="logo d-flex align-items-center">
+      <!-- <a href="index.html" class="logo d-flex align-items-center"> -->
         <!-- Uncomment the line below if you also wish to use an image logo -->
         <!-- <img src="assets/img/logo.png" alt=""> -->
-        <h1 id="titulo">Alô Microfone</h1>
-      </a>
+        <label>Escolha sua cidade<input type="text" v-model="cidade" class="form-control"></label>
+        <button @click="buscarCidade()">Ir</button>
+      <!-- </a> -->
 
       <nav id="navbar" class="navbar">
         <ul>
@@ -104,7 +106,14 @@
   </header><!-- End Header -->
 
   <main id="main">
-
+                  <a href="single-post.html" class="img-bg d-flex align-items-end" style="background-image: url('https://viagemeturismo.abril.com.br/wp-content/uploads/2017/12/istock-842960000.jpg?quality=70');">
+    <div class="img-bg-inner">
+      <h2 id="temperatura-atual-titulo"></h2>
+      <h3 id="temperatura-atual-texto"></h3>
+      <h4 id="temperatura-maxima" style="font-size: 16px;"></h4>
+      <h2 id="temperatura-minima" style="font-size: 16px;"></h2>
+    </div>
+                  </a>
     <!-- ======= Hero Slider Section ======= -->
     <section id="hero-slider" class="hero-slider">
       <div class="container-md" data-aos="fade-in">
@@ -115,10 +124,10 @@
                 <div class="swiper-slide">
                   <a href="single-post.html" class="img-bg d-flex align-items-end" style="background-image: url('assets/img/post-slide-1.jpg');">
                     <div class="img-bg-inner">
-                      <h2 id="temperatura-atual-titulo">The Best Homemade Masks for Face (keep the Pimples Away)</h2>
-                      <p id="temperatura-atual-texto">Lorem ipsum dolor sit amet, consectetur adipisicing elit. Quidem neque est mollitia! Beatae minima assumenda repellat harum vero, officiis ipsam magnam obcaecati cumque maxime inventore repudiandae quidem necessitatibus rem atque.</p>
-                      <p id="temperatura-maxima" style="font-size: 16px;"></p>
-                      <p id="temperatura-minima" style="font-size: 16px;"></p>
+                      <h2 id="temperatura-atual-titulo"></h2>
+                      <h4 id="temperatura-atual-texto"></h4>
+                      <h3 id="temperatura-maxima" style="font-size: 16px;"></h3>
+                      <h3 id="temperatura-minima" style="font-size: 16px;"></h3>
                     </div>
                   </a>
                 </div>
@@ -732,19 +741,33 @@
   <script src="assets/js/main.js"></script>
 
   <script>
+    var vm = new Vue({
+      el: '#header',
+      data() {
+        return {
+          cidade: ''
+        }
+      },
+      methods: {
+        buscarCidade() {
+          console.log(this.cidade)
+          getClima(this.cidade)
+        }
+      },
+    })
     // const axios = require('axios').default;
     var temperatura_atual
     var temperatura_maxima
     var temperatura_minima
     var previsao_amanha
     var local
-    async function getClima () {
+    async function getClima (xyz) {
     // console.log(this.dias)
     let API_KEY = "ce36eceef4d7486091d95932230303"
 
     // Definir o local de interesse e o número de dias de previsão
     // let location = this.cidade
-    let location = 'Sao Paulo'
+    let location = xyz
     // let days = this.dias
     let days = 2
 
@@ -753,28 +776,32 @@
     
     try {
       let response = await axios.get(url)
-      console.log(response.data.forecast.forecastday[0].day.maxtemp_c)
+      console.log(response.data)
       temperatura_atual = response.data.current.temp_c
       previsao_amanha = { maxima : response.data.forecast.forecastday[0].day.maxtemp_c , minima : response.data.forecast.forecastday[0].day.mintemp_c }
       temperatura_maxima = response.data.forecast.forecastday[0].day.maxtemp_c
       temperatura_minima = response.data.forecast.forecastday[0].day.mintemp_c
       local = response.data.location.name
-      document.getElementById('temperatura-atual-titulo').innerText = `Temperatura atual em ${local} ${temperatura_atual}`
+      document.getElementById('temperatura-atual-titulo').innerText = `Temperatura atual em ${local} ${temperatura_atual}°`
       document.getElementById('temperatura-atual-texto').innerText = response.data.forecast.forecastday[0].day.condition.text
       document.getElementById('previsao-amanha-titulo').innerText = 'Previsão para Amanhã'
-      document.getElementById('previsao-amanha-maxima').innerText = 'Máxima: ' + previsao_amanha.maxima
-      document.getElementById('previsao-amanha-minima').innerText = 'Mínima: ' + previsao_amanha.minima
-      document.getElementById('temperatura-maxima').innerText = 'Temperatura máxima: ' + temperatura_maxima
-      document.getElementById('temperatura-minima').innerText = 'Temperatura mínima: ' + temperatura_minima
+      document.getElementById('previsao-amanha-maxima').innerText = 'Máxima: ' + previsao_amanha.maxima + '°'
+      document.getElementById('previsao-amanha-minima').innerText = 'Mínima: ' + previsao_amanha.minima + '°'
+      document.getElementById('temperatura-maxima').innerText = 'Temperatura máxima: ' + temperatura_maxima + '°'
+      document.getElementById('temperatura-minima').innerText = 'Temperatura mínima: ' + temperatura_minima + '°'
     } catch (error) {
       console.log(error)
     }
   }
-  getClima()
-  document.getElementById('titulo').innerText = `Temperatura atual: ${temperatura_atual}`
+  getClima('Sao Paulo')
+  // document.getElementById('titulo').innerText = `Temperatura atual: ${temperatura_atual}`
   // x = document.getElementById("titulo")
   // console.warn(x)
   // console.log(document.getElementById("titulo"))
+
+  
+
+  console.log(vm.cidade)
   </script>
 
 </body>
