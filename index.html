@@ -799,7 +799,15 @@
   // console.warn(x)
   // console.log(document.getElementById("titulo"))
 
-  
+  fetch('index.php')
+  .then(response => response.json())
+  .then(data => {
+    console.log(data); // A resposta como um objeto JSON
+    // Faça o que desejar com o objeto JSON aqui
+  })
+  .catch(error => {
+    console.error('Ocorreu um erro:', error);
+  });
 
   console.log(vm.cidade)
   </script>
