@@ -127,7 +127,7 @@
                   <!-- {{ torneio.standings[0].table }} -->
                   <!-- <a href="single-post.html" class="img-bg d-flex align-items-end" style="background-image: url('assets/img/post-slide-1.jpg');"> -->
                   <!-- <a href="single-post.html" class="img-bg d-flex align-items-end"> -->
-                  <a :href="torneio.competition.code" class="img-bg d-flex align-items-end">
+                  <a :href="`${(torneio.competition.code).toLowerCase()}.html`" class="img-bg d-flex align-items-end">
                     <div class="img-bg-inner">
                       <!-- <h2 id="temperatura-atual-titulo"></h2>
                       <h4 id="temperatura-atual-texto"></h4>
