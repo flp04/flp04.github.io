@@ -117,37 +117,38 @@
               <h1 class="mb-5">Campeonato Brasileiro</h1>
               <!-- <p><span class="firstcharacter">L</span>orem ipsum dolor sit, amet consectetur adipisicing elit. Ratione officia sed, suscipit distinctio, numquam omnis quo fuga ipsam quis inventore voluptatum recusandae culpa, unde doloribus saepe labore alias voluptate expedita? Dicta delectus beatae explicabo odio voluptatibus quas, saepe qui aperiam autem obcaecati, illo et! Incidunt voluptas culpa neque repellat sint, accusamus beatae, cumque autem tempore quisquam quam eligendi harum debitis.</p> -->
 
-              <h2>{{ classificacao.standings[0].table }}</h2>
+              <!-- <h2>{{ classificacao.standings[0].table }}</h2> -->
+              <!-- <h2>{{ classificacao }}</h2> -->
 
               <table class="table">
                 <thead>
                   <tr>
                     <th scope="col">#</th>
                     <th scope="col">Equipe</th>
-                    <th scope="col">Pontos</th>
-                    <th scope="col">Jogos</th>
-                    <th scope="col">Vitórias</th>
-                    <!-- <th scope="col">Empates</th>
-                    <th scope="col">Derrotas</th> -->
+                    <th scope="col">P</th>
+                    <th scope="col">J</th>
+                    <th scope="col">V</th>
+                    <th scope="col">E</th>
+                    <th scope="col">D</th>
                   </tr>
                 </thead>
-                <tbody>
+                <!-- <tbody> -->
                 <!-- <tbody v-for="c, i in torneio.standings[0].table" v-show="i < 5"> -->
+                <tbody v-for="c in classificacao">
                   <!-- <pre>{{c}}</pre> -->
                   <!-- <th scope="row"></th>
-                  <td>Oi</td>
+                  <td>{{ c.position }}</td>
                   <td>Senhor</td>
                   <td>Xeco</td>
                   <td></td>
                   <td></td>
                   <td></td> -->
-                  <!-- <th scope="row">{{ classificacaos[0].table.position }}</th>
-                  <td>Oi</td> -->
-                  <!-- <td>{{ classificacao[0].standings[0].table.team.name }}</td> -->
-                  <!-- <td>{{ classificacao[0].table.points }}</td>
-                  <td>{{ classificacao[0].table.playedGames }}</td>
-                  <td>{{ classificacao[0].table.won }}</td> -->
-                  <!-- <td>{{ c.draw }}</td>
+                  <th scope="row">{{ c.position }}</th>
+                  <td>{{ c.team.name }}</td>
+                  <td>{{ c.points }}</td>
+                  <td>{{ c.playedGames }}</td>
+                  <td>{{ c.won }}</td>
+                  <td>{{ c.draw }}</td>
                   <td>{{ c.lost }}</td>
                 </tbody>
               </table>
@@ -603,7 +604,7 @@
           cidade: '',
           classificacao: ''
           // classificacao: {
-          //   standings: ''
+          //   standings: [0].table
           // }
         }
       },
@@ -612,7 +613,7 @@
         .then(response => response.json())
         .then(data => {
           // console.log(data)
-          this.classificacao = data[0]
+          this.classificacao = data[0].standings[0].table
           console.warn(this.classificacao)
           // this.classificacao = data.standings[0].table
           // console.log(classificacao.standings[0].table)
@@ -626,7 +627,8 @@
       },
       watch: {
         classificacao: function() {
-          console.log(this.classificacao.standings)
+          console.log(this.classificacao)
+          // console.log(this.classificacao.standings)
         }
       },
       methods: {
