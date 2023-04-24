@@ -50,7 +50,7 @@
       <a href="index.html" class="logo d-flex align-items-center">
         <!-- Uncomment the line below if you also wish to use an image logo -->
         <!-- <img src="assets/img/logo.png" alt=""> -->
-        <h1>ZenBlog</h1>
+        <h1>Alô Microfone</h1>
       </a>
 
       <nav id="navbar" class="navbar">
@@ -133,17 +133,7 @@
                     <th scope="col">SG</th>
                   </tr>
                 </thead>
-                <!-- <tbody> -->
-                <!-- <tbody v-for="c, i in torneio.standings[0].table" v-show="i < 5"> -->
                 <tbody v-for="c in classificacao">
-                  <!-- <pre>{{c}}</pre> -->
-                  <!-- <th scope="row"></th>
-                  <td>{{ c.position }}</td>
-                  <td>Senhor</td>
-                  <td>Xeco</td>
-                  <td></td>
-                  <td></td>
-                  <td></td> -->
                   <th scope="row">{{ c.position }}</th>
                   <td>{{ c.team.shortName }}</td>
                   <td>{{ c.points }}</td>
