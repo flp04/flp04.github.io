@@ -130,6 +130,7 @@
                     <th scope="col">V</th>
                     <th scope="col">E</th>
                     <th scope="col">D</th>
+                    <th scope="col">SG</th>
                   </tr>
                 </thead>
                 <!-- <tbody> -->
@@ -144,12 +145,13 @@
                   <td></td>
                   <td></td> -->
                   <th scope="row">{{ c.position }}</th>
-                  <td>{{ c.team.name }}</td>
+                  <td>{{ c.team.shortName }}</td>
                   <td>{{ c.points }}</td>
                   <td>{{ c.playedGames }}</td>
                   <td>{{ c.won }}</td>
                   <td>{{ c.draw }}</td>
                   <td>{{ c.lost }}</td>
+                  <td>{{ c.goalDifference }}</td>
                 </tbody>
               </table>
 
