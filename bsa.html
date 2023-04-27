@@ -119,6 +119,13 @@
 
               <!-- <h2>{{ classificacao.standings[0].table }}</h2> -->
               <!-- <h2>{{ classificacao }}</h2> -->
+              <div v-for="partida in partidas">
+                <!-- <pre>{{ partida }}</pre> -->
+                <div>{{ datinha }}</div>
+                <div v-if="partida.status == 'FINISHED'">{{ partida.utcDate }} - {{ partida.score.fullTime.home }} {{ partida.homeTeam.shortName }} vs {{ partida.awayTeam.shortName }} {{ partida.score.fullTime.away }}</div>
+                <div v-else>{{ partida.utcDate }} - {{ partida.homeTeam.shortName }} vs {{ partida.awayTeam.shortName }}</div>
+                <pre></pre>
+              </div>
 
               <table class="table">
                 <thead>
@@ -294,7 +301,12 @@
               <div class="tab-content" id="pills-tabContent">
 
                 <!-- Popular -->
-                <div class="tab-pane fade show active" id="pills-popular" role="tabpanel" aria-labelledby="pills-popular-tab">
+                <div v-for="partida in partidas">
+                  <!-- <pre>{{ partida }}</pre> -->
+                  <div>{{ partida.homeTeam.shortName }} vs {{ partida.awayTeam.shortName }}</div>
+                  <pre>{{ partida.status }}</pre>
+                </div>
+                <!-- <div class="tab-pane fade show active" id="pills-popular" role="tabpanel" aria-labelledby="pills-popular-tab">
                   <div class="post-entry-1 border-bottom">
                     <div class="post-meta"><span class="date">Sport</span> <span class="mx-1">&bullet;</span> <span>Jul 5th '22</span></div>
                     <h2 class="mb-2"><a href="#">How to Avoid Distraction and Stay Focused During Video Calls?</a></h2>
@@ -330,7 +342,8 @@
                     <h2 class="mb-2"><a href="#">10 Life-Changing Hacks Every Working Mom Should Know</a></h2>
                     <span class="author mb-3 d-block">Jenny Wilson</span>
                   </div>
-                </div> <!-- End Popular -->
+                </div> -->
+                <!-- End Popular -->
 
                 <!-- Trending -->
                 <div class="tab-pane fade" id="pills-trending" role="tabpanel" aria-labelledby="pills-trending-tab">
@@ -601,7 +614,9 @@
       data() {
         return {
           cidade: '',
-          classificacao: ''
+          classificacao: '',
+          partidas: '',
+          datinha: ''
           // classificacao: {
           //   standings: [0].table
           // }
@@ -619,6 +634,20 @@
 
           // console.log(data.standings[0].table); // A resposta como um objeto JSON
           // Faça o que desejar com o objeto JSON aqui
+        })
+        .catch(error => {
+          console.error('Ocorreu um erro:', error);
+        });
+
+        fetch('matches.json')
+        .then(response => response.json())
+        .then(data => {
+          this.partidas = data[0].matches
+          this.datinha = new Date(data[0].matches[0].utcDate).toLocaleString('en-US', {timeZone: 'America/Argentina/Buenos_Aires'})
+          // this.datinha = new Date(this.datinha.toLocaleString({timeZone: 'America/Argentina/Buenos_Aires'}))
+          // this.datinha = new Date(this.datinha.toLocaleString({timeZone: 'America/Sao_Paulo'}))
+          // this.datinha.
+          console.log(this.datinha)
         })
         .catch(error => {
           console.error('Ocorreu um erro:', error);

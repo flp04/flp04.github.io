@@ -657,7 +657,7 @@ section {
   position: relative;
   padding-left: 100px;
   padding-right: 100px;
-  margin-bottom: 330px;
+  margin-bottom: 100px;
 }
 
 @media (max-width: 768px) {
