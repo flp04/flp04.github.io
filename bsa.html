@@ -119,11 +119,14 @@
 
               <!-- <h2>{{ classificacao.standings[0].table }}</h2> -->
               <!-- <h2>{{ classificacao }}</h2> -->
+              <div>
+                <button @click="rodadaAnterior()">Rodada Anterior</button>
+                <button @click="rodadaProxima()">Próxima Rodada</button>
+              </div>
               <div v-for="partida in partidas">
                 <!-- <pre>{{ partida }}</pre> -->
-                <div>{{ datinha }}</div>
-                <div v-if="partida.status == 'FINISHED'">{{ partida.utcDate }} - {{ partida.score.fullTime.home }} {{ partida.homeTeam.shortName }} vs {{ partida.awayTeam.shortName }} {{ partida.score.fullTime.away }}</div>
-                <div v-else>{{ partida.utcDate }} - {{ partida.homeTeam.shortName }} vs {{ partida.awayTeam.shortName }}</div>
+                <div v-if="partida.status == 'FINISHED'">{{ corrigirFusoHorario(partida.utcDate) }} - {{ partida.score.fullTime.home }} {{ partida.homeTeam.shortName }} vs {{ partida.awayTeam.shortName }} {{ partida.score.fullTime.away }}</div>
+                <div v-else>{{ corrigirFusoHorario(partida.utcDate) }} - {{ partida.homeTeam.shortName }} vs {{ partida.awayTeam.shortName }}</div>
                 <pre></pre>
               </div>
 
@@ -616,6 +619,8 @@
           cidade: '',
           classificacao: '',
           partidas: '',
+          rodadas: [],
+          rodada_atual: 2,
           datinha: ''
           // classificacao: {
           //   standings: [0].table
@@ -643,11 +648,30 @@
         .then(response => response.json())
         .then(data => {
           this.partidas = data[0].matches
-          this.datinha = new Date(data[0].matches[0].utcDate).toLocaleString('en-US', {timeZone: 'America/Argentina/Buenos_Aires'})
+          let i = 0
+          let j = 0
+          let array = []
+          let rodadas = []
+          this.partidas.forEach(function(element) {
+            if (i < 10) {
+              array.push(element)
+              i++
+            } else {
+              rodadas.push(array)
+              array = []
+              i = 0
+              j++
+              array.push(element)
+              i++
+            }
+          })
+          this.rodadas = rodadas
+          this.partidas = rodadas[this.rodada_atual]
+          // this.datinha = new Date(data[0].matches[0].utcDate).toLocaleString('en-US', {timeZone: 'America/Argentina/Buenos_Aires'})
+          // this.datinha = new Date(data[0].matches[0].utcDate).toLocaleString('en-US', {timeZone: 'America/Argentina/Buenos_Aires'})
           // this.datinha = new Date(this.datinha.toLocaleString({timeZone: 'America/Argentina/Buenos_Aires'}))
           // this.datinha = new Date(this.datinha.toLocaleString({timeZone: 'America/Sao_Paulo'}))
           // this.datinha.
-          console.log(this.datinha)
         })
         .catch(error => {
           console.error('Ocorreu um erro:', error);
@@ -661,8 +685,33 @@
       },
       methods: {
         buscarCidade() {
-          console.log(this.cidade)
           getClima(this.cidade)
+        },
+        corrigirFusoHorario(data) {
+          data = new Date(data)
+          let opcoes = {
+            weekday: 'long',
+            year: 'numeric', 
+            month: '2-digit', 
+            day: '2-digit',
+            hour: 'numeric',
+            minute: 'numeric',
+            // second: 'numeric',
+            hour12: false,
+            // timeZone: 'local'
+          }
+          tradutor = new Intl.DateTimeFormat('pt-BR', opcoes)
+          data = tradutor.format(data).split(',')
+          data = `${data[0].slice(0,3)}, ${data[1]} ${data[2]}`
+          return data
+        },
+        rodadaAnterior() {
+          this.rodada_atual -= 1
+          this.partidas = this.rodadas[this.rodada_atual]
+        },
+        rodadaProxima() {
+          this.rodada_atual += 1
+          this.partidas = this.rodadas[this.rodada_atual]
         }
       },
     })

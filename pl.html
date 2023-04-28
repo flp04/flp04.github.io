@@ -241,6 +241,16 @@
                 </div>
               </div>
             </div> -->
+            <div>
+              <button @click="rodadaAnterior()">Rodada Anterior</button>
+              <button @click="rodadaProxima()">Próxima Rodada</button>
+            </div>
+            <div v-for="partida in partidas">
+              <!-- <pre>{{ partida }}</pre> -->
+              <div v-if="partida.status == 'FINISHED'">{{ corrigirFusoHorario(partida.utcDate) }} - {{ partida.score.fullTime.home }} {{ partida.homeTeam.shortName }} vs {{ partida.awayTeam.shortName }} {{ partida.score.fullTime.away }}</div>
+              <div v-else>{{ corrigirFusoHorario(partida.utcDate) }} - {{ partida.homeTeam.shortName }} vs {{ partida.awayTeam.shortName }}</div>
+              <pre></pre>
+            </div>
             <!-- End Comments -->
 
             <!-- ======= Comments Form ======= -->
@@ -597,39 +607,76 @@
       data() {
         return {
           cidade: '',
-          classificacao: ''
-          // classificacao: {
-          //   standings: [0].table
-          // }
+          classificacao: '',
+          partidas: '',
+          rodada_atual: 32
         }
       },
       mounted() {
         fetch('resultado.json')
         .then(response => response.json())
         .then(data => {
-          // console.log(data)
           this.classificacao = data[1].standings[0].table
-          console.warn(this.classificacao)
-          // this.classificacao = data.standings[0].table
-          // console.log(classificacao.standings[0].table)
-
-          // console.log(data.standings[0].table); // A resposta como um objeto JSON
-          // Faça o que desejar com o objeto JSON aqui
         })
         .catch(error => {
           console.error('Ocorreu um erro:', error);
-        });
-      },
-      watch: {
-        classificacao: function() {
-          console.log(this.classificacao)
-          // console.log(this.classificacao.standings)
-        }
+        })
+
+        fetch('matches.json')
+        .then(response => response.json())
+        .then(data => {
+          this.partidas = data[1].matches
+          let i = 0
+          let j = 0
+          let array = []
+          let rodadas = []
+          this.partidas.forEach(function(element) {
+            if (i < 10) {
+              array.push(element)
+              i++
+            } else {
+              rodadas.push(array)
+              array = []
+              i = 0
+              j++
+              array.push(element)
+              i++
+            }
+          })
+          this.rodadas = rodadas
+          this.partidas = rodadas[this.rodada_atual]
+        })
+        .catch(error => {
+          console.error('Ocorreu um erro:', error);
+        })
       },
       methods: {
         buscarCidade() {
-          console.log(this.cidade)
           getClima(this.cidade)
+        },
+        corrigirFusoHorario(data) {
+          data = new Date(data)
+          let opcoes = {
+            weekday: 'long',
+            year: 'numeric', 
+            month: '2-digit', 
+            day: '2-digit',
+            hour: 'numeric',
+            minute: 'numeric',
+            hour12: false,
+          }
+          tradutor = new Intl.DateTimeFormat('pt-BR', opcoes)
+          data = tradutor.format(data).split(',')
+          data = `${data[0].slice(0,3)}, ${data[1]} ${data[2]}`
+          return data
+        },
+        rodadaAnterior() {
+          this.rodada_atual -= 1
+          this.partidas = this.rodadas[this.rodada_atual]
+        },
+        rodadaProxima() {
+          this.rodada_atual += 1
+          this.partidas = this.rodadas[this.rodada_atual]
         }
       },
     })
