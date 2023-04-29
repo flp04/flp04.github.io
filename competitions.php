@@ -19,7 +19,7 @@ $dados = array(
 // Definir o cabeçalho de resposta como JSON
 header('Content-Type: application/json');
 
-$uri = 'http://api.football-data.org/v4/competitions/BSA/standings';
+$uri = 'http://api.football-data.org/v4/competitions/';
   $reqPrefs['http']['method'] = 'GET';
   $reqPrefs['http']['header'] = 'X-Auth-Token: bef4843a927541c5b894ff0c1d3c78ae';
   $stream_context = stream_context_create($reqPrefs);

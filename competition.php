@@ -19,20 +19,12 @@ $dados = array(
 // Definir o cabeçalho de resposta como JSON
 header('Content-Type: application/json');
 
-$uri = 'http://api.football-data.org/v4/competitions/';
+$uri = 'http://api.football-data.org/v4/competitions/CLI/standings';
   $reqPrefs['http']['method'] = 'GET';
   $reqPrefs['http']['header'] = 'X-Auth-Token: bef4843a927541c5b894ff0c1d3c78ae';
   $stream_context = stream_context_create($reqPrefs);
   $response = file_get_contents($uri, false, $stream_context);
+  $competitions = json_decode($response);
+  echo print_r($competitions);
 
-// echo $competitions->competitions[0]->code;
-$uri = 'http://api.football-data.org/v4/matches/432424';
-  $reqPrefs['http']['method'] = 'GET';
-  $reqPrefs['http']['header'] = 'X-Auth-Token: bef4843a927541c5b894ff0c1d3c78ae';
-  $stream_context = stream_context_create($reqPrefs);
-  $response = file_get_contents($uri, false, $stream_context);
-  $matches = json_decode($response);
-//   $competitions[] = json_decode($response);
-echo print_r($matches);
-
-?>
+  ?>
