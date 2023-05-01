@@ -166,6 +166,11 @@
                                         <td>{{ c.goalDifference }}</td>
                                       </tbody>
                                     </table>
+                                    <div class="text-center" v-for="p in partidas">
+                                        <h6 v-if="p.group == torneio.group">
+                                            {{ corrigirFusoHorario(p.utcDate) }} - {{ p.homeTeam.shortName }} vs {{ p.awayTeam.shortName }}
+                                        </h6>
+                                    </div>
                                   </div>
                                 </a>
                               </div>
@@ -685,26 +690,28 @@
         //     console.log(this.classificacao)
         // }
         partidas: function() {
+            // this.partidas = this.partidas.filter(function(el) {
+            //     return el.group != null
+            // })
             console.log(this.partidas)
         }
       },
       methods: {
         getCampeonato() {
-            formData = new FormData
-            formData.append('requisicao', 'classificacao')
-            fetch('libertadores.php', {
-                method: 'POST',
-                body: formData
-            })
-                .then(response => response.json())
-                .then(data => {
+            // formData = new FormData
+            // formData.append('requisicao', 'classificacao')
+            // fetch('libertadores.php', {
+            //     method: 'POST',
+            //     body: formData
+            fetch('libertadores.php')
+            .then(response => response.json())
+            .then(data => {
                     // this.nomeTorneio = JSON.parse(data[0]).competition.name
                     // this.imgTorneio = JSON.parse(data[0]).competition.emblem
                     // this.classificacao = (JSON.parse(data[0]).standings)
-
-                    this.nomeTorneio = JSON.parse(data).competition.name
-                    this.imgTorneio = JSON.parse(data).competition.emblem
-                    this.classificacao = (JSON.parse(data).standings)
+                this.nomeTorneio = JSON.parse(data).competition.name
+                this.imgTorneio = JSON.parse(data).competition.emblem
+                this.classificacao = (JSON.parse(data).standings)
                     // return data
                     // this.classificacao = data
                 // this.classificacao = data[7].standings[0].table
@@ -715,23 +722,43 @@
                 // console.log(data.standings[0].table); // A resposta como um objeto JSON
                 // Faça o que desejar com o objeto JSON aqui
                 })
-                .catch(error => {
-                    console.error('Ocorreu um erro:', error);
-                });
-            formData2 = new FormData
-            formData2.append('requisicao', 'partidas')
-            fetch('libertadores.php', {
-                method: 'POST',
-                body: formData2
-            })
-                .then(response => response.json())
-                .then(data => {
-                    // this.partidas = (JSON.parse(data).standings)
-                    this.partidas = (JSON.parse(data))
+            .catch(error => {
+                console.error('Ocorreu um erro:', error);
+            });
+            // formData2 = new FormData
+            // formData2.append('requisicao', 'partidas')
+            // fetch('libertadores.php', {
+                //     method: 'POST',
+                //     body: formData2
+                // })
+            fetch('libertadores_partidas.php')
+            .then(response => response.json())
+            .then(data => {
+                this.partidas = (JSON.parse(data).matches).filter(function(el) {
+                    return el.group != null && el.matchday == 3
                 })
-                .catch(error => {
-                    console.error('Ocorreu um erro:', error);
-                });
+            })
+            .catch(error => {
+                console.error('Ocorreu um erro:', error);
+            });
+        },
+        corrigirFusoHorario(data) {
+          data = new Date(data)
+          let opcoes = {
+            weekday: 'long',
+            year: 'numeric', 
+            month: '2-digit', 
+            day: '2-digit',
+            hour: 'numeric',
+            minute: 'numeric',
+            // second: 'numeric',
+            hour12: false,
+            // timeZone: 'local'
+          }
+          tradutor = new Intl.DateTimeFormat('pt-BR', opcoes)
+          data = tradutor.format(data).split(',')
+          data = `${data[0].slice(0,3)}, ${data[1]} ${data[2]}`
+          return data
         }
       },
     })
