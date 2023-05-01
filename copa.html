@@ -703,7 +703,7 @@
             // fetch('libertadores.php', {
             //     method: 'POST',
             //     body: formData
-            fetch('libertadores.php')
+            fetch('libertadores.json')
             .then(response => response.json())
             .then(data => {
                     // this.nomeTorneio = JSON.parse(data[0]).competition.name
@@ -731,7 +731,7 @@
                 //     method: 'POST',
                 //     body: formData2
                 // })
-            fetch('libertadores_partidas.php')
+            fetch('libertadores_partidas.json')
             .then(response => response.json())
             .then(data => {
                 this.partidas = (JSON.parse(data).matches).filter(function(el) {
