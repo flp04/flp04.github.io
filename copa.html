@@ -686,7 +686,12 @@
       },
       methods: {
         getCampeonato() {
-            fetch('libertadores.php')
+            formData = new FormData
+            formData.append('requisicao', 'classificacao')
+            fetch('libertadores.php', {
+                method: 'POST',
+                body: formData
+            })
                 .then(response => response.json())
                 .then(data => {
                     // this.nomeTorneio = JSON.parse(data[0]).competition.name
