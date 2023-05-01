@@ -7,7 +7,9 @@
     // Permitir os cabeçalhos "Content-Type" e "Authorization"
     header('Access-Control-Allow-Headers: Content-Type, Authorization');
 
-    header('Content-Type: text/plain');
+    // header('Content-Type: text/plain');
+
+    ob_start();
 
     // Arquivo PHP (arquivo.php)
 
@@ -71,6 +73,6 @@
     //         echo $matches;
     //         break;
     // }
-
+    exit();
 
 ?>
