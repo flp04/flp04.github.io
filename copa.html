@@ -689,6 +689,10 @@
             fetch('libertadores.php')
                 .then(response => response.json())
                 .then(data => {
+                    // this.nomeTorneio = JSON.parse(data[0]).competition.name
+                    // this.imgTorneio = JSON.parse(data[0]).competition.emblem
+                    // this.classificacao = (JSON.parse(data[0]).standings)
+
                     this.nomeTorneio = JSON.parse(data).competition.name
                     this.imgTorneio = JSON.parse(data).competition.emblem
                     this.classificacao = (JSON.parse(data).standings)

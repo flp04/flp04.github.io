@@ -24,8 +24,18 @@
     $reqPrefs['http']['header'] = 'X-Auth-Token: bef4843a927541c5b894ff0c1d3c78ae';
     $stream_context = stream_context_create($reqPrefs);
     $response = file_get_contents($uri, false, $stream_context);
-    $competitions = json_encode($response);
-    echo $competitions;
+    $standings = json_encode($response);
+    echo $standings;
+
+    $uri = 'http://api.football-data.org/v4/competitions/CLI/standings';
+    $reqPrefs['http']['method'] = 'GET';
+    $reqPrefs['http']['header'] = 'X-Auth-Token: bef4843a927541c5b894ff0c1d3c78ae';
+    $stream_context = stream_context_create($reqPrefs);
+    $response = file_get_contents($uri, false, $stream_context);
+    $matches = json_encode($response);
+    // echo $matches;
+    // echo json_encode([$standings, $matches)];
+    // $competition = ['standings' => $standings, 'matches' => $matches];
     // echo json_encode($dados);
 
 ?>
