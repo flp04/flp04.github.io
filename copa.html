@@ -668,7 +668,8 @@
           cidade: '',
           nomeTorneio: '',
           imgTorneio: '',
-          classificacao: ''
+          classificacao: '',
+          partidas: ''
           // classificacao: {
           //   standings: [0].table
           // }
@@ -680,8 +681,11 @@
         // console.log(JSON.parse(this.classificacao))
       },
       watch: {
-        classificacao: function() {
-            console.log(this.classificacao)
+        // classificacao: function() {
+        //     console.log(this.classificacao)
+        // }
+        partidas: function() {
+            console.log(this.partidas)
         }
       },
       methods: {
@@ -710,6 +714,20 @@
 
                 // console.log(data.standings[0].table); // A resposta como um objeto JSON
                 // Faça o que desejar com o objeto JSON aqui
+                })
+                .catch(error => {
+                    console.error('Ocorreu um erro:', error);
+                });
+            formData2 = new FormData
+            formData2.append('requisicao', 'partidas')
+            fetch('libertadores.php', {
+                method: 'POST',
+                body: formData2
+            })
+                .then(response => response.json())
+                .then(data => {
+                    // this.partidas = (JSON.parse(data).standings)
+                    this.partidas = (JSON.parse(data))
                 })
                 .catch(error => {
                     console.error('Ocorreu um erro:', error);
