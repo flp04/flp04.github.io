@@ -5,7 +5,7 @@
   <meta charset="utf-8">
   <meta content="width=device-width, initial-scale=1.0" name="viewport">
 
-  <title>ZenBlog Bootstrap Template - Single Post</title>
+  <title>Alô Microfone - Copa Libertadores</title>
   <meta content="" name="description">
   <meta content="" name="keywords">
 
@@ -169,7 +169,7 @@
                                     </table>
                                     <div class="text-center" v-for="p in partidas">
                                         <div class="text-nowrap" v-if="p.group == torneio.group">
-                                            {{ corrigirFusoHorario(p.utcDate) }} - {{ p.homeTeam.shortName }} vs {{ p.awayTeam.shortName }}
+                                            {{ corrigirFusoHorario(p.utcDate) }} - {{ p.status == 'FINISHED' ? p.score.fullTime.home : '' }} {{ p.homeTeam.shortName }} vs {{ p.awayTeam.shortName }} {{ p.status == 'FINISHED' ? p.score.fullTime.away : '' }}
                                             <!-- {{ p.homeTeam.shortName }} vs {{ p.awayTeam.shortName }} -->
                                         </div>
                                     </div>
