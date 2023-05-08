@@ -737,7 +737,7 @@
             .then(response => response.json())
             .then(data => {
                 this.partidas = (JSON.parse(data).matches).filter(function(el) {
-                    return el.group != null && el.matchday == 3
+                    return el.group != null && el.matchday == 4
                 })
             })
             .catch(error => {
