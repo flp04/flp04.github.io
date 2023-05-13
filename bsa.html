@@ -32,6 +32,64 @@
   <script src="https://unpkg.com/axios/dist/axios.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/vue@2.6.14"></script>
 
+  <style>
+    #carousel {
+      position: relative;
+      width: 100%;
+      height: 300px;
+      overflow: hidden;
+    }
+    
+    .carousel-items {
+      display: flex;
+      width: calc(100% * 5);
+      transition: transform 0.5s ease;
+      /* transform: translateX(calc(-100% / 5 * {{ currentIndex }})); */
+    }
+  
+    .carousel-item {
+      flex: 0 0 calc(100% / 5);
+      height: 100%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 18px;
+      /* font-weight: bold; */
+      /* color: white; */
+    }
+  
+    .carousel-controls {
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      z-index: 1;
+    }
+    
+    .carousel-control {
+      width: 50px;
+      height: 100%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 32px;
+      color: white;
+      cursor: pointer;
+    }
+    
+    /* .left {
+      background-color: rgba(0, 0, 0, 0.5);
+    }
+    
+    .right {
+      background-color: rgba(0, 0, 0, 0.5);
+    } */
+  </style>
+
   <!-- =======================================================
   * Template Name: ZenBlog
   * Updated: Mar 10 2023 with Bootstrap v5.2.3
@@ -114,22 +172,13 @@
             <!-- ======= Single Post Content ======= -->
             <div class="single-post">
               <div class="post-meta"><span class="date">Business</span> <span class="mx-1">&bullet;</span> <span>Jul 5th '22</span></div>
-              <h1 class="mb-5">Campeonato Brasileiro</h1>
+              <!-- <img :src="liga.competition.emblem" alt="" class="mx-auto d-block" width="20%"> -->
+              <h1 class="mb-5">{{ liga.competition.name }}</h1>
               <!-- <p><span class="firstcharacter">L</span>orem ipsum dolor sit, amet consectetur adipisicing elit. Ratione officia sed, suscipit distinctio, numquam omnis quo fuga ipsam quis inventore voluptatum recusandae culpa, unde doloribus saepe labore alias voluptate expedita? Dicta delectus beatae explicabo odio voluptatibus quas, saepe qui aperiam autem obcaecati, illo et! Incidunt voluptas culpa neque repellat sint, accusamus beatae, cumque autem tempore quisquam quam eligendi harum debitis.</p> -->
 
               <!-- <h2>{{ classificacao.standings[0].table }}</h2> -->
               <!-- <h2>{{ classificacao }}</h2> -->
-              <div>
-                <button @click="rodadaAnterior()">Rodada Anterior</button>
-                <button @click="rodadaProxima()">Próxima Rodada</button>
-              </div>
-              <div v-for="partida in partidas">
-                <!-- <pre>{{ partida }}</pre> -->
-                <div v-if="partida.status == 'FINISHED'">{{ corrigirFusoHorario(partida.utcDate) }} - {{ partida.score.fullTime.home }} {{ partida.homeTeam.shortName }} vs {{ partida.awayTeam.shortName }} {{ partida.score.fullTime.away }}</div>
-                <div v-else>{{ corrigirFusoHorario(partida.utcDate) }} - {{ partida.homeTeam.shortName }} vs {{ partida.awayTeam.shortName }}</div>
-                <pre></pre>
-              </div>
-
+              
               <table class="table">
                 <thead>
                   <tr>
@@ -146,12 +195,16 @@
                 </thead>
                 <!-- <tbody> -->
                 <!-- <tbody v-for="c, i in torneio.standings[0].table" v-show="i < 5"> -->
-                <tbody v-for="c in classificacao">
-                  <th class="bg-info" v-if="c.position <=4" scope="row">{{ c.position }}</th>
-                  <th class="bg-warning" v-else-if="c.position == 5 || c.position == 6" scope="row">{{ c.position }}</th>
-                  <th class="bg-success" v-else-if="c.position > 6 && c.position <= 12" scope="row">{{ c.position }}</th>
+                  <tbody v-for="c in classificacao">
+                  <th class="bg-info" v-if="c.position <= continentalA" scope="row">{{ c.position }}</th>
+                  <th class="bg-secondary" v-else-if="continentalA_eliminatorias > 0 && c.position > continentalA && c.position <= continentalA_eliminatorias" scope="row">{{ c.position }}</th>
+                  <th class="bg-warning" v-else-if="continentalA_eliminatorias > 0 && c.position > continentalA_eliminatorias && c.position <= continentalB" scope="row">{{ c.position }}</th>
+                  <th class="bg-warning" v-else-if="c.position > continentalA && c.position <= continentalB" scope="row">{{ c.position }}</th>
+                  <th class="bg-success" v-else-if="c.position > continentalB && c.position <= continentalC" scope="row">{{ c.position }}</th>
+                  <th class="bg-danger" v-else-if="c.position > 6 && c.position > (classificacao.length - nRebaixados)" scope="row">{{ c.position }}</th>
                   <th v-else scope="row">{{ c.position }}</th>
-                  <td>{{ c.team.shortName }}</td>
+                  <td v-if="verificarCampeao && c.position == 1" class="bg-success">{{ c.team.shortName }}</td>
+                  <td v-else>{{ c.team.shortName }}</td>
                   <td>{{ c.points }}</td>
                   <td>{{ c.playedGames }}</td>
                   <td>{{ c.won }}</td>
@@ -162,6 +215,35 @@
                 </tbody>
               </table>
 
+              <div id="carousel">
+                <div class="carousel-items" v-for="partida in partidas">
+                  <div class="carousel-item" v-if="partida.status == 'FINISHED'">{{ corrigirFusoHorario(partida.utcDate) }} - {{ partida.score.fullTime.home }} {{ partida.homeTeam.shortName }} vs {{ partida.awayTeam.shortName }} {{ partida.score.fullTime.away }}</div>
+                  <div class="carousel-item" v-else>{{ corrigirFusoHorario(partida.utcDate) }} - {{ partida.homeTeam.shortName }} vs {{ partida.awayTeam.shortName }}</div>
+                </div>
+                <div class="carousel-controls">
+                  <div class="carousel-control left" @click="rodadaAnterior()">&#9664;</div>
+                  <div class="carousel-control right" @click="rodadaProxima()">&#9654;</div>
+                </div>
+              </div>
+
+              <!-- <div id="carousel">
+                <table class="carousel-items">
+                    <tbody v-for="partida in partidas">
+                        <div class="carousel-item">
+                          <td scope="col">{{ corrigirFusoHorario(partida.utcDate) }}</th>
+                          <td scope="col">{{ partida.score.fullTime.home }}</th>
+                          <td scope="col">{{ partida.homeTeam.shortName }}</th>
+                          <td scope="col">vs</th>
+                          <td scope="col">{{ partida.awayTeam.shortName }}</th>
+                          <td scope="col">{{ partida.score.fullTime.away }}</th>
+                        </div>
+                  </tbody>
+                  <div class="carousel-controls">
+                    <div class="carousel-control left" @click="rodadaAnterior()">&#9664;</div>
+                    <div class="carousel-control right" @click="rodadaProxima()">&#9654;</div>
+                  </div>
+                </table>
+              </div> -->
               <!-- <figure class="my-4">
                 <img src="assets/img/post-landscape-1.jpg" alt="" class="img-fluid">
                 <figcaption>Lorem ipsum dolor sit amet consectetur adipisicing elit. Explicabo, odit? </figcaption>
@@ -304,11 +386,10 @@
               <div class="tab-content" id="pills-tabContent">
 
                 <!-- Popular -->
-                <div v-for="partida in partidas">
-                  <!-- <pre>{{ partida }}</pre> -->
+                <!-- <div v-for="partida in partidas">
                   <div>{{ partida.homeTeam.shortName }} vs {{ partida.awayTeam.shortName }}</div>
                   <pre>{{ partida.status }}</pre>
-                </div>
+                </div> -->
                 <!-- <div class="tab-pane fade show active" id="pills-popular" role="tabpanel" aria-labelledby="pills-popular-tab">
                   <div class="post-entry-1 border-bottom">
                     <div class="post-meta"><span class="date">Sport</span> <span class="mx-1">&bullet;</span> <span>Jul 5th '22</span></div>
@@ -617,28 +698,116 @@
       data() {
         return {
           cidade: '',
+          liga: {
+            competition: {
+              name: ''
+            }
+          },
           classificacao: '',
           partidas: '',
           rodadas: [],
-          rodada_atual: 2,
+          rodada_atual: '',
+          continentalA: '',
+          continentalA_eliminatorias: '',
+          continentalB: '',
+          continentalC: '',
+          nRebaixados: '',
           datinha: ''
-          // classificacao: {
-          //   standings: [0].table
-          // }
         }
+      },
+      computed: {
+        verificarCampeao() {
+          if (this.classificacao[0].points > (( ((this.classificacao.length*2)-2) - this.classificacao[1].playedGames)*3) + this.classificacao[1].points) {
+            return true
+          } else {
+            false
+          }
+        },
+        verificarRebaixamento() {
+          let ultimo = this.classificacao[this.classificacao.length -1] 
+          let primeiroFora = this.classificacao[this.classificacao.length -4] 
+          if (this.classificacao[0].points > (( ((this.classificacao.length*2)-2) - this.classificacao[1].playedGames)*3) + this.classificacao[1].points) {
+            return true
+          } else {
+            false
+          }
+        },
       },
       mounted() {
         fetch('resultado.json')
         .then(response => response.json())
         .then(data => {
-          // console.log(data)
-          this.classificacao = data[0].standings[0].table
-          console.warn(this.classificacao)
-          // this.classificacao = data.standings[0].table
-          // console.log(classificacao.standings[0].table)
-
-          // console.log(data.standings[0].table); // A resposta como um objeto JSON
-          // Faça o que desejar com o objeto JSON aqui
+          const param = new URLSearchParams(window.location.search);
+          const code = param.get('code');
+          let liga
+          switch (code) {
+            case 'bsa':
+              liga = data[0]
+              this.continentalA = 4
+              this.continentalA_eliminatorias = 2 + this.continentalA
+              this.continentalB = 6 + this.continentalA_eliminatorias
+              this.nRebaixados = 4
+              break
+            case 'pl':
+              liga = data[1]
+              this.continentalA = 4
+              this.continentalB = 1 + this.continentalA
+              this.nRebaixados = 3
+              break
+            case 'sa':
+              liga = data[2]
+              this.continentalA = 4
+              this.continentalB = 1 + this.continentalA
+              this.continentalC = 1 + this.continentalB
+              this.nRebaixados = 3
+              break
+            case 'ppl':
+              liga = data[3]
+              this.continentalA = 2
+              this.continentalB = 1 + this.continentalA
+              this.continentalC = 2 + this.continentalB
+              this.nRebaixados = 3 // mas o melhor classificado entre os 3 disputa repescagem
+              break
+            case 'bl1':
+              liga = data[4]
+              this.continentalA = 4
+              this.continentalB = 1 + this.continentalA
+              this.continentalC = 1 + this.continentalB
+              this.nRebaixados = 3 // mas o melhor classificado entre os 3 disputa repescagem
+              break
+            case 'ded':
+              liga = data[5]
+              this.continentalA = 1
+              this.continentalB = 1 + this.continentalA
+              this.continentalC = 1 + this.continentalB
+              this.nRebaixados = 3 // mas o melhor classificado entre os 3 disputa repescagem
+              break
+            case 'fl1':
+              liga = data[6]
+              this.continentalA = 2
+              this.continentalA_eliminatorias = 1 + this.continentalA
+              this.continentalB = 1 + this.continentalA_eliminatorias
+              this.continentalC = 1 + this.continentalB
+              this.nRebaixados = 4
+              break
+            case 'pd':
+              liga = data[7]
+              this.continentalA = 4
+              this.continentalB = 2 + this.continentalA
+              this.continentalC = 1 + this.continentalB
+              this.nRebaixados = 3
+              break
+          }
+          console.log(liga.competition.code)
+          if (liga.competition.code == 'PPL') {
+            this.rodada_atual = 29
+          } else {
+            this.rodada_atual = liga.season.currentMatchday - 1 //data[0].season.currentMatchday - 1
+          }
+          console.warn(liga)
+          console.log(this.rodada_atual)
+          this.classificacao = liga.standings[0].table //data[0].standings[0].table
+          this.liga = liga
         })
         .catch(error => {
           console.error('Ocorreu um erro:', error);
@@ -647,7 +816,35 @@
         fetch('matches.json')
         .then(response => response.json())
         .then(data => {
-          this.partidas = data[0].matches
+          const param = new URLSearchParams(window.location.search);
+          const code = param.get('code');
+          switch (code) {
+            case 'bsa':
+              this.partidas = data[0].matches
+              break
+            case 'pl':
+              this.partidas = data[1].matches
+              break
+            case 'sa':
+              this.partidas = data[2].matches
+              break
+            case 'ppl':
+              this.partidas = data[3].matches
+              break
+            case 'bl1':
+              this.partidas = data[4].matches
+              break
+            case 'ded':
+              this.partidas = data[5].matches
+              break
+            case 'fl1':
+              this.partidas = data[6].matches
+              break
+            case 'pd':
+              this.partidas = data[7].matches
+              break
+          }
+          // this.partidas = data[0].matches
           let i = 0
           let j = 0
           let array = []
@@ -675,7 +872,10 @@
         })
         .catch(error => {
           console.error('Ocorreu um erro:', error);
-        });
+        })
+        // .finally(data => {
+        //   this.verificarCampeao()
+        // });
       },
       watch: {
         classificacao: function() {
@@ -712,7 +912,7 @@
         rodadaProxima() {
           this.rodada_atual += 1
           this.partidas = this.rodadas[this.rodada_atual]
-        }
+        },
       },
     })
   </script>
