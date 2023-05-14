@@ -113,8 +113,16 @@
 
       <nav id="navbar" class="navbar">
         <ul>
-          <li><a href="index.html">Blog</a></li>
-          <li><a href="single-post.html">Single Post</a></li>
+          <li><a href="liga.html?code=bsa">Brasileiro</a></li>
+          <li><a href="liga.html?code=pl">Inglês</a></li>
+          <li><a href="liga.html?code=sa">Italiano</a></li>
+          <li><a href="liga.html?code=ppl">Português</a></li>
+          <li><a href="liga.html?code=bl1">Alemão</a></li>
+          <li><a href="liga.html?code=ded">Holandes</a></li>
+          <li><a href="liga.html?code=fl1">Francês</a></li>
+          <li><a href="liga.html?code=pd">Espanhol</a></li>
+
+        <!-- <li><a href="single-post.html">Single Post</a></li>
           <li class="dropdown"><a href="category.html"><span>Categories</span> <i class="bi bi-chevron-down dropdown-indicator"></i></a>
             <ul>
               <li><a href="search-result.html">Search Result</a></li>
@@ -132,7 +140,7 @@
               <li><a href="#">Drop Down 3</a></li>
               <li><a href="#">Drop Down 4</a></li>
             </ul>
-          </li>
+          </li> -->
 
           <li><a href="about.html">About</a></li>
           <li><a href="contact.html">Contact</a></li>
@@ -173,7 +181,7 @@
             <div class="single-post">
               <div class="post-meta"><span class="date">Business</span> <span class="mx-1">&bullet;</span> <span>Jul 5th '22</span></div>
               <!-- <img :src="liga.competition.emblem" alt="" class="mx-auto d-block" width="20%"> -->
-              <h1 class="mb-5">{{ liga.competition.name }}</h1>
+              <h1>{{ liga.competition.name }}</h1>
               <!-- <p><span class="firstcharacter">L</span>orem ipsum dolor sit, amet consectetur adipisicing elit. Ratione officia sed, suscipit distinctio, numquam omnis quo fuga ipsam quis inventore voluptatum recusandae culpa, unde doloribus saepe labore alias voluptate expedita? Dicta delectus beatae explicabo odio voluptatibus quas, saepe qui aperiam autem obcaecati, illo et! Incidunt voluptas culpa neque repellat sint, accusamus beatae, cumque autem tempore quisquam quam eligendi harum debitis.</p> -->
 
               <!-- <h2>{{ classificacao.standings[0].table }}</h2> -->
@@ -201,9 +209,10 @@
                   <th class="bg-warning" v-else-if="continentalA_eliminatorias > 0 && c.position > continentalA_eliminatorias && c.position <= continentalB" scope="row">{{ c.position }}</th>
                   <th class="bg-warning" v-else-if="c.position > continentalA && c.position <= continentalB" scope="row">{{ c.position }}</th>
                   <th class="bg-success" v-else-if="c.position > continentalB && c.position <= continentalC" scope="row">{{ c.position }}</th>
-                  <th class="bg-danger" v-else-if="c.position > 6 && c.position > (classificacao.length - nRebaixados)" scope="row">{{ c.position }}</th>
+                  <th class="bg-danger" v-else-if="c.position > (classificacao.length - nRebaixados)" scope="row">{{ c.position }}</th>
                   <th v-else scope="row">{{ c.position }}</th>
                   <td v-if="verificarCampeao && c.position == 1" class="bg-success">{{ c.team.shortName }}</td>
+                  <td v-else-if="verificarRebaixamento(c.position) && c.position > (classificacao.length - nRebaixados)" class="bg-danger">{{ c.team.shortName }}</td>
                   <td v-else>{{ c.team.shortName }}</td>
                   <td>{{ c.points }}</td>
                   <td>{{ c.playedGames }}</td>
@@ -217,8 +226,8 @@
 
               <div id="carousel">
                 <div class="carousel-items" v-for="partida in partidas">
-                  <div class="carousel-item" v-if="partida.status == 'FINISHED'">{{ corrigirFusoHorario(partida.utcDate) }} - {{ partida.score.fullTime.home }} {{ partida.homeTeam.shortName }} vs {{ partida.awayTeam.shortName }} {{ partida.score.fullTime.away }}</div>
-                  <div class="carousel-item" v-else>{{ corrigirFusoHorario(partida.utcDate) }} - {{ partida.homeTeam.shortName }} vs {{ partida.awayTeam.shortName }}</div>
+                  <div class="carousel-item" nowrap>{{ corrigirFusoHorario(partida.utcDate) }} - {{ partida.score.fullTime.home }} {{ partida.homeTeam.shortName }} x {{ partida.awayTeam.shortName }} {{ partida.score.fullTime.away }}</div>
+                  <!-- <div class="carousel-item" nowrap>{{ corrigirFusoHorario(partida.utcDate) }} <img :src="partida.homeTeam.crest" style="margin:5px" width="5%"  alt=""> {{ partida.homeTeam.shortName }} {{ partida.score.fullTime.home }} x {{ partida.score.fullTime.away }} {{ partida.awayTeam.shortName }} <img :src="partida.awayTeam.crest" style="margin:5px" width="5%" alt=""></div> -->
                 </div>
                 <div class="carousel-controls">
                   <div class="carousel-control left" @click="rodadaAnterior()">&#9664;</div>
@@ -569,12 +578,14 @@
           <div class="col-6 col-lg-2">
             <h3 class="footer-heading">Navigation</h3>
             <ul class="footer-links list-unstyled">
-              <li><a href="index.html"><i class="bi bi-chevron-right"></i> Home</a></li>
-              <li><a href="index.html"><i class="bi bi-chevron-right"></i> Blog</a></li>
-              <li><a href="category.html"><i class="bi bi-chevron-right"></i> Categories</a></li>
-              <li><a href="single-post.html"><i class="bi bi-chevron-right"></i> Single Post</a></li>
-              <li><a href="about.html"><i class="bi bi-chevron-right"></i> About us</a></li>
-              <li><a href="contact.html"><i class="bi bi-chevron-right"></i> Contact</a></li>
+              <li><a href="liga.html?code=bsa"><i class="bi bi-chevron-right"></i> Brasileiro</a></li>
+              <li><a href="liga.html?code=pl"><i class="bi bi-chevron-right"></i> Inglês</a></li>
+              <li><a href="liga.html?code=sa"><i class="bi bi-chevron-right"></i> Italiano</a></li>
+              <li><a href="liga.html?code=ppl"><i class="bi bi-chevron-right"></i> Português</a></li>
+              <li><a href="liga.html?code=bl1"><i class="bi bi-chevron-right"></i> Alemão</a></li>
+              <li><a href="liga.html?code=ded"><i class="bi bi-chevron-right"></i> Holandes</a></li>
+              <li><a href="liga.html?code=fl1"><i class="bi bi-chevron-right"></i> Francês</a></li>
+              <li><a href="liga.html?code=pd"><i class="bi bi-chevron-right"></i> Espanhol</a></li>
             </ul>
           </div>
           <div class="col-6 col-lg-2">
@@ -724,13 +735,14 @@
           }
         },
         verificarRebaixamento() {
-          let ultimo = this.classificacao[this.classificacao.length -1] 
-          let primeiroFora = this.classificacao[this.classificacao.length -4] 
-          if (this.classificacao[0].points > (( ((this.classificacao.length*2)-2) - this.classificacao[1].playedGames)*3) + this.classificacao[1].points) {
-            return true
-          } else {
-            false
-          }
+            return (posicao) => {
+              let primeiroFora = this.classificacao[this.classificacao.length - this.nRebaixados]
+              if (this.classificacao[posicao-1].points + (((this.classificacao.length*2-2) - this.classificacao[posicao-1].playedGames)*3) < primeiroFora.points) {
+                return true
+              } else {
+                return false
+              }
+            }
         },
       },
       mounted() {
@@ -891,7 +903,7 @@
           data = new Date(data)
           let opcoes = {
             weekday: 'long',
-            year: 'numeric', 
+            // year: 'numeric', 
             month: '2-digit', 
             day: '2-digit',
             hour: 'numeric',
