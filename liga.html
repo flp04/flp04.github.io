@@ -212,6 +212,10 @@
                   <th class="bg-danger" v-else-if="c.position > (classificacao.length - nRebaixados)" scope="row">{{ c.position }}</th>
                   <th v-else scope="row">{{ c.position }}</th>
                   <td v-if="verificarCampeao && c.position == 1" class="bg-success">{{ c.team.shortName }}</td>
+                  <td v-else-if="verificarContinentalA(c.position)" class="bg-info">{{ c.team.shortName }}</td>
+                  <td v-else-if="continentalA_eliminatorias > 0 && verificarContinentalA_eliminatorias(c.position)" class="bg-secondary">{{ c.team.shortName }}</td>
+                  <td v-else-if="continentalB > 0 && verificarContinentalB(c.position)" class="bg-warning">{{ c.team.shortName }}</td>
+                  <td v-else-if="continentalC > 0 && verificarContinentalC(c.position)" class="bg-success">{{ c.team.shortName }}</td>
                   <td v-else-if="verificarRebaixamento(c.position) && c.position > (classificacao.length - nRebaixados)" class="bg-danger">{{ c.team.shortName }}</td>
                   <td v-else>{{ c.team.shortName }}</td>
                   <td>{{ c.points }}</td>
@@ -223,7 +227,6 @@
                   <td>{{ c.form }}</td>
                 </tbody>
               </table>
-
               <div id="carousel">
                 <div class="carousel-items" v-for="partida in partidas">
                   <div class="carousel-item" nowrap>{{ corrigirFusoHorario(partida.utcDate) }} - {{ partida.score.fullTime.home }} {{ partida.homeTeam.shortName }} x {{ partida.awayTeam.shortName }} {{ partida.score.fullTime.away }}</div>
@@ -743,6 +746,46 @@
                 return false
               }
             }
+        },
+        verificarContinentalA() {
+          return (posicao) => {
+            let primeiroFora = this.classificacao[this.continentalA]
+            if ((primeiroFora.points + (((this.classificacao.length*2-2) - primeiroFora.playedGames)*3)) < this.classificacao[posicao-1].points) {
+              return true
+            } else {
+              return false
+            }
+          }
+        },
+        verificarContinentalA_eliminatorias() {
+          return (posicao) => {
+            let primeiroFora = this.classificacao[this.continentalA_eliminatorias]
+            if ((primeiroFora.points + (((this.classificacao.length*2-2) - primeiroFora.playedGames)*3)) < this.classificacao[posicao-1].points) {
+              return true
+            } else {
+              return false
+            }
+          }
+        },
+        verificarContinentalB() {
+          return (posicao) => {
+            let primeiroFora = this.classificacao[this.continentalB]
+            if ((primeiroFora.points + (((this.classificacao.length*2-2) - primeiroFora.playedGames)*3)) < this.classificacao[posicao-1].points) {
+              return true
+            } else {
+              return false
+            }
+          }
+        },
+        verificarContinentalC() {
+          return (posicao) => {
+            let primeiroFora = this.classificacao[this.continentalC]
+            if ((primeiroFora.points + (((this.classificacao.length*2-2) - primeiroFora.playedGames)*3)) < this.classificacao[posicao-1].points) {
+              return true
+            } else {
+              return false
+            }
+          }
         },
       },
       mounted() {
