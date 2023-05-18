@@ -168,7 +168,7 @@
                                       </tbody>
                                     </table>
                                     <div class="text-center" v-for="p in partidas">
-                                        <div class="text-nowrap" v-if="p.group == torneio.group">
+                                        <div class="text-nowrap" v-if="p.group == torneio.group && p.status != 'FINISHED'">
                                             {{ corrigirFusoHorario(p.utcDate) }} - {{ p.status == 'FINISHED' ? p.score.fullTime.home : '' }} {{ p.homeTeam.shortName }} vs {{ p.awayTeam.shortName }} {{ p.status == 'FINISHED' ? p.score.fullTime.away : '' }}
                                             <!-- {{ p.homeTeam.shortName }} vs {{ p.awayTeam.shortName }} -->
                                         </div>
@@ -676,7 +676,8 @@
           nomeTorneio: '',
           imgTorneio: '',
           classificacao: '',
-          partidas: ''
+          partidas: '',
+          rodada: ''
           // classificacao: {
           //   standings: [0].table
           // }
@@ -736,9 +737,10 @@
             fetch('libertadores_partidas.json')
             .then(response => response.json())
             .then(data => {
-                this.partidas = (JSON.parse(data).matches).filter(function(el) {
-                    return el.group != null && el.matchday == 4
-                })
+              this.partidas = JSON.parse(data).matches
+              this.rodada = (JSON.parse(data).matches).filter(function(el) {
+                  return el.group != null && el.matchday == 4
+              })
             })
             .catch(error => {
                 console.error('Ocorreu um erro:', error);
