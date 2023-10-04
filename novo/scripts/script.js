@@ -1,4 +1,5 @@
 var listaUrlImgPokemon = []
+var listaNomePokemon = ['pikachu', 'mewtwo', 'bulbasaur', 'charmander', 'meowth','squirtle', 'gengar', 'eevee', 'charizard', 'blastoise', 'alakazam', 'gholdengo', 'jigglypuff', 'psyduck', 'snorlax', 'totodile', 'mew', 'lugia', 'espeon', 'sudowoodo', 'rowlet', 'mimikyu', 'zygarde', 'greninja', 'decidueye', 'lucario', 'lycanroc', 'infernape', 'dragonite', 'gyarados']
 
 function obterUrlImagemPokemon(nomePokemon, id) {
   // Fazendo uma chamada à API para obter os dados do Pokémon
@@ -19,24 +20,28 @@ function obterUrlImagemPokemon(nomePokemon, id) {
 }
 
 function obterListaAleatoriaPokemon(numeroPokemon) {
+  listaNomePokemon.forEach(el => {
+    obterUrlImagemPokemon(el, 1)
+  })
+  console.warn(listaUrlImgPokemon)
   // Gerar um número aleatório para o offset
-  const offset = Math.floor(Math.random() * 800); // Existem aproximadamente 800 Pokémon na PokeAPI
+  // const offset = Math.floor(Math.random() * 800); // Existem aproximadamente 800 Pokémon na PokeAPI
 
-  // Fazendo uma chamada à API para obter a lista aleatória de Pokémon
-  fetch(`https://pokeapi.co/api/v2/pokemon?limit=${numeroPokemon}&offset=${offset}`)
-      .then(response => response.json())
-      .then(dados => {
-          const listaPokemon = dados.results;
+  // // Fazendo uma chamada à API para obter a lista aleatória de Pokémon
+  // fetch(`https://pokeapi.co/api/v2/pokemon?limit=${numeroPokemon}&offset=${offset}`)
+  //     .then(response => response.json())
+  //     .then(dados => {
+  //         const listaPokemon = dados.results;
           
-          console.log('Lista aleatória de Pokémon:');
-          numeroPokemon++
-          listaPokemon.forEach(pokemon => {
-          //   numeroPokemon--
-          // console.warn(numeroPokemon)
-            obterUrlImagemPokemon(pokemon.name, numeroPokemon)
-          });
-      })
-      .catch(error => console.error('Erro ao obter lista de Pokémon:', error));
+  //         console.log('Lista aleatória de Pokémon:');
+  //         numeroPokemon++
+  //         listaPokemon.forEach(pokemon => {
+  //         //   numeroPokemon--
+  //         // console.warn(numeroPokemon)
+  //           obterUrlImagemPokemon(pokemon.name, numeroPokemon)
+  //         });
+  //     })
+  //     .catch(error => console.error('Erro ao obter lista de Pokémon:', error));
 }
 
 // Exemplo de uso da função
@@ -76,6 +81,8 @@ function criarTabuleiro(linhas, pecas){
       let linha = document.createElement("tr");
       for(let z = 0;z<pecas;z++){
         let peca = document.createElement("td");
+        // peca.style.width = '160px'
+        // peca.style.height = '165px'
         peca.innerHTML = "X";
         peca.setAttribute("class", "peca");
         peca.setAttribute("id", contador);
