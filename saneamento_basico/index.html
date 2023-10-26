@@ -7,6 +7,7 @@
   <title>Document</title>
 </head>
 <body>
+  <br>
   <div class="container">
     <div class="mb-3">
       <label class="form-label">Nome:</label>
@@ -16,85 +17,95 @@
       <label class="form-label">CPF</label>
       <input type="text" class="form-control" id="cpf">
     </div>
-    <div class="input-group mb-3">
-      <div class="col-sm-4">
-        <label class="form-label">Tem acesso a água potável?</label>
-      </div>
-      <div class="col-sm-4">
-        <div class="form-check">
-          <input class="form-check-input" type="radio" name="aguaPotavel" onchange="computarResposta('aguaPotavel')">
-          <label class="form-check-label">
-            Sim
-          </label>
+    <div class="row">
+      <div class="input-group mb-3">
+        <div class="col-sm-4">
+          <label class="form-label">Tem acesso a água potável?</label>
         </div>
-      </div>
-      <div class="col-sm-4">
-        <div class="form-check">
-          <input class="form-check-input" type="radio" name="aguaPotavel" onchange="computarResposta('aguaPotavel')">
-          <label class="form-check-label">
-            Não
-          </label>
+        <div class="col-sm-4">
+          <div class="form-check">
+            <input class="form-check-input" type="radio" name="aguaPotavel" onchange="computarResposta('aguaPotavel')">
+            <label class="form-check-label">
+              Sim
+            </label>
+          </div>
         </div>
-      </div>
-    </div>
-    <div class="input-group mb-3">
-      <div class="col-sm-4">
-        <label class="form-label">Tem acesso a rede de esgoto?</label>
-      </div>
-      <div class="col-sm-4">
-        <div class="form-check">
-          <input class="form-check-input" type="radio" name="redeEsgoto" onclick="computarResposta('redeEsgoto')">
-          <label class="form-check-label">
-            Sim
-          </label>
-        </div>
-      </div>
-      <div class="col-sm-4">
-        <div class="form-check">
-          <input class="form-check-input" type="radio" name="redeEsgoto" onclick="computarResposta('redeEsgoto')">
-          <label class="form-check-label">
-            Não
-          </label>
+        <div class="col-sm-4">
+          <div class="form-check">
+            <input class="form-check-input" type="radio" name="aguaPotavel" onchange="computarResposta('aguaPotavel')">
+            <label class="form-check-label">
+              Não
+            </label>
+          </div>
         </div>
       </div>
     </div>
-    <div class="input-group mb-3">
-      <div class="col-sm-4">
-        <label class="form-label">Quando chove acontece enchentes ou alagamentos?</label>
-      </div>
-      <div class="col-sm-4">
-        <div class="form-check">
-          <input class="form-check-input" type="radio" name="drenagem" onclick="computarResposta('drenagem')">
-          <label class="form-check-label">
-            Sim
-          </label>
+    <div class="row">
+      <div class="input-group mb-3">
+        <div class="col-sm-4">
+          <label class="form-label">Tem acesso a rede de esgoto?</label>
+        </div>
+        <div class="col-sm-4">
+          <div class="form-check">
+            <input class="form-check-input" type="radio" name="redeEsgoto" onclick="computarResposta('redeEsgoto')">
+            <label class="form-check-label">
+              Sim
+            </label>
+          </div>
+        </div>
+        <div class="col-sm-4">
+          <div class="form-check">
+            <input class="form-check-input" type="radio" name="redeEsgoto" onclick="computarResposta('redeEsgoto')">
+            <label class="form-check-label">
+              Não
+            </label>
+          </div>
         </div>
       </div>
-      <div class="col-sm-4">
-        <div class="form-check">
-          <input class="form-check-input" type="radio" name="drenagem" onclick="computarResposta('drenagem')">
-          <label class="form-check-label">
-            Não
-          </label>
+    </div>
+    <div class="row">
+      <div class="input-group mb-3">
+        <div class="col-sm-4">
+          <label class="form-label">Quando chove acontece enchentes ou alagamentos?</label>
+        </div>
+        <div class="col-sm-4">
+          <div class="form-check">
+            <input class="form-check-input" type="radio" name="drenagem" onclick="computarResposta('drenagem')">
+            <label class="form-check-label">
+              Sim
+            </label>
+          </div>
+        </div>
+        <div class="col-sm-4">
+          <div class="form-check">
+            <input class="form-check-input" type="radio" name="drenagem" onclick="computarResposta('drenagem')">
+            <label class="form-check-label">
+              Não
+            </label>
+          </div>
         </div>
       </div>
-      <div class="col-sm-4">
-        <label class="form-label">Tem acesso a coleta de lixo? </label>
-      </div>
-      <div class="col-sm-4">
-        <div class="form-check">
-          <input class="form-check-input" type="radio" name="coletaLixo" onclick="computarResposta('coletaLixo')">
-          <label class="form-check-label">
-            Sim
-          </label>
+    </div>
+    <div class="row">
+      <div class="input-group mb-3">
+        <div class="col-sm-4">
+          <label class="form-label">Tem acesso a coleta de lixo? </label>
         </div>
-      </div>
-      <div class="col-sm-4">
-        <div class="form-check">
-          <input class="form-check-input" type="radio" name="coletaLixo" onclick="computarResposta('coletaLixo')">
-          <label class="form-check-label">
-            Não
-          </label>
+        <div class="col-sm-4">
+          <div class="form-check">
+            <input class="form-check-input" type="radio" name="coletaLixo" onclick="computarResposta('coletaLixo')">
+            <label class="form-check-label">
+              Sim
+            </label>
+          </div>
+        </div>
+        <div class="col-sm-4">
+          <div class="form-check">
+            <input class="form-check-input" type="radio" name="coletaLixo" onclick="computarResposta('coletaLixo')">
+            <label class="form-check-label">
+              Não
+            </label>
+          </div>
         </div>
       </div>
     </div>
