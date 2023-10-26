@@ -115,19 +115,31 @@
         questionario[parametro] = false
       }
     }
-    function calcularResultado() {
-      let pontos = 0
-      for (resposta in questionario) {
-        if (questionario[resposta] == true) {
-          pontos += 1
+    function validarFormulario() {
+      for (item in questionario) {
+        if (questionario[item] == null) {
+          return false
         }
       }
-      if (pontos < 2) {
-        alert('Saneamento básico: ruim')
-      } else if (pontos == 2) {
-        alert('Saneamento básico: razoável')
+      return true
+    }
+    function calcularResultado() {
+      if (validarFormulario()) {
+        let pontos = 0
+        for (resposta in questionario) {
+          if (questionario[resposta] == true) {
+            pontos += 1
+          }
+        }
+        if (pontos < 2) {
+          alert('Saneamento básico: ruim')
+        } else if (pontos == 2) {
+          alert('Saneamento básico: razoável')
+        } else {
+          alert('Saneamento básico: bom')
+        }
       } else {
-        alert('Saneamento básico: bom')
+        alert('Responda todas as perguntas')
       }
     }
   </script>
