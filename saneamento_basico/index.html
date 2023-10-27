@@ -24,7 +24,7 @@
         </div>
         <div class="col-sm-4">
           <div class="form-check">
-            <input class="form-check-input" type="radio" name="aguaPotavel" onchange="computarResposta('aguaPotavel')">
+            <input class="form-check-input" type="radio" name="aguaPotavel" onchange="questionario.computarResposta('aguaPotavel')">
             <label class="form-check-label">
               Sim
             </label>
@@ -32,7 +32,7 @@
         </div>
         <div class="col-sm-4">
           <div class="form-check">
-            <input class="form-check-input" type="radio" name="aguaPotavel" onchange="computarResposta('aguaPotavel')">
+            <input class="form-check-input" type="radio" name="aguaPotavel" onchange="questionario.computarResposta('aguaPotavel')">
             <label class="form-check-label">
               Não
             </label>
@@ -47,7 +47,7 @@
         </div>
         <div class="col-sm-4">
           <div class="form-check">
-            <input class="form-check-input" type="radio" name="redeEsgoto" onclick="computarResposta('redeEsgoto')">
+            <input class="form-check-input" type="radio" name="redeEsgoto" onclick="questionario.computarResposta('redeEsgoto')">
             <label class="form-check-label">
               Sim
             </label>
@@ -55,7 +55,7 @@
         </div>
         <div class="col-sm-4">
           <div class="form-check">
-            <input class="form-check-input" type="radio" name="redeEsgoto" onclick="computarResposta('redeEsgoto')">
+            <input class="form-check-input" type="radio" name="redeEsgoto" onclick="questionario.computarResposta('redeEsgoto')">
             <label class="form-check-label">
               Não
             </label>
@@ -70,7 +70,7 @@
         </div>
         <div class="col-sm-4">
           <div class="form-check">
-            <input class="form-check-input" type="radio" name="drenagem" onclick="computarResposta('drenagem')">
+            <input class="form-check-input" type="radio" name="drenagem" onclick="questionario.computarResposta('drenagem')">
             <label class="form-check-label">
               Sim
             </label>
@@ -78,7 +78,7 @@
         </div>
         <div class="col-sm-4">
           <div class="form-check">
-            <input class="form-check-input" type="radio" name="drenagem" onclick="computarResposta('drenagem')">
+            <input class="form-check-input" type="radio" name="drenagem" onclick="questionario.computarResposta('drenagem')">
             <label class="form-check-label">
               Não
             </label>
@@ -93,7 +93,7 @@
         </div>
         <div class="col-sm-4">
           <div class="form-check">
-            <input class="form-check-input" type="radio" name="coletaLixo" onclick="computarResposta('coletaLixo')">
+            <input class="form-check-input" type="radio" name="coletaLixo" onclick="questionario.computarResposta('coletaLixo')">
             <label class="form-check-label">
               Sim
             </label>
@@ -101,7 +101,7 @@
         </div>
         <div class="col-sm-4">
           <div class="form-check">
-            <input class="form-check-input" type="radio" name="coletaLixo" onclick="computarResposta('coletaLixo')">
+            <input class="form-check-input" type="radio" name="coletaLixo" onclick="questionario.computarResposta('coletaLixo')">
             <label class="form-check-label">
               Não
             </label>
@@ -109,48 +109,62 @@
         </div>
       </div>
     </div>
-    <button class="btn btn-primary" onclick="calcularResultado()">Calcular Resultado</button>
+    <button class="btn btn-primary" onclick="questionario.exibirResultado()">Calcular Resultado</button>
   </div>
   <script>
-    let questionario = {
-      'aguaPotavel': null,
-      'redeEsgoto': null,
-      'drenagem': null,
-      'coletaLixo': null
-    }
-    function computarResposta(parametro) {
-      let radio = document.getElementsByName(parametro)
-      if (radio[0].checked == true) {
-        questionario[parametro] = true
-      } else if (radio[1].checked == true) {
-        questionario[parametro] = false
-      }
-    }
-    function validarFormulario() {
-      for (item in questionario) {
-        if (questionario[item] == null) {
-          return false
+    // classe que contém um objeto formulario com as variáveis do questionário 
+    class Questionario {
+      constructor() {
+        this.formulario = {  
+          'aguaPotavel': null,
+          'redeEsgoto': null,
+          'drenagem': null,
+          'coletaLixo': null,
         }
       }
-      return true
+      // função que verifica a resposta do formulário, utilizando um parametro para encontrar a questao através do indice
+      computarResposta(parametro) {
+        let inputRadio = document.getElementsByName(parametro)
+        if (inputRadio[0].checked == true) {
+          this.formulario[parametro] = true
+        } else if (inputRadio[1].checked == true) {
+          this.formulario[parametro] = false
+        }
+      }
+      // função que verifica se o usuario respondeu todos os itens do formulário
+      validarFormulario() {
+        for (let item in this.formulario) {
+          if (this.formulario[item] == null) {
+            return false
+          }
+        }
+        return true
+      }
     }
-    function calcularResultado() {
-      if (validarFormulario()) {
+    // classe que irá exibir o resultado e calcular a pontuação das respostas do questionario, se o mesmo for validado 
+    class Resultado extends Questionario {
+      exibirResultado() {
+        if (this.validarFormulario()) {
+          let pontos = this.calcularResultado()
+          if (pontos < 2) {
+            return alert('Saneamento básico: ruim')
+          } else if (pontos == 2) {
+            return alert('Saneamento básico: razoável')
+          } else {
+            return alert('Saneamento básico: bom')
+          }
+        } else {
+          return alert('Responda todas as perguntas')
+        }
+      }
+      calcularResultado() {
         let pontos = 0
-        for (resposta in questionario) {
-          if (questionario[resposta] == true) {
+        for (let resposta in this.formulario) {
+          if (this.formulario[resposta] == true) {
             pontos += 1
           }
         }
-        if (pontos < 2) {
-          alert('Saneamento básico: ruim')
-        } else if (pontos == 2) {
-          alert('Saneamento básico: razoável')
-        } else {
-          alert('Saneamento básico: bom')
-        }
-      } else {
-        alert('Responda todas as perguntas')
+        return pontos
       }
     }
   </script>
