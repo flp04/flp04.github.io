@@ -1,0 +1,185 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-T3c6CoIi6uLrA9TneNEoa7RxnatzjcDSCmG1MXxSR1GAsXEV/Dwwykc2MPK8M2HN" crossorigin="anonymous">
+  <title>A3 - Saneamento Básico</title>
+  <script src="https://cdn.jsdelivr.net/npm/apexcharts"></script>
+</head>
+<body>
+  <br>
+  <div class="container">
+    <div class="mb-3 text-center">
+      <h1>A3 - Saneamento Básico</h1>
+    </div>
+    <div class="row">
+      <div class="col-md-6">
+        <div id="chartIndice"></div>
+      </div>
+      <div class="col-md-6">
+        <div id="chartItensFormulario"></div>
+      </div>
+    </div>
+  </div>
+  <script>
+    class Grafico {
+      constructor() {
+        this.pegarDados()
+      }
+      pegarDados() {
+        fetch('https://flpserver.000webhostapp.com/saneamento_basico/api.php?requisicao=pegarDados',
+          {
+            method: 'GET',
+            // headers: {
+            //     'Content-Type': 'application/json' // Indica que o conteúdo é JSON
+            // },
+            // body: JSON.stringify(formulario) // Converte o objeto em uma string JSON
+          }
+        )
+        .then(response => response.json())
+        .then(data => {
+          this.gerarGrafico(data)
+          this.gerarGraficoItensFormulario(data)
+        })
+        .catch(error => {
+          console.error('Ocorreu um erro:', error);
+        })
+      }
+
+      gerarGrafico(dados) {
+        var options = {
+          chart: {
+            type: 'bar',
+            height: 430,
+            // width: 300
+          },
+          series: [{
+            data: [{
+              x: 'Ruim',
+              y: 0
+            }, {
+              x: 'Razoável',
+              y: 0
+            }, {
+              x: 'Bom',
+              y: 0
+            }]
+          }],
+          title: {
+            text: 'Gráfico por Indicador',
+            align: 'center'
+          }
+        }
+        dados.forEach(el => {
+          let pontos = 0
+          for (let item in el) {
+            if (el[item] == 1) {
+              pontos += 1
+            }
+          }
+          if (pontos < 2) {
+            options.series[0].data[0].y += 1
+          } else if (pontos == 2) {
+            options.series[0].data[1].y += 1
+          } else  {
+            options.series[0].data[2].y += 1
+          }
+        //   if (el.agua_potavel == 1) {
+        //     options.series[1].data[0] += 1
+        //   }
+        //   if (el.rede_esgoto == 1) {
+        //     options.series[1].data[1] += 1
+        //   }
+        //   if (el.drenagem == 1) {
+        //     options.series[1].data[2] += 1
+        //   }
+        //   if (el.coleta_lixo == 1) {
+        //     options.series[1].data[3] += 1
+        //   }
+        })
+        var chart = new ApexCharts(document.querySelector("#chartIndice"), options)
+        chart.render()
+      }
+      gerarGraficoItensFormulario(dados) {
+        var options = {
+          series: [
+            {
+              data: [0, 0, 0, 0],
+              name: 'Total de Entrevistados'
+            },
+            {
+              data: [0, 0, 0, 0],
+              name: 'Tem acesso'
+            }
+          ],
+          chart: {
+            type: 'bar',
+            height: 430
+          },
+          plotOptions: {
+            bar: {
+              horizontal: true,
+              dataLabels: {
+                position: 'top',
+              },
+            }
+          },
+          dataLabels: {
+            enabled: true,
+            offsetX: -6,
+            style: {
+              fontSize: '12px',
+              colors: ['#fff']
+            }
+          },
+          stroke: {
+            show: true,
+            width: 1,
+            colors: ['#fff']
+          },
+          tooltip: {
+            shared: true,
+            intersect: false
+          },
+          xaxis: {
+            categories: ['Água Potável', 'Rede de Esgoto', 'Drenagem', 'Coleta de lixo'],
+          },
+          title: {
+            text: 'Gráfico por Item do Questionário',
+            align: 'center'
+          }
+        }
+
+        dados.forEach(el => {
+          options.series[0].data[0] += 1
+          options.series[0].data[1] += 1
+          options.series[0].data[2] += 1
+          options.series[0].data[3] += 1
+          if (el.agua_potavel == 1) {
+            options.series[1].data[0] += 1
+          }
+          if (el.rede_esgoto == 1) {
+            options.series[1].data[1] += 1
+          }
+          if (el.drenagem == 1) {
+            options.series[1].data[2] += 1
+          }
+          if (el.coleta_lixo == 1) {
+            options.series[1].data[3] += 1
+          }
+        })
+
+        var chart = new ApexCharts(document.querySelector("#chartItensFormulario"), options);
+        chart.render();
+      }
+    }
+
+    // instanciando objeto da clase resultado, que extende a classe questionario, para execução das instruções 
+    grafico = new Grafico()
+    // tabela.gerarGrafico(tabela.dados)
+    // tabela.gerarGraficoItensFormulario(tabela.dados)
+  </script>
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-C6RzsynM9kWDrMNeT87bh95OGNyZPhcTNXj1NW7RuBCsyN/o0jlpcV8Qyq46cDfL" crossorigin="anonymous"></script>
+</body>
+</html>

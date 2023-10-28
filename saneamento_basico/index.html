@@ -5,20 +5,24 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-T3c6CoIi6uLrA9TneNEoa7RxnatzjcDSCmG1MXxSR1GAsXEV/Dwwykc2MPK8M2HN" crossorigin="anonymous">
   <title>A3 - Saneamento Básico</title>
+  <script src="https://cdn.jsdelivr.net/npm/apexcharts"></script>
 </head>
 <body>
   <br>
   <div class="container">
     <div class="mb-3 text-center">
-    <h1>A3 - Saneamento Básico</h1>
+      <h1>A3 - Saneamento Básico</h1>
+    </div>
+    <div>
+      <div name="respostaQuestionario" style="display: none;"></div>
     </div>
     <div class="mb-3">
       <label class="form-label">Nome:</label>
-      <input type="text" class="form-control" id="nome">
+      <input type="text" class="form-control" name="nome">
     </div>
     <div class="mb-3">
       <label class="form-label">CPF</label>
-      <input type="text" class="form-control" id="cpf">
+      <input type="text" class="form-control" name="cpf">
     </div>
     <div class="row">
       <div class="input-group mb-3">
@@ -27,7 +31,7 @@
         </div>
         <div class="col-sm-4">
           <div class="form-check">
-            <input class="form-check-input" type="radio" name="aguaPotavel" onchange="questionario.computarResposta('aguaPotavel')">
+            <input class="form-check-input" type="radio" name="aguaPotavel" value="true" onchange="questionario.computarResposta('aguaPotavel')">
             <label class="form-check-label">
               Sim
             </label>
@@ -35,7 +39,7 @@
         </div>
         <div class="col-sm-4">
           <div class="form-check">
-            <input class="form-check-input" type="radio" name="aguaPotavel" onchange="questionario.computarResposta('aguaPotavel')">
+            <input class="form-check-input" type="radio" name="aguaPotavel" value="false" onchange="questionario.computarResposta('aguaPotavel')">
             <label class="form-check-label">
               Não
             </label>
@@ -50,7 +54,7 @@
         </div>
         <div class="col-sm-4">
           <div class="form-check">
-            <input class="form-check-input" type="radio" name="redeEsgoto" onclick="questionario.computarResposta('redeEsgoto')">
+            <input class="form-check-input" type="radio" name="redeEsgoto" value="true" onclick="questionario.computarResposta('redeEsgoto')">
             <label class="form-check-label">
               Sim
             </label>
@@ -58,7 +62,7 @@
         </div>
         <div class="col-sm-4">
           <div class="form-check">
-            <input class="form-check-input" type="radio" name="redeEsgoto" onclick="questionario.computarResposta('redeEsgoto')">
+            <input class="form-check-input" type="radio" name="redeEsgoto" value="false" onclick="questionario.computarResposta('redeEsgoto')">
             <label class="form-check-label">
               Não
             </label>
@@ -73,7 +77,7 @@
         </div>
         <div class="col-sm-4">
           <div class="form-check">
-            <input class="form-check-input" type="radio" name="drenagem" onclick="questionario.computarResposta('drenagem')">
+            <input class="form-check-input" type="radio" name="drenagem" value="false" onclick="questionario.computarResposta('drenagem')">
             <label class="form-check-label">
               Sim
             </label>
@@ -81,7 +85,7 @@
         </div>
         <div class="col-sm-4">
           <div class="form-check">
-            <input class="form-check-input" type="radio" name="drenagem" onclick="questionario.computarResposta('drenagem')">
+            <input class="form-check-input" type="radio" name="drenagem" value="true" onclick="questionario.computarResposta('drenagem')">
             <label class="form-check-label">
               Não
             </label>
@@ -96,7 +100,7 @@
         </div>
         <div class="col-sm-4">
           <div class="form-check">
-            <input class="form-check-input" type="radio" name="coletaLixo" onclick="questionario.computarResposta('coletaLixo')">
+            <input class="form-check-input" type="radio" name="coletaLixo" value="true" onclick="questionario.computarResposta('coletaLixo')">
             <label class="form-check-label">
               Sim
             </label>
@@ -104,7 +108,7 @@
         </div>
         <div class="col-sm-4">
           <div class="form-check">
-            <input class="form-check-input" type="radio" name="coletaLixo" onclick="questionario.computarResposta('coletaLixo')">
+            <input class="form-check-input" type="radio" name="coletaLixo" value="false" onclick="questionario.computarResposta('coletaLixo')">
             <label class="form-check-label">
               Não
             </label>
@@ -113,15 +117,19 @@
       </div>
     </div>
     <div class="mb-3 text-center">
-      <button class="btn btn-primary" onclick="questionario.exibirResultado()">Calcular Resultado</button>
-      <button class="btn btn-primary" onclick="questionario.limparFormulario()">Limpar Formulário</button>
+      <button class="btn btn-primary" id="calcular-resultado" onclick="questionario.exibirResultado()">Calcular Resultado</button>
+      <button class="btn btn-primary" id="limpar-formulario" onclick="questionario.limparFormulario()">Limpar Formulário</button>
+      <a class="btn btn-primary" href="dados.html">Ver Resultados</a>
     </div>
+    <div id="chart"></div>
   </div>
   <script>
     // classe que contém um objeto formulario com as variáveis do questionário 
     class Questionario {
       constructor() {
         this.formulario = {  
+          'nome': null,
+          'cpf': null,
           'aguaPotavel': null,
           'redeEsgoto': null,
           'drenagem': null,
@@ -131,14 +139,20 @@
       // função que verifica a resposta do formulário, utilizando um parametro para encontrar a questao através do indice
       computarResposta(parametro) {
         let inputRadio = document.getElementsByName(parametro)
-        if (inputRadio[0].checked == true) {
-          this.formulario[parametro] = true
-        } else if (inputRadio[1].checked == true) {
-          this.formulario[parametro] = false
-        }
+        inputRadio.forEach(el => {
+          if (el.checked) {
+            this.formulario[parametro] = el.value
+          }
+        })
+      }
+      // preenche as variáveis nome e cpf conforme, se preenchidas no formulário
+      preencherDadosPessoais() {
+        this.formulario.nome = document.getElementsByName('nome')[0].value != '' ? this.formulario.nome = document.getElementsByName('nome')[0].value : null
+        this.formulario.cpf = document.getElementsByName('cpf')[0].value != '' ? this.formulario.cpf = document.getElementsByName('cpf')[0].value : null
       }
       // função que verifica se o usuario respondeu todos os itens do formulário
       validarFormulario() {
+        this.preencherDadosPessoais()
         for (let item in this.formulario) {
           if (this.formulario[item] == null) {
             return false
@@ -146,27 +160,52 @@
         }
         return true
       }
-      // função para limpar as seleções dos input radio do formulário
+      // função para limpar e remover o disabled dos campos do formulário, do botão de calcular resultado e esconder a resposta
       limparFormulario() {
         for (let item in this.formulario) {
-          let inputRadio = document.getElementsByName(item)
-          inputRadio.forEach(el => el.checked = false)
+          if (['nome', 'cpf'].includes(item)) {
+            document.getElementsByName(item)[0].value = ''
+            document.getElementsByName(item)[0].removeAttribute('disabled')
+          } else {
+            let inputRadio = document.getElementsByName(item)
+            inputRadio.forEach(el => {
+              el.checked = false
+              el.removeAttribute('disabled')
+            })
+          }
           this.formulario[item] = null
         }
+        document.getElementById('calcular-resultado').removeAttribute('disabled')
+        document.getElementsByName('respostaQuestionario')[0].style.display = 'none'
       }
     }
     // classe que irá exibir o resultado e calcular a pontuação das respostas do questionario, se o mesmo for validado 
     class Resultado extends Questionario {
       exibirResultado() {
+        let resultado = ''
         if (this.validarFormulario()) {
-          let pontos = this.calcularResultado()
-          if (pontos < 2) {
-            return alert('Saneamento básico: ruim')
-          } else if (pontos == 2) {
-            return alert('Saneamento básico: razoável')
-          } else {
-            return alert('Saneamento básico: bom')
+          // desabilita o botão para calcular o resultado e o formulário preenchido
+          document.getElementById('calcular-resultado').setAttribute('disabled', 'true')
+          for (let item in this.formulario) {
+            let elemento = document.getElementsByName(item)
+            elemento.forEach(el => el.setAttribute('disabled', 'true'))
           }
+          let pontos = this.calcularResultado()
+          let alertResposta = document.getElementsByName('respostaQuestionario')[0]
+          if (pontos < 2) {
+            resultado = 'ruim'
+            alertResposta.setAttribute('class', 'alert alert-danger')
+          } else if (pontos == 2) {
+            resultado = 'razoável'
+            alertResposta.setAttribute('class', 'alert alert-warning')
+          } else {
+            resultado = 'bom'
+            alertResposta.setAttribute('class', 'alert alert-success')
+          }
+          alertResposta.style.display = 'block'
+          alertResposta.textContent = 'Saneamento básico: ' + resultado
+          let dao = new DAO()
+          dao.salvarDados(this.formulario)
         } else {
           return alert('Responda todas as perguntas')
         }
@@ -174,17 +213,45 @@
       calcularResultado() {
         let pontos = 0
         for (let resposta in this.formulario) {
-          if (this.formulario[resposta] == true) {
+          if (this.formulario[resposta] == 'true') {
             pontos += 1
           }
         }
         return pontos
       }
     }
+    class DAO {
+      salvarDados(formulario) {
+        for (let item in formulario) {
+          if (formulario[item] == 'true') {
+            formulario[item] = 1
+          } else if (formulario[item] == 'false'){
+            formulario[item] = 0
+          }
+        }
+        fetch('https://flpserver.000webhostapp.com/saneamento_basico/api.php?requisicao=salvarDados', 
+          {
+            method: 'POST',
+            // headers: {
+            //     'Content-Type': 'application/json' // Indica que o conteúdo é JSON
+            // },
+            body: JSON.stringify(formulario) // Converte o objeto em uma string JSON
+          }
+        )
+        .then(response => response.json())
+        .then(data => {
+          alert(`Obrigado por se cadastrar ${data.nome}`)
+        })
+        .catch(error => {
+          console.error('Ocorreu um erro:', error);
+        })
+      }
+    }
     
     // instanciando objeto da clase resultado, que extende a classe questionario, para execução das instruções 
     let questionario = new Resultado()
+    let dao = new DAO()
   </script>
-  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-C6RzsynM9kWDrMNeT87bh95OGNyZPhcTNXj1NW7RuBCsyN/o0jlpcV8Qyq46cDfL" crossorigin="anonymous"></script>  
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-C6RzsynM9kWDrMNeT87bh95OGNyZPhcTNXj1NW7RuBCsyN/o0jlpcV8Qyq46cDfL" crossorigin="anonymous"></script>
 </body>
 </html>
