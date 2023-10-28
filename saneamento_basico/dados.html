@@ -52,9 +52,9 @@
           chart: {
             type: 'bar',
             height: 430,
-            // width: 300
           },
           series: [{
+            name: 'Entrevistados',
             data: [{
               x: 'Ruim',
               y: 0
@@ -74,7 +74,7 @@
         dados.forEach(el => {
           let pontos = 0
           for (let item in el) {
-            if (el[item] == 1) {
+            if (el[item] == 1 && !['nome', 'cpf'].includes(item)) {
               pontos += 1
             }
           }
@@ -85,18 +85,6 @@
           } else  {
             options.series[0].data[2].y += 1
           }
-        //   if (el.agua_potavel == 1) {
-        //     options.series[1].data[0] += 1
-        //   }
-        //   if (el.rede_esgoto == 1) {
-        //     options.series[1].data[1] += 1
-        //   }
-        //   if (el.drenagem == 1) {
-        //     options.series[1].data[2] += 1
-        //   }
-        //   if (el.coleta_lixo == 1) {
-        //     options.series[1].data[3] += 1
-        //   }
         })
         var chart = new ApexCharts(document.querySelector("#chartIndice"), options)
         chart.render()
@@ -152,10 +140,9 @@
         }
 
         dados.forEach(el => {
-          options.series[0].data[0] += 1
-          options.series[0].data[1] += 1
-          options.series[0].data[2] += 1
-          options.series[0].data[3] += 1
+          options.series[0].data = options.series[0].data.map(el => {
+            return el += 1
+          })
           if (el.agua_potavel == 1) {
             options.series[1].data[0] += 1
           }
