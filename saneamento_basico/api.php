@@ -5,8 +5,9 @@
   // Credenciais do banco de dados
   $servername = "localhost";
   $username = "id20775278_root";
-  $password = "Hungria*8";
+  $password = "********";
   $database = "id20775278_laravel";
+
   // Cria a conexão com o banco de dados
   $conn = new mysqli($servername, $username, $password, $database);
 

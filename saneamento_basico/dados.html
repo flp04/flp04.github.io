@@ -27,14 +27,11 @@
       constructor() {
         this.pegarDados()
       }
+      // função para pegar os registros no banco de dados
       pegarDados() {
         fetch('https://flpserver.000webhostapp.com/saneamento_basico/api.php?requisicao=pegarDados',
           {
             method: 'GET',
-            // headers: {
-            //     'Content-Type': 'application/json' // Indica que o conteúdo é JSON
-            // },
-            // body: JSON.stringify(formulario) // Converte o objeto em uma string JSON
           }
         )
         .then(response => response.json())
@@ -47,6 +44,7 @@
         })
       }
 
+      // função que gera o Gráfico por Indicadores
       gerarGrafico(dados) {
         var options = {
           chart: {
@@ -73,6 +71,7 @@
         }
         dados.forEach(el => {
           let pontos = 0
+          // laço de repetição para somar os pontos
           for (let item in el) {
             if (el[item] == 1 && !['nome', 'cpf'].includes(item)) {
               pontos += 1
@@ -89,18 +88,16 @@
         var chart = new ApexCharts(document.querySelector("#chartIndice"), options)
         chart.render()
       }
+      // função para gerar o Grafíco por Itens do Formulário
       gerarGraficoItensFormulario(dados) {
         var options = {
-          series: [
-            {
-              data: [0, 0, 0, 0],
-              name: 'Total de Entrevistados'
-            },
-            {
-              data: [0, 0, 0, 0],
-              name: 'Tem acesso'
-            }
-          ],
+          series: [{
+            data: [0, 0, 0, 0],
+            name: 'Total de Entrevistados'
+          },{
+            data: [0, 0, 0, 0],
+            name: 'Tem acesso'
+          }],
           chart: {
             type: 'bar',
             height: 430
@@ -138,7 +135,6 @@
             align: 'center'
           }
         }
-
         dados.forEach(el => {
           options.series[0].data = options.series[0].data.map(el => {
             return el += 1
@@ -164,8 +160,6 @@
 
     // instanciando objeto da clase resultado, que extende a classe questionario, para execução das instruções 
     grafico = new Grafico()
-    // tabela.gerarGrafico(tabela.dados)
-    // tabela.gerarGraficoItensFormulario(tabela.dados)
   </script>
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-C6RzsynM9kWDrMNeT87bh95OGNyZPhcTNXj1NW7RuBCsyN/o0jlpcV8Qyq46cDfL" crossorigin="anonymous"></script>
 </body>
