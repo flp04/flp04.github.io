@@ -577,6 +577,14 @@
                       {{ atividade.atividade }}
                     </label>
                   </div>
+                  <!-- <input class="form-check-input" disabled type="checkbox" value="" id="flexCheckDefault"> -->
+                  <!-- <a class="icon" data-bs-toggle="modal" data-bs-target="#basicModal" title="Nova tarefa" id="botaoNovaTarefa" @mouseover="mostrarNovaTarefa()" @mouseout="invisibilizarNovaTarefa()" style="opacity: 0.2;">+ Nova tarefa</a> -->
+                  <div class="form-check">
+                    <a class="icon" title="Nova tarefa" id="botaoNovaTarefa" @click="novaTarefa" @mouseover="mostrarNovaTarefa()" @mouseout="invisibilizarNovaTarefa()" style="opacity: 0.2;">+ Nova tarefa</a>
+                  </div>
+                  <!-- <label class="form-check-label" for="flexCheckDefault" id="botaoNovaTarefa" @mouseover="mostrarNovaTarefa()" @mouseout="invisibilizarNovaTarefa()" style="opacity: 0.2;">
+                    + Nova tarefa
+                  </label> -->
                 </div>
               </div>
             </div>
@@ -642,7 +650,8 @@
         {atividade: 'Lavar a roupa', checked: false},
         {atividade: 'Dobrar e guardar a roupa', checked: false},
       ],
-      novaAtividade: ''
+      novaAtividade: '',
+      mostrarBotaoNovaTarefa: false
     }
     new Vue({
       el: '#main',
@@ -657,6 +666,47 @@
         checked(i) {
           obj.listaAtividades[i].checked = true
           console.log(obj.listaAtividades)
+        },
+        mostrarNovaTarefa() {
+          document.getElementById('botaoNovaTarefa').style.opacity = 1
+        },
+        invisibilizarNovaTarefa() {
+          document.getElementById('botaoNovaTarefa').style.opacity = 0.2
+        },
+        salvarTarefa(input, pai) {
+          console.log('pegou')
+          let label = document.createElement('label')
+          label.setAttribute('class', 'form-check-label')
+          label.textContent = input.value
+          input.remove()
+          // pai.replaceChild(label, input2)
+          // console.log(input)
+          pai.appendChild(label)
+        },
+        changerded() {
+          console.log('oi')
+        },
+        novaTarefa() {
+          let input = document.createElement('input')
+          let label = document.createElement('label')
+          label.appendChild(input)
+          let ancora = document.getElementById('botaoNovaTarefa')
+          let pai = ancora.parentNode
+          let inputCheckbox = document.createElement('input')
+          inputCheckbox.setAttribute('type', 'checkbox')
+          label.setAttribute('class', 'form-check-label')
+          input.setAttribute('class', 'form-control')
+          input.style.border = 'none'
+          inputCheckbox.setAttribute('class', 'form-check-input')
+          pai.replaceChild(label, ancora)
+          pai.insertBefore(inputCheckbox, label)
+          input.addEventListener('change', this.changerded(input, pai))
+          input.addEventListener('keyup', () => {
+            if (event.key == "Enter") {
+              this.salvarTarefa(input, pai)
+            }
+          })
+          input.focus()
         }
       },
     })
