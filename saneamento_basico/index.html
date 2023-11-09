@@ -31,7 +31,7 @@
         </div>
         <div class="col-sm-4">
           <div class="form-check">
-            <input class="form-check-input" type="radio" name="aguaPotavel" value="true" onchange="questionario.computarResposta('aguaPotavel')">
+            <input class="form-check-input" type="radio" name="aguaPotavel" value="1" onchange="questionario.computarResposta('aguaPotavel')">
             <label class="form-check-label">
               Sim
             </label>
@@ -39,7 +39,7 @@
         </div>
         <div class="col-sm-4">
           <div class="form-check">
-            <input class="form-check-input" type="radio" name="aguaPotavel" value="false" onchange="questionario.computarResposta('aguaPotavel')">
+            <input class="form-check-input" type="radio" name="aguaPotavel" value="0" onchange="questionario.computarResposta('aguaPotavel')">
             <label class="form-check-label">
               Não
             </label>
@@ -54,7 +54,7 @@
         </div>
         <div class="col-sm-4">
           <div class="form-check">
-            <input class="form-check-input" type="radio" name="redeEsgoto" value="true" onclick="questionario.computarResposta('redeEsgoto')">
+            <input class="form-check-input" type="radio" name="redeEsgoto" value="1" onclick="questionario.computarResposta('redeEsgoto')">
             <label class="form-check-label">
               Sim
             </label>
@@ -62,7 +62,7 @@
         </div>
         <div class="col-sm-4">
           <div class="form-check">
-            <input class="form-check-input" type="radio" name="redeEsgoto" value="false" onclick="questionario.computarResposta('redeEsgoto')">
+            <input class="form-check-input" type="radio" name="redeEsgoto" value="0" onclick="questionario.computarResposta('redeEsgoto')">
             <label class="form-check-label">
               Não
             </label>
@@ -77,7 +77,7 @@
         </div>
         <div class="col-sm-4">
           <div class="form-check">
-            <input class="form-check-input" type="radio" name="drenagem" value="false" onclick="questionario.computarResposta('drenagem')">
+            <input class="form-check-input" type="radio" name="drenagem" value="0" onclick="questionario.computarResposta('drenagem')">
             <label class="form-check-label">
               Sim
             </label>
@@ -85,7 +85,7 @@
         </div>
         <div class="col-sm-4">
           <div class="form-check">
-            <input class="form-check-input" type="radio" name="drenagem" value="true" onclick="questionario.computarResposta('drenagem')">
+            <input class="form-check-input" type="radio" name="drenagem" value="1" onclick="questionario.computarResposta('drenagem')">
             <label class="form-check-label">
               Não
             </label>
@@ -100,7 +100,7 @@
         </div>
         <div class="col-sm-4">
           <div class="form-check">
-            <input class="form-check-input" type="radio" name="coletaLixo" value="true" onclick="questionario.computarResposta('coletaLixo')">
+            <input class="form-check-input" type="radio" name="coletaLixo" value="1" onclick="questionario.computarResposta('coletaLixo')">
             <label class="form-check-label">
               Sim
             </label>
@@ -108,7 +108,7 @@
         </div>
         <div class="col-sm-4">
           <div class="form-check">
-            <input class="form-check-input" type="radio" name="coletaLixo" value="false" onclick="questionario.computarResposta('coletaLixo')">
+            <input class="form-check-input" type="radio" name="coletaLixo" value="0" onclick="questionario.computarResposta('coletaLixo')">
             <label class="form-check-label">
               Não
             </label>
@@ -117,7 +117,7 @@
       </div>
     </div>
     <div class="mb-3 text-center">
-      <button class="btn btn-primary" id="calcular-resultado" onclick="questionario.exibirResultado()">Calcular Resultado</button>
+      <button class="btn btn-primary" id="calcular-resultado" onclick="questionario.calcularResultado()">Calcular Resultado</button>
       <button class="btn btn-primary" id="limpar-formulario" onclick="questionario.limparFormulario()">Limpar Formulário</button>
       <a class="btn btn-primary" href="dados.html">Ver Resultados</a>
     </div>
@@ -160,7 +160,15 @@
         }
         return true
       }
-      // função para limpar e remover o disabled dos campos do formulário, do botão de calcular resultado e esconder a resposta
+      // desabilita o botão para calcular o resultado e o formulário preenchido
+      desabilitarFormulario() {
+        document.getElementById('calcular-resultado').setAttribute('disabled', 'true')
+        for (let item in this.formulario) {
+          let elemento = document.getElementsByName(item)
+          elemento.forEach(el => el.setAttribute('disabled', 'true'))
+        }
+      }
+      // limpa e remove o disabled dos campos do formulário, do botão de calcular resultado e esconder a resposta
       limparFormulario() {
         for (let item in this.formulario) {
           if (['nome', 'cpf'].includes(item)) {
@@ -179,56 +187,50 @@
         document.getElementsByName('respostaQuestionario')[0].style.display = 'none'
       }
     }
-    // classe que irá exibir o resultado e calcular a pontuação das respostas do questionario, se o mesmo for validado 
+    // classe que irá calcular a pontuação das respostas do questionario e exibir o resultado, se o mesmo for validado 
     class Resultado extends Questionario {
-      exibirResultado() {
-        let resultado = ''
+      constructor() {
+        super()
+        this.pontos = null
+      }
+      atribuirPontuacao() {
+        for (let resposta in this.formulario) {
+          if (this.formulario[resposta] == 1) {
+            this.pontos += 1
+          }
+        }
+      }
+      calcularResultado() {
         if (this.validarFormulario()) {
-          // desabilita o botão para calcular o resultado e o formulário preenchido
-          document.getElementById('calcular-resultado').setAttribute('disabled', 'true')
-          for (let item in this.formulario) {
-            let elemento = document.getElementsByName(item)
-            elemento.forEach(el => el.setAttribute('disabled', 'true'))
-          }
-          let pontos = this.calcularResultado()
-          let alertResposta = document.getElementsByName('respostaQuestionario')[0]
-          if (pontos < 2) {
-            resultado = 'ruim'
-            alertResposta.setAttribute('class', 'alert alert-danger')
-          } else if (pontos == 2) {
-            resultado = 'razoável'
-            alertResposta.setAttribute('class', 'alert alert-warning')
-          } else {
-            resultado = 'bom'
-            alertResposta.setAttribute('class', 'alert alert-success')
-          }
-          alertResposta.style.display = 'block'
-          alertResposta.textContent = 'Saneamento básico: ' + resultado
+          this.desabilitarFormulario()
+          this.atribuirPontuacao()
+          this.exibirResultado()
+          // instancia do objeto para salvar os dados no BD
           let dao = new DAO()
-          dao.salvarDados(this.formulario)
+          dao.salvarDados(this.formulario, this.pontos)
         } else {
           return alert('Responda todas as perguntas')
         }
       }
-      calcularResultado() {
-        let pontos = 0
-        for (let resposta in this.formulario) {
-          if (this.formulario[resposta] == 'true') {
-            pontos += 1
-          }
+      exibirResultado() {
+        let alertResposta = document.getElementsByName('respostaQuestionario')[0]
+        alertResposta.textContent = 'Saneamento básico: '
+        if (this.pontos < 2) {
+          alertResposta.textContent += 'ruim'
+          alertResposta.setAttribute('class', 'alert alert-danger')
+        } else if (this.pontos == 2) {
+          alertResposta.textContent += 'razoável'
+          alertResposta.setAttribute('class', 'alert alert-warning')
+        } else {
+          alertResposta.textContent += 'bom'
+          alertResposta.setAttribute('class', 'alert alert-success')
         }
-        return pontos
+        alertResposta.style.display = 'block'
       }
     }
     class DAO {
-      salvarDados(formulario) {
-        for (let item in formulario) {
-          if (formulario[item] == 'true') {
-            formulario[item] = 1
-          } else if (formulario[item] == 'false'){
-            formulario[item] = 0
-          }
-        }
+      salvarDados(formulario, pontos) {
+        formulario.pontos = pontos
         fetch('https://flpserver.000webhostapp.com/saneamento_basico/api.php?requisicao=salvarDados', 
           {
             method: 'POST',

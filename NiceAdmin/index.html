@@ -534,7 +534,7 @@
                   <!-- <a class="icon" href="#" data-bs-toggle="dropdown"><i class="bi bi-three-dots"></i></a> -->
               </div>
                 <div class="card-body">
-                  <h5 class="card-title">Atividades Diárias</h5>
+                  <h5 class="card-title">A fazer</h5>
                   <div class="form-check" v-for="(atividade, i) in listaAtividades">
                     <input class="form-check-input" :disabled="atividade.checked" type="checkbox" value="" id="flexCheckDefault" @change="checked(i)">
                     <label class="form-check-label" for="flexCheckDefault">
@@ -570,7 +570,7 @@
             <div class="col-xxl-4 col-md-6">
               <div class="card info-card sales-card">
                 <div class="card-body">
-                  <h5 class="card-title">Atividades Semanais</h5>
+                  <h5 class="card-title">Pendente</h5>
                   <div class="form-check" v-for="(atividade, i) in atividadesSemanais">
                     <input class="form-check-input" :disabled="atividade.checked" type="checkbox" value="" id="flexCheckDefault" @change="checked(i)">
                     <label class="form-check-label" for="flexCheckDefault">

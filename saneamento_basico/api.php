@@ -41,9 +41,10 @@
     $rede_esgoto = $dados["redeEsgoto"];
     $drenagem = $dados["drenagem"];
     $coleta_lixo = $dados["coletaLixo"];
+    $pontos = $dados["pontos"];
 
     // Preparar a declaração SQL para inserir dados no banco de dados
-    $sql = "INSERT INTO saneamento_basico (nome, cpf, agua_potavel, rede_esgoto, drenagem, coleta_lixo) VALUES ('$nome', '$cpf', '$agua_potavel', '$rede_esgoto', '$drenagem', '$coleta_lixo')";
+    $sql = "INSERT INTO saneamento_basico (nome, cpf, agua_potavel, rede_esgoto, drenagem, coleta_lixo, pontos) VALUES ('$nome', '$cpf', '$agua_potavel', '$rede_esgoto', '$drenagem', '$coleta_lixo, 'pontos')";
 
     // Executar a declaração SQL
     if ($conn->query($sql) === TRUE) {
