@@ -509,7 +509,7 @@
   </aside><!-- End Sidebar-->
 
   <main id="main" class="main">
-
+{{listaAtividades}}
     <div class="pagetitle">
       <h1>Dashboard</h1>
       <nav>
@@ -535,10 +535,13 @@
               </div>
                 <div class="card-body">
                   <h5 class="card-title">A fazer</h5>
-                  <div class="form-check" v-for="(atividade, i) in listaAtividades">
-                    <input class="form-check-input" :disabled="atividade.checked" type="checkbox" value="" id="flexCheckDefault" @change="checked(i)">
+                  <div class="form-check" v-for="(atividade, i) in aFazer">
+                    <i class="bi bi-check-circle" id="flexCheckDefault" @click="checked(atividade)"></i>
+                    <!-- <input class="form-check-input" :disabled="atividade.checked" type="checkbox" value="" id="flexCheckDefault" @change="checked(atividade)"> -->
+                    <!-- <input class="form-check-input" type="checkbox" value="false" id="flexCheckDefault"> -->
                     <label class="form-check-label" for="flexCheckDefault">
-                      {{ atividade.atividade }}
+                      <!-- <a class="icon" style="cursor: pointer;" data-bs-toggle="modal" data-bs-target="#atividadeModal" @click="selecionarAtividade(atividade)" title="Nova tarefa">{{ atividade.atividade }} : {{ atividade.frequencia }}</a> -->
+                      <a class="icon" style="cursor: pointer;" >{{ atividade.atividade }} : {{ atividade.frequencia }}</a>
                     </label>
                   </div>
                 </div>
@@ -560,8 +563,35 @@
                     </div>
                   </div>
                   <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-                    <button type="button" @click="cadastrarAtividade()" class="btn btn-primary">Save changes</button>
+                    <button type="button" @click="validarFrequencia(atividade)" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                    <button type="button" @click="validarFrequencia(atividade)" class="btn btn-primary">Save changes</button>
+                  </div>
+                </div>
+              </div>
+            </div><!-- End Basic Modal-->
+
+            <div class="modal fade" id="atividadeModal" tabindex="-1">
+              <div class="modal-dialog">
+                <div class="modal-content">
+                  <div class="modal-header">
+                    <h5 class="modal-title">{{ atividadeSelecionada.atividade }}</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                  </div>
+                  <div class="modal-body">
+                    <div class="mb-3">
+                      <label for="exampleInputEmail1" class="form-label">Frequência</label>
+                      <input type="text" class="form-control" id="exampleInputEmail1" v-model="atividadeSelecionada.frequencia" aria-describedby="emailHelp">
+                      <div id="emailHelp" class="form-text alert alert-danger">É necessário incluir a frequência</div>
+                    </div>
+                    <div class="mb-3">
+                      <label for="exampleInputEmail1" class="form-label">Proprietário</label>
+                      <input type="text" class="form-control" id="exampleInputEmail1" v-model="atividadeSelecionada.proprietario" aria-describedby="emailHelp">
+                      <div id="emailHelp" class="form-text">We'll never share your email with anyone else.</div>
+                    </div>
+                  </div>
+                  <div class="modal-footer">
+                    <button type="button" @click="validarFrequencia(atividadeSelecionada)" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                    <button type="button" @click="validarFrequencia(atividadeSelecionada)" class="btn btn-primary">Save changes</button>
                   </div>
                 </div>
               </div>
@@ -570,17 +600,46 @@
             <div class="col-xxl-4 col-md-6">
               <div class="card info-card sales-card">
                 <div class="card-body">
-                  <h5 class="card-title">Pendente</h5>
-                  <div class="form-check" v-for="(atividade, i) in atividadesSemanais">
-                    <input class="form-check-input" :disabled="atividade.checked" type="checkbox" value="" id="flexCheckDefault" @change="checked(i)">
+                  <h5 class="card-title">Sem proprietário (clique na atividade para pega-la)</h5>
+                  <div class="form-check" v-for="(atividade, i) in pendentes">
+                    <!-- <input class="form-check-input" :checked="atividade.checked" type="checkbox" id="owner" @change="owner(atividade)"> -->
                     <label class="form-check-label" for="flexCheckDefault">
-                      {{ atividade.atividade }}
+                      <!-- <a class="icon" style="cursor: pointer;" data-bs-toggle="modal" data-bs-target="#atividadeModal" @click="selecionarAtividade(atividade)" title="Nova tarefa">{{ atividade.atividade }}</a> -->
+                      <a class="icon" style="cursor: pointer;" @click="owner(atividade)" title="Nova tarefa">{{ atividade.atividade }}</a>
+                      : 
+                      <a class="icon" :id="`botaoNovaFrequencia${i}`" style="opacity: 0.4;" @click="incluirFrequencia(i)" title="Nova tarefa">{{ atividade.frequencia == '' ? 'Incluir frequencia' : atividade.frequencia }}</a>
+                      <input type="text" list="frequencias" style="display: none; border: 0px;" :id="`input-nova-frequencia-${i}`" @blur="saiuNovaFrequencia(atividade, i)" @keyup="keyUpNovaFrequencia(event, atividade, i)">
+                      <datalist id="frequencias">
+                        <option v-for="frequencia in frequencias" :value="frequencia"></option>
+                      </datalist>
                     </label>
                   </div>
-                  <!-- <input class="form-check-input" disabled type="checkbox" value="" id="flexCheckDefault"> -->
-                  <!-- <a class="icon" data-bs-toggle="modal" data-bs-target="#basicModal" title="Nova tarefa" id="botaoNovaTarefa" @mouseover="mostrarNovaTarefa()" @mouseout="invisibilizarNovaTarefa()" style="opacity: 0.2;">+ Nova tarefa</a> -->
-                  <div class="form-check">
+                  <div id="div-nova-tarefa" class="form-check">
                     <a class="icon" title="Nova tarefa" id="botaoNovaTarefa" @click="novaTarefa" @mouseover="mostrarNovaTarefa()" @mouseout="invisibilizarNovaTarefa()" style="opacity: 0.2;">+ Nova tarefa</a>
+                    <input  list="frequencias" class="form-control" style="display: none; border: 0px;" id="input-nova-tarefa" @blur="saiuNovaTarefa()" @keyup="keyUpNovaTarefa">
+                    <!-- <input type="text" style="display: none;" id="input-nova-tarefa" @blur="saiuNovaTarefa()" @keyup="keyUpNovaTarefa"> -->
+                  </div>
+                  <!-- <label class="form-check-label" for="flexCheckDefault" id="botaoNovaTarefa" @mouseover="mostrarNovaTarefa()" @mouseout="invisibilizarNovaTarefa()" style="opacity: 0.2;">
+                    + Nova tarefa
+                  </label> -->
+                </div>
+              </div>
+            </div>
+
+            <div class="col-xxl-4 col-md-12">
+              <div class="card info-card sales-card">
+                <div class="card-body">
+                  <h5 class="card-title">Concluído</h5>
+                  <div class="form-check" v-for="(atividade, i) in concluidos">
+                    <input class="form-check-input" type="checkbox" value="" id="flexCheckDefault" @change="checked(event, atividade)">
+                    <label class="form-check-label" for="flexCheckDefault">
+                      <a class="icon" style="cursor: pointer;" data-bs-toggle="modal" data-bs-target="#atividadeModal" @click="selecionarAtividade(atividade)" title="Nova tarefa">{{ atividade.atividade }} : {{ atividade.frequencia == '' ? 'Incluir frequencia' : atividade.frequencia }}</a>
+                    </label>
+                  </div>
+                  <div id="div-nova-tarefa" class="form-check">
+                    <a class="icon" title="Nova tarefa" id="botaoNovaTarefa" @click="novaTarefa" @mouseover="mostrarNovaTarefa()" @mouseout="invisibilizarNovaFrequencia()" style="opacity: 0.2;">+ Nova tarefa</a>
+                    <input type="text" class="form-control" style="display: none; border: 0px;" id="input-nova-tarefa" @blur="saiuNovaFrequencia(atividade, i)" @keyup="keyUpNovaFrequencia(atividade, i)">
+                    <!-- <input type="text" style="display: none;" id="input-nova-tarefa" @blur="saiuNovaTarefa()" @keyup="keyUpNovaTarefa"> -->
                   </div>
                   <!-- <label class="form-check-label" for="flexCheckDefault" id="botaoNovaTarefa" @mouseover="mostrarNovaTarefa()" @mouseout="invisibilizarNovaTarefa()" style="opacity: 0.2;">
                     + Nova tarefa
@@ -628,34 +687,51 @@
   <script>
     obj = {
       listaAtividades: [
-        {atividade: 'Escovar os dentes', checked: false}, 
-        {atividade: 'Tomar banho', checked: false}, 
-        {atividade: 'Tomar café', checked: false},
-        {atividade: 'Limpar a mesa', checked: false},
-        {atividade: 'Trabalhar', checked: false},
-        {atividade: 'Almoçar', checked: false},
-        {atividade: 'Trabalhar', checked: false},
-        {atividade: 'Tomar café da tarde', checked: false},
-        {atividade: 'Tomar banho', checked: false},
-        {atividade: 'Estudar', checked: false},
-      ],
-      atividadesSemanais: [
-        {atividade: 'Lavar a louça', checked: false},
-        {atividade: 'Varrer o chão', checked: false},
-        {atividade: 'Passar pano', checked: false},
-        {atividade: 'Lavar o banheiro', checked: false},
-        {atividade: 'Lavar a cozinha', checked: false},
-        {atividade: 'Lavar o corredor', checked: false},
-        {atividade: 'Lavar a lavanderia', checked: false},
-        {atividade: 'Lavar a roupa', checked: false},
-        {atividade: 'Dobrar e guardar a roupa', checked: false},
+        // {atividade: 'Escovar os dentes', checked: false, frequencia: '', proprietario: ''},
+        // {atividade: 'Tomar banho', checked: false, frequencia: '', proprietario: ''},
+        // {atividade: 'Tomar café', checked: false, frequencia: '', proprietario: ''},
+        // {atividade: 'Limpar a mesa', checked: false, frequencia: '', proprietario: ''},
+        // {atividade: 'Trabalhar', checked: false, frequencia: '', proprietario: ''},
+        // {atividade: 'Almoçar', checked: false, frequencia: '', proprietario: ''},
+        // {atividade: 'Trabalhar', checked: false, frequencia: '', proprietario: ''},
+        // {atividade: 'Tomar café da tarde', checked: false, frequencia: '', proprietario: ''},
+        // {atividade: 'Tomar banho', checked: false, frequencia: '', proprietario: ''},
+        // {atividade: 'Estudar', checked: false, frequencia: '', proprietario: ''},
+        {atividade: 'Lavar a louça', checked: false, frequencia: 'diaria', proprietario: ''},
+        {atividade: 'Varrer o chão', checked: false, frequencia: 'diaria', proprietario: ''},
+        {atividade: 'Passar pano', checked: false, frequencia: '', proprietario: ''},
+        {atividade: 'Lavar o banheiro', checked: false, frequencia: 'semanal', proprietario: ''},
+        {atividade: 'Lavar a cozinha', checked: false, frequencia: '', proprietario: ''},
+        {atividade: 'Lavar o corredor', checked: false, frequencia: '', proprietario: ''},
+        {atividade: 'Lavar a lavanderia', checked: false, frequencia: '', proprietario: ''},
+        {atividade: 'Lavar a roupa', checked: false, frequencia: '', proprietario: ''},
+        {atividade: 'Dobrar e guardar a roupa', checked: false, frequencia: '', proprietario: ''},
       ],
       novaAtividade: '',
-      mostrarBotaoNovaTarefa: false
+      mostrarBotaoNovaTarefa: false,
+      atividadeSelecionada: {},
+      frequencias: [
+        'diaria',
+        'dia sim, dia não',
+        'semanal',
+        'quinzenal',
+        'mensal'
+      ]
     }
     new Vue({
       el: '#main',
       data: obj,
+      computed: {
+        aFazer() {
+          return obj.listaAtividades.filter(el => el.proprietario != '' && el.checked == false)
+        },
+        pendentes() {
+          return obj.listaAtividades.filter(el => el.proprietario == '')
+        },
+        concluidos() {
+          return obj.listaAtividades.filter(el => el.checked == true)
+        }
+      },
       mounted() {
         // console.log(obj)
       },
@@ -663,50 +739,137 @@
         cadastrarAtividade() {
           obj.listaAtividades.push({atividade: obj.novaAtividade, checked: false})
         },
-        checked(i) {
-          obj.listaAtividades[i].checked = true
-          console.log(obj.listaAtividades)
+        checked(atividade) {
+          // obj.atividadeSelecionada = atividade
+          // console.log(obj.listaAtividades.find(el => el == atividade))
+          console.log(atividade)
+          atividade.checked = true
+          // obj.listaAtividades.push(atividade)
+          // console.log(obj.listaAtividades)
+          // atividade.checked = true
+        },
+        owner(atividade) {
+          // if(atividade.frequencia == '')
+          // $('#atividadeModal').modal('show')
+          // let input = document.getElementById('owner')
+          // console.log(input.checked)
+          // obj.atividadeSelecionada = atividade
+          // atividade.checked = false
+          atividade.proprietario = 'eu'
+          console.log(atividade)
+          // const modal = new bootstrap.Modal(document.getElementById('atividadeModal'));
+          // modal.show();
+          // atividade.checked = true
+        },
+        validarFrequencia(atividade) {
+          // let input = document.getElementById('owner')
+          // input.checked = false
+          atividade.checked = false
+          console.log(atividade)
+          console.log('oi')
         },
         mostrarNovaTarefa() {
           document.getElementById('botaoNovaTarefa').style.opacity = 1
         },
         invisibilizarNovaTarefa() {
-          document.getElementById('botaoNovaTarefa').style.opacity = 0.2
+          document.getElementById('botaoNovaTarefa').style.opacity = 0.4
         },
-        salvarTarefa(input, pai) {
-          console.log('pegou')
-          let label = document.createElement('label')
-          label.setAttribute('class', 'form-check-label')
-          label.textContent = input.value
-          input.remove()
+        mostrarNovaFrequencia() {
+          document.getElementById('botaoNovaFrequencia').style.opacity = 1
+        },
+        invisibilizarNovaFrequencia() {
+          document.getElementById('botaoNovaFrequencia').style.opacity = 0.4
+        },
+        salvarTarefa(input, pai, ancora) {
+          // console.log('pegou')
+          // let label = document.createElement('label')
+          // label.setAttribute('class', 'form-check-label')
+          // label.textContent = input.value
+          obj.atividadesSemanais.push({atividade: input.value, checked: false})
+          console.log(input.parentNode.parentNode)
+          input.parentNode.parentNode.appendChild(ancora)
+          let x = input.parentNode.parentNode.firstChild
+          input.parentNode.parentNode.removeChild(x)
+          x = input.parentNode.parentNode.firstChild
+          input.parentNode.parentNode.removeChild(x)
+          // input.parentNode.parentNode.remove()
           // pai.replaceChild(label, input2)
           // console.log(input)
-          pai.appendChild(label)
+          // pai.appendChild(label)
+          // let vo = pai.parentNode
+          // vo.appendChild(div)
+          // console.log(vo)
         },
         changerded() {
           console.log('oi')
         },
         novaTarefa() {
-          let input = document.createElement('input')
-          let label = document.createElement('label')
-          label.appendChild(input)
           let ancora = document.getElementById('botaoNovaTarefa')
-          let pai = ancora.parentNode
-          let inputCheckbox = document.createElement('input')
-          inputCheckbox.setAttribute('type', 'checkbox')
-          label.setAttribute('class', 'form-check-label')
-          input.setAttribute('class', 'form-control')
-          input.style.border = 'none'
-          inputCheckbox.setAttribute('class', 'form-check-input')
-          pai.replaceChild(label, ancora)
-          pai.insertBefore(inputCheckbox, label)
-          input.addEventListener('change', this.changerded(input, pai))
-          input.addEventListener('keyup', () => {
-            if (event.key == "Enter") {
-              this.salvarTarefa(input, pai)
-            }
-          })
+          ancora.style.display = 'none'
+          let input = document.getElementById('input-nova-tarefa')
+          input.style.display = 'block'
+          input.setAttribute('class', 'input-sem-borda')
           input.focus()
+        },
+        incluirFrequencia(indice) {
+          let ancora = document.getElementById(`botaoNovaFrequencia${indice}`)
+          ancora.style.display = 'none'
+          let input = document.getElementById(`input-nova-frequencia-${indice}`)
+          input.style.display = 'inline'
+          input.setAttribute('class', 'input-sem-borda')
+          input.focus()
+        },
+        keyUpNovaTarefa(event) {
+          if (event.keyCode === 13) {
+            let input = document.getElementById('input-nova-tarefa')
+            obj.listaAtividades.push({atividade: input.value, checked: false, proprietario: '', frequencia: ''})
+            input.value = ''
+            input.style.display = 'none'
+            let ancora = document.getElementById('botaoNovaTarefa')
+            ancora.style.display = 'block'
+          }
+        },
+        saiuNovaTarefa() {
+          let input = document.getElementById('input-nova-tarefa')
+          let ancora = document.getElementById('botaoNovaTarefa')
+          if (input.value == '') {
+            ancora.style.display = 'block'
+          } else {
+            obj.atividadesSemanais.push({atividade: input.value, checked: false})
+            input.value = ''
+            ancora.style.display = 'block'
+          }
+          input.style.display = 'none'
+        },
+        keyUpNovaFrequencia(event, atividade, i) {
+          if (event.keyCode === 13) {
+            console.log('oi')
+            let input = document.getElementById(`input-nova-frequencia-${i}`)
+            // obj.listaAtividades.push({atividade: input.value, checked: false, proprietario: '', frequencia: ''})
+            atividade.frequencia = input.value
+            input.value = ''
+            input.style.display = 'none'
+            let ancora = document.getElementById(`botaoNovaFrequencia${i}`)
+            ancora.style.display = 'inline'
+          }
+        },
+        saiuNovaFrequencia(atividade, i) {
+          let input = document.getElementById(`input-nova-frequencia-${i}`)
+          let ancora = document.getElementById(`botaoNovaFrequencia${i}`)
+          if (input.value == '') {
+            ancora.style.display = 'inline'
+          } else {
+            console.log(input.value)
+            // obj.atividadesSemanais.push({atividade: input.value, checked: false})
+            atividade.frequencia = input.value
+            ancora.style.display = 'inline'
+          }
+          input.style.display = 'none'
+        },
+        selecionarAtividade(atividade) {
+          console.log(atividade)
+          obj.atividadeSelecionada = atividade
+          // atividade.checked = true
         }
       },
     })
@@ -714,3 +877,11 @@
 </body>
 
 </html>
+
+<style>
+  .input-sem-borda:focus {
+    outline: none;
+    border: none; /* Remova esta linha se quiser manter a borda, mas remover o destaque padrão do navegador */
+  }
+
+</style>
