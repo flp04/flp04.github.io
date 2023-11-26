@@ -1,0 +1,371 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="utf-8">
+  <meta content="width=device-width, initial-scale=1.0" name="viewport">
+
+  <title>Alô Microfone</title>
+  <meta content="" name="description">
+  <meta content="" name="keywords">
+
+  <!-- Favicons -->
+  <link href="assets/img/favicon.png" rel="icon">
+  <link href="assets/img/apple-touch-icon.png" rel="apple-touch-icon">
+
+  <!-- Google Fonts -->
+  <link href="https://fonts.gstatic.com" rel="preconnect">
+  <link href="https://fonts.googleapis.com/css?family=Open+Sans:300,300i,400,400i,600,600i,700,700i|Nunito:300,300i,400,400i,600,600i,700,700i|Poppins:300,300i,400,400i,500,500i,600,600i,700,700i" rel="stylesheet">
+
+  <!-- Vendor CSS Files -->
+  <link href="assets/vendor/bootstrap/css/bootstrap.min.css" rel="stylesheet">
+  <link href="assets/vendor/bootstrap-icons/bootstrap-icons.css" rel="stylesheet">
+  <link href="assets/vendor/boxicons/css/boxicons.min.css" rel="stylesheet">
+  <link href="assets/vendor/quill/quill.snow.css" rel="stylesheet">
+  <link href="assets/vendor/quill/quill.bubble.css" rel="stylesheet">
+  <link href="assets/vendor/remixicon/remixicon.css" rel="stylesheet">
+  <link href="assets/vendor/simple-datatables/style.css" rel="stylesheet">
+
+  <script src="https://unpkg.com/axios/dist/axios.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/vue@2.6.14"></script>
+
+  <!-- Template Main CSS File -->
+  <link href="assets/css/style.css" rel="stylesheet">
+
+  <!-- =======================================================
+  * Template Name: NiceAdmin
+  * Updated: Jul 27 2023 with Bootstrap v5.3.1
+  * Template URL: https://bootstrapmade.com/nice-admin-bootstrap-admin-html-template/
+  * Author: BootstrapMade.com
+  * License: https://bootstrapmade.com/license/
+  ======================================================== -->
+</head>
+
+<body>
+
+  <!-- ======= Header ======= -->
+  <header id="header" class="header fixed-top d-flex align-items-center">
+
+    <div class="d-flex align-items-center justify-content-between">
+      <a href="index.html" class="logo d-flex align-items-center">
+        <img src="assets/img/logo.png" alt="">
+        <span class="d-none d-lg-block">Alô Microfone</span>
+      </a>
+      <i class="bi bi-list toggle-sidebar-btn"></i>
+    </div><!-- End Logo -->
+
+  </header><!-- End Header -->
+
+  <!-- ======= Sidebar ======= -->
+  <aside id="sidebar" class="sidebar">
+    <ul class="sidebar-nav" id="sidebar-nav">
+      <li class="nav-item" v-for="campeonato in competicoes" :key="campeonato">
+        <a class="nav-link" data-bs-target="#components-nav" @click="getLiga(campeonato.code)" style="cursor: pointer;">
+          <img :src="campeonato.emblem" style="width: 24px; height: 24px;"><span>{{ campeonato.nome }}</span>
+        </a>
+      </li>
+    </ul>
+  </aside><!-- End Sidebar-->
+
+  <main id="main" class="main">
+
+    <section class="section dashboard">
+      
+      <div class="row">
+        <div class="col-md-9">
+          <h4 class="text-center mb-4">{{ competicao }}</h4>
+          <table class="table table-striped table-bordered">
+            <thead>
+              <tr>
+                <th scope="col">#</th>
+                <th scope="col">Equipe</th>
+                <th scope="col">P</th>
+                <th scope="col">J</th>
+                <th scope="col">V</th>
+                <th scope="col">E</th>
+                <th scope="col">D</th>
+                <th scope="col">SG</th>
+                <th scope="col">Forma</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr v-for="d in dados">
+                <td>{{ d.position }}°</td>
+                <td><a @click="selecionarEquipe(d.team.id)" style="cursor: pointer;">{{ d.team.shortName }}</a></td>
+                <td>{{ d.points }}</td>
+                <td>{{ d.playedGames }}</td>
+                <td>{{ d.won }}</td>
+                <td>{{ d.draw }}</td>
+                <td>{{ d.lost }}</td>
+                <td>{{ d.goalDifference }}</td>
+                <td>{{ d.form }}</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+        <div class="col-md-3">
+          <!-- <div class="d-flex justify-content-between align-items-center"> -->
+          <div class="d-flex justify-content-between align-items-center" v-if="!equipeSelecionada">
+            <i class="bi bi-arrow-left" @click="rodadaAnterior()" style="cursor: pointer;"></i>
+            <h4 class="text-center mb-3">Rodada {{ matchday }}</h4>
+            <i class="bi bi-arrow-right" @click="rodadaProxima()" style="cursor: pointer;"></i>
+          </div>
+          <div class="d-flex justify-content-between align-items-center" v-else>
+            <i class="bi bi-arrow-left" @click="mudarTurno()" style="cursor: pointer;"></i>
+            <h4 class="text-center mb-3">{{ turnoSelecionado }}° Turno</h4>
+            <i class="bi bi-arrow-right" @click="mudarTurno()" style="cursor: pointer;"></i>
+          </div>
+          <div class="container">
+            <!-- <div v-for="partida in partidas" v-show="partida.matchday == matchday"> -->
+            <div v-for="partida in partidas" v-show="(equipeSelecionada && [partida.homeTeam.id, partida.awayTeam.id].includes(equipeSelecionada) && ((turnoSelecionado == 1 && partida.matchday <= 19) || (turnoSelecionado == 2 && partida.matchday > 19))) || (!equipeSelecionada && partida.matchday == matchday)">
+              <div class="row justify-content-center" v-if="partida.status == 'FINISHED'">
+                <h7 class="text-center">{{ corrigirFusoHorario(partida.utcDate) }}</h7>
+                <div class="col-md-3 d-flex justify-content-center align-items-center mb-4">
+                  <img :src="partida.homeTeam.crest" :alt="partida.homeTeam.shortName" :title="partida.homeTeam.shortName" style="width: 40px;"> 
+                </div>
+                <div class="col-md-1 d-flex justify-content-center align-items-center mb-4">
+                  {{ partida.score.fullTime.home }}
+                </div>
+                <div class="col-md-2 d-flex justify-content-center align-items-center mb-4">
+                  vs
+                </div>
+                <div class="col-md-1 d-flex justify-content-center align-items-center mb-4">
+                  {{ partida.score.fullTime.away }}
+                </div>
+                <div class="col-md-3 d-flex justify-content-center align-items-center mb-4">
+                  <img :src="partida.awayTeam.crest" :alt="partida.awayTeam.shortName" :title="partida.awayTeam.shortName" style="width: 40px;">
+                </div>
+              </div>
+              <div class="row justify-content-center" v-else-if="partida.status == 'IN_PLAY'">
+                <!-- <h7 class="text-center">{{ corrigirFusoHorario(partida.utcDate) }}</h7> -->
+                <h7 class="text-center">Em andamento...</h7>
+                <div class="col-md-3 d-flex justify-content-center align-items-center mb-4">
+                  <img :src="partida.homeTeam.crest" :alt="partida.homeTeam.shortName" :title="partida.homeTeam.shortName" style="width: 40px;"> 
+                </div>
+                <div class="col-md-1 d-flex justify-content-center align-items-center mb-4">
+                  {{ partida.score.fullTime.home }}
+                </div>
+                <div class="col-md-2 d-flex justify-content-center align-items-center mb-4">
+                  vs
+                </div>
+                <div class="col-md-1 d-flex justify-content-center align-items-center mb-4">
+                  {{ partida.score.fullTime.away }}
+                </div>
+                <div class="col-md-3 d-flex justify-content-center align-items-center mb-4">
+                  <img :src="partida.awayTeam.crest" :alt="partida.awayTeam.shortName" :title="partida.awayTeam.shortName" style="width: 40px;">
+                </div>
+              </div>
+              <div class="row justify-content-center" v-else>
+                <h7 class="text-center">{{ corrigirFusoHorario(partida.utcDate) }}</h7>
+                <div class="col-md-5 d-flex justify-content-center align-items-center mb-4">
+                  <img :src="partida.homeTeam.crest" :alt="partida.homeTeam.shortName" :title="partida.homeTeam.shortName" style="width: 40px;"> 
+                </div>
+                <div class="col-md-2 d-flex justify-content-center align-items-center mb-4">
+                  vs 
+                </div>
+                <div class="col-md-5 d-flex justify-content-center align-items-center mb-4">
+                  <img :src="partida.awayTeam.crest" :alt="partida.awayTeam.shortName" :title="partida.awayTeam.shortName" style="width: 40px;">
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+  </main><!-- End #main -->
+
+  <!-- ======= Footer ======= -->
+  <footer id="footer" class="footer">
+    <div class="copyright">
+      &copy; Copyright <strong><span>NiceAdmin</span></strong>. All Rights Reserved
+    </div>
+    <div class="credits">
+      <!-- All the links in the footer should remain intact. -->
+      <!-- You can delete the links only if you purchased the pro version. -->
+      <!-- Licensing information: https://bootstrapmade.com/license/ -->
+      <!-- Purchase the pro version with working PHP/AJAX contact form: https://bootstrapmade.com/nice-admin-bootstrap-admin-html-template/ -->
+      Designed by <a href="https://bootstrapmade.com/">BootstrapMade</a>
+    </div>
+  </footer><!-- End Footer -->
+
+  <a href="#" class="back-to-top d-flex align-items-center justify-content-center"><i class="bi bi-arrow-up-short"></i></a>
+
+  <!-- Vendor JS Files -->
+  <script src="assets/vendor/apexcharts/apexcharts.min.js"></script>
+  <script src="assets/vendor/bootstrap/js/bootstrap.bundle.min.js"></script>
+  <script src="assets/vendor/chart.js/chart.umd.js"></script>
+  <script src="assets/vendor/echarts/echarts.min.js"></script>
+  <script src="assets/vendor/quill/quill.min.js"></script>
+  <script src="assets/vendor/simple-datatables/simple-datatables.js"></script>
+  <script src="assets/vendor/tinymce/tinymce.min.js"></script>
+  <script src="assets/vendor/php-email-form/validate.js"></script>
+
+  <!-- Template Main JS File -->
+  <script src="assets/js/main.js"></script>
+  <script>
+    var eventBus = new Vue()
+    var vmSidebar = new Vue({
+      el: '#sidebar',
+      data() {
+        return {
+          competicaoSelecionada: null,
+          competicoes: [
+            {
+              nome: 'Campeonato Brasileiro',
+              code: 'BSA',
+              emblem: 'https://crests.football-data.org/764.svg'
+            },
+            {
+              nome: 'Campeonato Inglês',
+              code: 'PL',
+              emblem: 'https://crests.football-data.org/PL.png'
+            },
+            {
+              nome: 'Campeonato Português',
+              code: 'PPL',
+              emblem: 'https://crests.football-data.org/PPL.png'
+            },
+            {
+              nome: 'Campeonato Alemão',
+              code: 'BL1',
+              emblem: 'https://crests.football-data.org/BL1.png'
+            },
+            {
+              nome: 'Campeonato Holandes',
+              code: 'DED',
+              emblem: 'https://crests.football-data.org/ED.png'
+            },
+            {
+              nome: 'Campeonato Espanhol',
+              code: 'PD',
+              emblem: 'https://crests.football-data.org/PD.png'
+            },
+            {
+              nome: 'Campeonato Francês',
+              code: 'FL1',
+              emblem: 'https://crests.football-data.org/FL1.png'
+            },
+          ]
+        }
+      },
+      mounted() {
+        this.getLiga('BSA')
+        setInterval(() => {
+          this.getLiga(this.competicaoSelecionada)
+          console.log('oi')
+        }, 60000);
+      },
+      methods: {
+        getLiga(code) {
+          this.competicaoSelecionada = code
+          this.loading = true
+          const url = `https://flpserver.000webhostapp.com/liga.php?code=${code}`;
+          fetch(url)
+          .then(response => response.json())
+          .then(data => {
+            eventBus.$emit('evento', data)
+            this.loading = false
+          })
+          .catch(error => {
+            console.error('Error fetching matches:', error);
+          });
+        },
+      }
+    })
+
+    var vmMain = new Vue({
+      el: '#main',
+      data() {
+        return {
+          competicao: '',
+          partidas: '',
+          dados: '',
+          matchday: 20,
+          equipeSelecionada: '',
+          turnoSelecionado: 1,
+          loading: false
+        }
+      },
+      created() {
+        eventBus.$on('evento', data => {
+          this.dados = data.dados.standings[0].table
+          this.partidas = data.partidas.matches
+          this.matchday = data.dados.season.currentMatchday
+          this.competicao = data.dados.competition.name
+        })
+      },
+      mounted() {
+        // this.getTabela()
+        // this.getPartidas()
+        // const url2 = `/api/competitions/${this.code}/matches`;
+        // const url2 = `/api/competitions/${this.code}/standings`;
+        // const headers2 = {
+        //   'X-Auth-Token': 'bef4843a927541c5b894ff0c1d3c78ae',
+        // };
+
+        // axios.get(url2, { headers2 })
+        //   .then(response => {
+        //     this.partidas = response.data;
+        //   })
+        //   .catch(error => {
+        //     console.error('Error fetching matches:', error);
+        //   });
+      },
+      methods: {
+        getTabela() {
+          this.loading = true   
+          const url = `http://api.football-data.org/v4/competitions/${this.code}/standings`;
+          const headers = {
+            'X-Auth-Token': 'bef4843a927541c5b894ff0c1d3c78ae',
+          };
+
+          axios.get(url, { headers })
+          .then(response => {
+            this.matchday = response.data.season.currentMatchday
+            this.dados = response.data.standings[0].table;
+            this.loading = false
+          })
+          .catch(error => {
+            console.error('Error fetching matches:', error);
+          });
+        },
+        corrigirFusoHorario(data) {
+          data = new Date(data)
+          let opcoes = {
+            weekday: 'long',
+            // year: 'numeric', 
+            month: '2-digit', 
+            day: '2-digit',
+            hour: 'numeric',
+            minute: 'numeric',
+            // second: 'numeric',
+            hour12: false,
+            // timeZone: 'local'
+          }
+          let tradutor = new Intl.DateTimeFormat('pt-BR', opcoes)
+          data = tradutor.format(data).split(',')
+          data = `${data[0].slice(0,3)}, ${data[1]} - ${data[2]}`
+          return data
+        },
+        rodadaAnterior() {
+          this.matchday -= 1
+        },
+        rodadaProxima() {
+          this.matchday += 1
+        },
+        mudarTurno() {
+          console.log('oi')
+          this.turnoSelecionado == 1 ? this.turnoSelecionado = 2 : this.turnoSelecionado = 1
+        },
+        selecionarEquipe(equipe) {
+          console.log(equipe)
+          this.equipeSelecionada = equipe
+        }
+      },
+    })
+  </script>
+
+</body>
+
+</html>

@@ -509,7 +509,6 @@
   </aside><!-- End Sidebar-->
 
   <main id="main" class="main">
-{{listaAtividades}}
     <div class="pagetitle">
       <h1>Dashboard</h1>
       <nav>
@@ -535,14 +534,15 @@
               </div>
                 <div class="card-body">
                   <h5 class="card-title">A fazer</h5>
-                  <div class="form-check" v-for="(atividade, i) in aFazer">
-                    <i class="bi bi-check-circle" id="flexCheckDefault" @click="checked(atividade)"></i>
+                  <div class="form-check" v-for="(atividade, i) in tarefas"  v-show="atividade.status_id == 2">
                     <!-- <input class="form-check-input" :disabled="atividade.checked" type="checkbox" value="" id="flexCheckDefault" @change="checked(atividade)"> -->
                     <!-- <input class="form-check-input" type="checkbox" value="false" id="flexCheckDefault"> -->
+                    <img src="assets/img/profile-img.jpg" alt="Profile" class="rounded-circle" style="width: 20px;">
                     <label class="form-check-label" for="flexCheckDefault">
                       <!-- <a class="icon" style="cursor: pointer;" data-bs-toggle="modal" data-bs-target="#atividadeModal" @click="selecionarAtividade(atividade)" title="Nova tarefa">{{ atividade.atividade }} : {{ atividade.frequencia }}</a> -->
-                      <a class="icon" style="cursor: pointer;" >{{ atividade.atividade }} : {{ atividade.frequencia }}</a>
+                      <a class="icon" style="cursor: pointer;" >{{ atividade.nome }} : {{ atividade.frequencia }}</a>
                     </label>
+                    <i class="bi bi-check-circle" id="flexCheckDefault" @click="checked(atividade)"></i>
                   </div>
                 </div>
               </div>
@@ -600,18 +600,24 @@
             <div class="col-xxl-4 col-md-6">
               <div class="card info-card sales-card">
                 <div class="card-body">
-                  <h5 class="card-title">Sem proprietário (clique na atividade para pega-la)</h5>
-                  <div class="form-check" v-for="(atividade, i) in pendentes">
+                  <h5 class="card-title">Sem proprietário</h5>
+                  <div class="form-check" v-for="(atividade, i) in tarefas" v-show="atividade.status_id == 1">
                     <!-- <input class="form-check-input" :checked="atividade.checked" type="checkbox" id="owner" @change="owner(atividade)"> -->
                     <label class="form-check-label" for="flexCheckDefault">
                       <!-- <a class="icon" style="cursor: pointer;" data-bs-toggle="modal" data-bs-target="#atividadeModal" @click="selecionarAtividade(atividade)" title="Nova tarefa">{{ atividade.atividade }}</a> -->
-                      <a class="icon" style="cursor: pointer;" @click="owner(atividade)" title="Nova tarefa">{{ atividade.atividade }}</a>
+                      <!-- <a class="icon" style="cursor: pointer;" @click="owner(atividade)" title="Nova tarefa">{{ atividade.nome }}</a> -->
+                      <i class="bi bi-circle" style="cursor: pointer;" @click="owner(atividade)"></i>
+                      <a>{{ atividade.nome }}</a>
                       : 
-                      <a class="icon" :id="`botaoNovaFrequencia${i}`" style="opacity: 0.4;" @click="incluirFrequencia(i)" title="Nova tarefa">{{ atividade.frequencia == '' ? 'Incluir frequencia' : atividade.frequencia }}</a>
-                      <input type="text" list="frequencias" style="display: none; border: 0px;" :id="`input-nova-frequencia-${i}`" @blur="saiuNovaFrequencia(atividade, i)" @keyup="keyUpNovaFrequencia(event, atividade, i)">
+                      <!-- <a class="icon" :id="`botaoNovaFrequencia${i}`" style="opacity: 0.4;" @click="incluirFrequencia(i)" title="Nova tarefa">{{ atividade.frequencia == null ? 'Incluir frequencia' : atividade.frequencia.nome }}</a> -->
+                      <a class="icon" :id="`botaoNovaFrequencia${i}`" :style="atividade.frequencia == null ? 'opacity: 0.4;' : 'opacity: ;'" @click="incluirFrequencia(i)" title="Nova tarefa">{{ atividade.frequencia == null ? 'Incluir frequencia' : atividade.frequencia }}</a>
+                      <input type="text" list="frequencias" v-model="atividade.frequencia" style="display: none; border: 0px;" :id="`input-nova-frequencia-${i}`" @blur="saiuNovaFrequencia(atividade, i)" @keyup="keyUpNovaFrequencia(event, atividade, i)">
                       <datalist id="frequencias">
                         <option v-for="frequencia in frequencias" :value="frequencia"></option>
                       </datalist>
+                      <!-- <i class="bi bi-trash" style="font-size: 1rem;"></i> -->
+                      <i class="bi bi-trash" @click="excluirTarefa(atividade)"></i>
+                      <!-- <a href="" style="font-size: 16px;">x</a> -->
                     </label>
                   </div>
                   <div id="div-nova-tarefa" class="form-check">
@@ -630,7 +636,7 @@
               <div class="card info-card sales-card">
                 <div class="card-body">
                   <h5 class="card-title">Concluído</h5>
-                  <div class="form-check" v-for="(atividade, i) in concluidos">
+                  <div class="form-check" v-for="(atividade, i) in tarefas" v-show="atividade.status_id == 3">
                     <input class="form-check-input" type="checkbox" value="" id="flexCheckDefault" @change="checked(event, atividade)">
                     <label class="form-check-label" for="flexCheckDefault">
                       <a class="icon" style="cursor: pointer;" data-bs-toggle="modal" data-bs-target="#atividadeModal" @click="selecionarAtividade(atividade)" title="Nova tarefa">{{ atividade.atividade }} : {{ atividade.frequencia == '' ? 'Incluir frequencia' : atividade.frequencia }}</a>
@@ -686,6 +692,7 @@
   <script src="assets/js/main.js"></script>
   <script>
     obj = {
+      tarefas: [],
       listaAtividades: [
         // {atividade: 'Escovar os dentes', checked: false, frequencia: '', proprietario: ''},
         // {atividade: 'Tomar banho', checked: false, frequencia: '', proprietario: ''},
@@ -723,17 +730,36 @@
       data: obj,
       computed: {
         aFazer() {
-          return obj.listaAtividades.filter(el => el.proprietario != '' && el.checked == false)
+          // return obj.tarefas.filter(el => el.proprietario != '' && el.checked == false)
+          return obj.tarefas.filter(el => el.status_id == 2)
         },
         pendentes() {
-          return obj.listaAtividades.filter(el => el.proprietario == '')
+          // return obj.tarefas.filter(el => el.proprietario == '')
+          return obj.tarefas.filter(el => el.status_id == 1)
         },
         concluidos() {
-          return obj.listaAtividades.filter(el => el.checked == true)
+          // return obj.tarefas.filter(el => el.checked == true)
+          return obj.tarefas.filter(el => el.status_id == 3)
         }
       },
       mounted() {
         // console.log(obj)
+        // fetch('http://127.0.0.1:8000/api/tarefas',
+        fetch('https://flpserver.000webhostapp.com/api_organizador.php?requisicao=pegarTarefas',
+          {
+            method: 'GET',
+          }
+        )
+        .then(response => response.json())
+        .then(data => {
+          console.log(data)
+          obj.tarefas = data
+          // this.gerarGrafico(data)
+          // this.gerarGraficoItensFormulario(data)
+        })
+        .catch(error => {
+          console.error('Ocorreu um erro:', error);
+        })
       },
       methods: {
         cadastrarAtividade() {
@@ -743,7 +769,7 @@
           // obj.atividadeSelecionada = atividade
           // console.log(obj.listaAtividades.find(el => el == atividade))
           console.log(atividade)
-          atividade.checked = true
+          atividade.status_id = 3
           // obj.listaAtividades.push(atividade)
           // console.log(obj.listaAtividades)
           // atividade.checked = true
@@ -756,6 +782,7 @@
           // obj.atividadeSelecionada = atividade
           // atividade.checked = false
           atividade.proprietario = 'eu'
+          atividade.status_id = 2
           console.log(atividade)
           // const modal = new bootstrap.Modal(document.getElementById('atividadeModal'));
           // modal.show();
@@ -822,11 +849,36 @@
         keyUpNovaTarefa(event) {
           if (event.keyCode === 13) {
             let input = document.getElementById('input-nova-tarefa')
-            obj.listaAtividades.push({atividade: input.value, checked: false, proprietario: '', frequencia: ''})
-            input.value = ''
-            input.style.display = 'none'
-            let ancora = document.getElementById('botaoNovaTarefa')
-            ancora.style.display = 'block'
+            formData = new FormData()
+            formData.append('nome', input.value)
+            // fetch('http://127.0.0.1:8000/api/criarTarefa', 
+            fetch('https://flpserver.000webhostapp.com/api_organizador.php?requisicao=criarTarefa',
+              {
+                method: 'POST',
+                // headers: {
+                //     'Content-Type': 'application/json' // Indica que o conteúdo é JSON
+                // },
+                body: JSON.stringify({nome : input.value}) // Converte o objeto em uma string JSON
+                // body: formData
+              }
+            )
+            .then(response => response.json())
+            .then(data => {
+              obj.tarefas.push({nome: data.nome, status_id: 1, proprietario: '', frequencia: null})
+              console.log(obj.tarefas)
+              input.value = ''
+              input.style.display = 'none'
+              let ancora = document.getElementById('botaoNovaTarefa')
+              ancora.style.display = 'block'
+            })
+            .catch(error => {
+              console.error('Ocorreu um erro:', error);
+            })
+            // obj.listaAtividades.push({atividade: input.value, checked: false, proprietario: '', frequencia: ''})
+            // input.value = ''
+            // input.style.display = 'none'
+            // let ancora = document.getElementById('botaoNovaTarefa')
+            // ancora.style.display = 'block'
           }
         },
         saiuNovaTarefa() {
@@ -870,6 +922,25 @@
           console.log(atividade)
           obj.atividadeSelecionada = atividade
           // atividade.checked = true
+        },
+        excluirTarefa(atividade) {
+          fetch('https://flpserver.000webhostapp.com/api_organizador.php?requisicao=deletarTarefa',
+            {
+              method: 'POST',
+              // headers: {
+              //     'Content-Type': 'application/json' // Indica que o conteúdo é JSON
+              // },
+              body: JSON.stringify({atividade_id : atividade.id}) // Converte o objeto em uma string JSON
+              // body: formData
+            }
+          )
+          .then(response => response.json())
+          .then(data => {
+            obj.tarefas = obj.tarefas.filter(el => el.id != data.atividade_id)
+          })
+          .catch(error => {
+            console.error('Ocorreu um erro:', error);
+          })  
         }
       },
     })
