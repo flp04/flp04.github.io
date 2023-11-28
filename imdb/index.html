@@ -13,15 +13,15 @@
     <div class="d-flex justify-content-between">
       <div class="form-group">
         <label for="">Filme/Série:</label>
-        <input class="form-control" type="text" name="" @click="buscar()" @keyup.enter="buscar" v-model="busca">
-        <button class="btn btn-primary" onclick="buscar()">Buscar</button>
+        <input class="form-control" type="text" name="" @keyup.enter="buscar" v-model="busca">
+        <button class="btn btn-primary" @click="buscar()">Buscar</button>
       </div>
       <div class="form-group">
         <img :src="imagem" alt="">
       </div>
       <div class="form-group">
         <label for="">Nota:</label>
-        <input class="form-control" type="text" disabled id="nota">
+        <input class="form-control" type="text" disabled v-model="nota">
       </div>
     </div>
     <p>{{ resultado.Year }}</p>
@@ -35,20 +35,20 @@
 </body>
 </html>
 <script>
-  function buscar() {
-    let busca = document.getElementById('busca')
-    let nota = document.getElementById('nota')
-    // let movie = document.getElementById('movie')
-    fetch(`https://www.omdbapi.com/?apikey=5b63ca10&t=${busca.value}`)
-    .then(response => response.json())
-    .then(data => {
-      nota.setAttribute('value', data.imdbRating)
-      // movie.textContent = JSON.stringify(data)
-    })
-    .catch(error => {
-      console.error('Error fetching matches:', error);
-    });
-  }
+  // function buscar() {
+  //   let busca = document.getElementById('busca')
+  //   let nota = document.getElementById('nota')
+  //   // let movie = document.getElementById('movie')
+  //   fetch(`https://www.omdbapi.com/?apikey=5b63ca10&t=${busca.value}`)
+  //   .then(response => response.json())
+  //   .then(data => {
+  //     nota.setAttribute('value', data.imdbRating)
+  //     // movie.textContent = JSON.stringify(data)
+  //   })
+  //   .catch(error => {
+  //     console.error('Error fetching matches:', error);
+  //   });
+  // }
 </script>
 <script>
   // var eventBus = new Vue()
@@ -58,7 +58,8 @@
       return {
         busca: '',
         imagem: '',
-        resultado: {}
+        resultado: {},
+        nota: ''
       }
     },
     mounted() {
@@ -66,14 +67,11 @@
     },
     methods: {
       buscar() {
-        let busca = document.getElementById('busca')
-        let nota = document.getElementById('nota')
         // let movie = document.getElementById('movie')
-        fetch(`https://www.omdbapi.com/?apikey=5b63ca10&t=${busca.value}`)
+        fetch(`https://www.omdbapi.com/?apikey=5b63ca10&t=${this.busca}`)
         .then(response => response.json())
         .then(data => {
-          nota.setAttribute('value', data.imdbRating)
-          // movie.textContent = JSON.stringify(data)
+          this.nota = data.imdbRating
           this.imagem = data.Poster
           this.resultado = data
         })
