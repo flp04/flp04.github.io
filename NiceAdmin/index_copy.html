@@ -685,22 +685,8 @@
           let data = new Date()
           return data.getFullYear()
         }
-        // aFazer() {
-        //   // return obj.tarefas.filter(el => el.proprietario != '' && el.checked == false)
-        //   return obj.tarefas.filter(el => el.status_id == 2)
-        // },
-        // pendentes() {
-        //   // return obj.tarefas.filter(el => el.proprietario == '')
-        //   return obj.tarefas.filter(el => el.status_id == 1)
-        // },
-        // concluidos() {
-        //   // return obj.tarefas.filter(el => el.checked == true)
-        //   return obj.tarefas.filter(el => el.status_id == 3)
-        // }
       },
       mounted() {
-        // console.log(obj)
-        // fetch('http://127.0.0.1:8000/api/tarefas',
         fetch('https://flpserver.000webhostapp.com/api_organizador.php?requisicao=pegarTarefas',
           {
             method: 'GET',
@@ -710,8 +696,6 @@
         .then(data => {
           console.log(data)
           obj.tarefas = data
-          // this.gerarGrafico(data)
-          // this.gerarGraficoItensFormulario(data)
         })
         .catch(error => {
           console.error('Ocorreu um erro:', error);

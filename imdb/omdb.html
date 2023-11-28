@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Document</title>
+  <script src="https://cdn.jsdelivr.net/npm/vue@2.6.14"></script>
+  <link href="assets/vendor/bootstrap/css/bootstrap.min.css" rel="stylesheet">
+  <link href="assets/vendor/bootstrap-icons/bootstrap-icons.css" rel="stylesheet">
+</head>
+<body>
+  <div id="main" class="container mt-3">
+    <div class="d-flex justify-content-between">
+      <div class="form-group">
+        <label for="">Filme/Série:</label>
+        <input class="form-control" type="text" name="" id="busca" @keyup.enter="buscar" v-model="busca">
+        <button class="btn btn-primary" onclick="buscar()">Buscar</button>
+      </div>
+      <div class="form-group">
+        <img :src="imagem" alt="">
+      </div>
+      <div class="form-group">
+        <label for="">Nota:</label>
+        <input class="form-control" type="text" disabled id="nota">
+      </div>
+    </div>
+    <p>{{ resultado.Year }}</p>
+    <p>{{ resultado.Actors }}</p>
+    <p>{{ resultado.Country }}</p>
+    <p>{{ resultado.Director }}</p>
+    <!-- <p id="movie">{{ busca }}</p>
+    <p id="movie"></p> -->
+  </div>
+  <script src="assets/vendor/bootstrap/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>
+<script>
+  function buscar() {
+    let busca = document.getElementById('busca')
+    let nota = document.getElementById('nota')
+    // let movie = document.getElementById('movie')
+    fetch(`https://www.omdbapi.com/?apikey=5b63ca10&t=${busca.value}`)
+    .then(response => response.json())
+    .then(data => {
+      nota.setAttribute('value', data.imdbRating)
+      // movie.textContent = JSON.stringify(data)
+    })
+    .catch(error => {
+      console.error('Error fetching matches:', error);
+    });
+  }
+</script>
+<script>
+  // var eventBus = new Vue()
+  var vmSidebar = new Vue({
+    el: '#main',
+    data() {
+      return {
+        busca: '',
+        imagem: '',
+        resultado: {}
+      }
+    },
+    mounted() {
+      console.log('oi')
+    },
+    methods: {
+      buscar() {
+        let busca = document.getElementById('busca')
+        let nota = document.getElementById('nota')
+        // let movie = document.getElementById('movie')
+        fetch(`https://www.omdbapi.com/?apikey=5b63ca10&t=${busca.value}`)
+        .then(response => response.json())
+        .then(data => {
+          nota.setAttribute('value', data.imdbRating)
+          // movie.textContent = JSON.stringify(data)
+          this.imagem = data.Poster
+          this.resultado = data
+        })
+        .catch(error => {
+          console.error('Error fetching matches:', error);
+        });
+      }
+    }
+  })
+  </script>
