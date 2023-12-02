@@ -10,26 +10,36 @@
 </head>
 <body>
   <div id="main" class="container mt-3">
-    <div class="d-flex justify-content-between">
-      <div class="form-group">
-        <label for="">Filme/Série:</label>
-        <input class="form-control" type="text" name="" @keyup.enter="buscar" v-model="busca">
+    <!-- <div class="d-flex justify-content-between"> -->
+    <div class="row">
+      <div class="col-md-2">
+        <label class="" for="busca">Filme/Série:</label>
+      </div>
+      <div class="col-md-6">
+        <input id="busca" class="form-control mr-2" type="text" name="" @keyup.enter="buscar" v-model="busca">    
+      </div>
+      <div class="col-md-4">
         <button class="btn btn-primary" @click="buscar()">Buscar</button>
       </div>
-      <div class="form-group">
-        <img :src="imagem" alt="">
-      </div>
-      <div class="form-group">
+      <!-- <div class="form-group">
         <label for="">Nota:</label>
         <input class="form-control" type="text" disabled v-model="nota">
+      </div> -->
+    </div>
+    <div class="row mt-3">
+      <div class="col-md-6">
+        <img :src="imagem" alt="">
+      </div>
+      <div class="col-md-6">
+        <p v-if="resultado.imdbRating">Nota: {{ resultado.imdbRating }}</p>
+        <p v-if="resultado.Year">Ano: {{ resultado.Year }}</p>
+        <p v-if="resultado.Actors">Elenco: {{ resultado.Actors }}</p>
+        <p v-if="resultado.Country">País: {{ resultado.Country }}</p>
+        <p v-if="resultado.Director">Diretor: {{ resultado.Director }}</p>
+      <!-- <p id="movie">{{ busca }}</p>
+      <p id="movie"></p> -->
       </div>
     </div>
-    <p>{{ resultado.Year }}</p>
-    <p>{{ resultado.Actors }}</p>
-    <p>{{ resultado.Country }}</p>
-    <p>{{ resultado.Director }}</p>
-    <!-- <p id="movie">{{ busca }}</p>
-    <p id="movie"></p> -->
   </div>
   <script src="../alo-microfone/assets/vendor/bootstrap/js/bootstrap.bundle.min.js"></script>
 </body>
