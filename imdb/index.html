@@ -31,11 +31,11 @@
         <img :src="imagem" alt="">
       </div>
       <div class="col-md-6">
-        <p v-if="resultado.imdbRating">Nota: {{ resultado.imdbRating }}</p>
-        <p v-if="resultado.Year">Ano: {{ resultado.Year }}</p>
-        <p v-if="resultado.Actors">Elenco: {{ resultado.Actors }}</p>
-        <p v-if="resultado.Country">País: {{ resultado.Country }}</p>
-        <p v-if="resultado.Director">Diretor: {{ resultado.Director }}</p>
+        <p v-if="resultado.imdbRating"><b>Nota:</b> {{ resultado.imdbRating }}</p>
+        <p v-if="resultado.Year"><b>Ano:</b> {{ resultado.Year }}</p>
+        <p v-if="resultado.Actors"><b>Elenco:</b> {{ resultado.Actors }}</p>
+        <p v-if="resultado.Country"><b>País:</b> {{ resultado.Country }}</p>
+        <p v-if="resultado.Director"><b>Diretor:</b> {{ resultado.Director }}</p>
       <!-- <p id="movie">{{ busca }}</p>
       <p id="movie"></p> -->
       </div>
