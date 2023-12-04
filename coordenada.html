@@ -1,0 +1,14 @@
+<script>
+  if ("geolocation" in navigator) {
+    navigator.geolocation.getCurrentPosition(function(position) {
+      // console.log('oi')
+      // Obter as coordenadas geográficas
+      var latitude = position.coords.latitude;
+      var longitude = position.coords.longitude;
+      this.latlong = latitude + ',' + longitude
+      location.href = (`https://www.google.com/maps/search/?api=1&query=${latitude},${longitude}`)
+      // window.open(`https://www.google.com/maps/search/?api=1&query=${latitude},${longitude}`)
+      // Exibir as coordenadas no console (você pode fazer o que quiser com essas informações)
+    })
+  }
+</script>

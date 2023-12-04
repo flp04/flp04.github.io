@@ -20,7 +20,15 @@
       <div class="row">
         <div class="col-sm-5 text-center" style="border: 1px solid black;">
           <h4>Hoje</h4>
-          <p style="margin-bottom: 0px;"><b>Temperatura: </b>{{clima.clima_hoje.temperatura_celsius}}</p>
+          <p style="margin-bottom: 0px;"><b>Atual: </b>{{clima.clima_hoje.temperatura_celsius}}</p>
+          <div class="row">
+            <div class="col-sm-6">
+              <p style="margin-bottom: 0px;"><b>Máxima: </b>{{clima.clima_hoje.temperatura_maxima_celcius}}</p>
+            </div>
+            <div class="col-sm-6">
+              <p style="margin-bottom: 0px;"><b>Mínima: </b>{{clima.clima_hoje.temperatura_minima_celcius}}</p>
+            </div>
+          </div>
           <img :src="this.clima.clima_hoje.condicao_img">
           <p>{{clima.clima_hoje.condicao}}</p>
         </div>
@@ -124,7 +132,9 @@ var vmSidebar = new Vue({
             clima_hoje: {
               temperatura_celsius: data.current.temp_c + '°',
               condicao: data.current.condition.text,
-              condicao_img: 'https:' + data.current.condition.icon
+              condicao_img: 'https:' + data.current.condition.icon,
+              temperatura_maxima_celcius: data.forecast.forecastday[0].day.maxtemp_c + '°',
+              temperatura_minima_celcius: data.forecast.forecastday[0].day.mintemp_c + '°',
             },
             clima_amanha: {
               temperatura_maxima_celcius: data.forecast.forecastday[1].day.maxtemp_c + '°',
