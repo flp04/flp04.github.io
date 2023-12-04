@@ -32,9 +32,8 @@
       </div>
       <div class="col-md-6">
         <!-- {{ resultado }} -->
-        {{ resultado.Ratings }}
         <p v-if="resultado.imdbRating"><b>Nota IMDb:</b> {{ resultado.imdbRating }}</p>
-        <p v-if="resultado.Ratings"><b>{{ resultado.Ratings }}:</b> {{ resultado.Ratings }}</p>
+        <!-- <p v-if="resultado.Ratings"><b>{{ resultado.Ratings }}:</b> {{ resultado.Ratings }}</p> -->
         <p v-if="resultado.Year"><b>Ano:</b> {{ resultado.Year }}</p>
         <p v-if="resultado.Actors"><b>Elenco:</b> {{ resultado.Actors }}</p>
         <p v-if="resultado.Country"><b>País:</b> {{ resultado.Country }}</p>
@@ -78,8 +77,6 @@
       }
     },
     mounted() {
-      console.log('oi')
-      this.busca = 'Nope'
       this.buscar()
     },
     methods: {
