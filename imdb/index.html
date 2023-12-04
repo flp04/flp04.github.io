@@ -31,11 +31,16 @@
         <img :src="imagem" alt="">
       </div>
       <div class="col-md-6">
-        <p v-if="resultado.imdbRating"><b>Nota:</b> {{ resultado.imdbRating }}</p>
+        <!-- {{ resultado }} -->
+        {{ resultado.Ratings }}
+        <p v-if="resultado.imdbRating"><b>Nota IMDb:</b> {{ resultado.imdbRating }}</p>
+        <p v-if="resultado.Ratings"><b>{{ resultado.Ratings }}:</b> {{ resultado.Ratings }}</p>
         <p v-if="resultado.Year"><b>Ano:</b> {{ resultado.Year }}</p>
         <p v-if="resultado.Actors"><b>Elenco:</b> {{ resultado.Actors }}</p>
         <p v-if="resultado.Country"><b>País:</b> {{ resultado.Country }}</p>
         <p v-if="resultado.Director"><b>Diretor:</b> {{ resultado.Director }}</p>
+        <p v-if="resultado.Genre"><b>Gênero:</b> {{ resultado.Genre }}</Gênero>
+        <p v-if="resultado.Plot"><b>Sinopse:</b> {{ resultado.Plot }}</Gênero>
       <!-- <p id="movie">{{ busca }}</p>
       <p id="movie"></p> -->
       </div>
@@ -74,13 +79,17 @@
     },
     mounted() {
       console.log('oi')
+      this.busca = 'Nope'
+      this.buscar()
     },
     methods: {
       buscar() {
         // let movie = document.getElementById('movie')
-        fetch(`https://www.omdbapi.com/?apikey=5b63ca10&t=${this.busca}`)
+        fetch(`https://www.omdbapi.com/?apikey=5b63ca10&t=${this.busca}&plot=full`)
+        // fetch(`https://www.omdbapi.com/?apikey=5b63ca10&y=2021`)
         .then(response => response.json())
         .then(data => {
+          console.log(data.Ratings)
           this.nota = data.imdbRating
           this.imagem = data.Poster
           this.resultado = data

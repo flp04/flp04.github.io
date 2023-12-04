@@ -1,0 +1,154 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <script src="https://cdn.jsdelivr.net/npm/vue@2.6.14"></script>
+  <link href="../alo-microfone/assets/vendor/bootstrap/css/bootstrap.min.css" rel="stylesheet">
+  <link href="../alo-microfone/assets/vendor/bootstrap-icons/bootstrap-icons.css" rel="stylesheet">
+  <title>Document</title>
+</head>
+<body>
+  <div id="main">
+    <div v-if="!carregando" class="container mt-3">
+      <div class="row">
+        <div class="col-md-12 text-center">
+          <h3 style="margin-bottom: 0px;">{{clima.localidade.cidade}} - {{clima.localidade.estado}}</h3>
+        </div>
+      </div>
+      <br>
+      <div class="row">
+        <div class="col-sm-5 text-center" style="border: 1px solid black;">
+          <h4>Hoje</h4>
+          <p style="margin-bottom: 0px;"><b>Temperatura: </b>{{clima.clima_hoje.temperatura_celsius}}</p>
+          <img :src="this.clima.clima_hoje.condicao_img">
+          <p>{{clima.clima_hoje.condicao}}</p>
+        </div>
+        <div class="col-sm-2"></div>
+        <div class="col-sm-5 text-center" style="border: 1px solid black;">
+          <h4>Amanhã</h4>
+          <div class="row">
+
+            <div class="col-sm-6">
+              <p style="margin-bottom: 0px;"><b>Máxima:</b> {{clima.clima_amanha.temperatura_maxima_celcius}}</p>
+            </div>
+            <div class="col-sm-6">
+              <p style="margin-bottom: 0px;"><b>Mínima:</b> {{clima.clima_amanha.temperatura_minima_celcius}}</p>
+            </div>
+          </div>
+          <img :src="this.clima.clima_amanha.condicao_img">
+          <p>{{clima.clima_amanha.condicao}}</p>
+        </div>
+      </div>
+    </div>
+    <!-- <img src="cdn.weatherapi.com/weather/64x64/night/113.png"> -->
+    <!-- <pre>{{ this.clima }}</pre> -->
+  </div>
+</body>
+</html>
+<script>
+var vmSidebar = new Vue({
+  el: '#main',
+  data() {
+    return {
+      carregando: false,
+      latlong: '',
+      clima: {
+        localidade: {
+          cidade: '',
+          estado: '',
+          pais: ''
+        },
+        clima_hoje: {
+          temperatura_celsius: ''
+        },
+        clima_amanha: {
+          temperatura_maxima_celcius: '',
+          temperatura_minima_celcius: ''
+        }
+      }
+    }
+  },
+  mounted() {
+    // this.getClima('Sao Paulo')
+    this.pegarLocalizacao()
+    // this.latlong = 'oi'
+  },
+  watch: {
+    latlong() {
+      // console.log('hellow')
+      this.getClima(this.latlong)
+    }
+  },
+  methods: {
+    pegarLocalizacao() {
+      var vm = this
+      if ("geolocation" in navigator) {
+        navigator.geolocation.getCurrentPosition(function(position) {
+          // console.log('oi')
+          // Obter as coordenadas geográficas
+          var latitude = position.coords.latitude;
+          var longitude = position.coords.longitude;
+          this.latlong = latitude + ',' + longitude
+          vm.getClima(this.latlong)
+          // window.open(`https://www.google.com/maps/search/?api=1&query=${latitude},${longitude}`)
+          // Exibir as coordenadas no console (você pode fazer o que quiser com essas informações)
+        })
+      }
+    },
+    async getClima (latlong) {
+      this.carregando = true
+    // console.log(this.dias)
+      let API_KEY = "ce36eceef4d7486091d95932230303"
+
+      // Definir o local de interesse e o número de dias de previsão
+    // let location = this.cidade
+      // let location = xyz
+    
+      let days = 2
+    
+      // Fazer a requisição HTTP para a API da weatherapi
+    // let url = `https://api.weatherapi.com/v1/forecast.json?key=${API_KEY}&q=${location}&days=${days}&lang=pt`
+      let url = `https://api.weatherapi.com/v1/forecast.json?key=${API_KEY}&q=${latlong}&days=${days}&lang=pt`
+      
+      try {
+        fetch(url)
+        .then(response => response.json())
+        .then(data => {
+          this.clima = {
+            localidade: {
+              cidade: data.location.name.replace('ao', 'ão'),
+              estado: data.location.region.replace('ao', 'ão'),
+              pais: data.location.country.replace('ao', 'ão')
+            },
+            clima_hoje: {
+              temperatura_celsius: data.current.temp_c + '°',
+              condicao: data.current.condition.text,
+              condicao_img: 'https:' + data.current.condition.icon
+            },
+            clima_amanha: {
+              temperatura_maxima_celcius: data.forecast.forecastday[1].day.maxtemp_c + '°',
+              temperatura_minima_celcius: data.forecast.forecastday[1].day.mintemp_c + '°',
+              condicao: data.forecast.forecastday[1].day.condition.text,
+              condicao_img: 'https:' + data.forecast.forecastday[1].day.condition.icon
+            }
+          }
+          console.log(data)
+          this.carregando = false
+        })
+    //   // let response = await axios.get(url)
+    //   // let response = axios.get(url)
+    //   // console.log(response.data)
+    //   // temperatura_atual = response.data.current.temp_c
+    //   // previsao_amanha = { maxima : response.data.forecast.forecastday[0].day.maxtemp_c , minima : response.data.forecast.forecastday[0].day.mintemp_c }
+    //   // temperatura_maxima = response.data.forecast.forecastday[0].day.maxtemp_c
+    //   // temperatura_minima = response.data.forecast.forecastday[0].day.mintemp_c
+    //   // local = response.data.location.name
+    } catch (error) {
+      console.log(error)
+    }
+  }
+  // },
+  }
+})
+</script>
