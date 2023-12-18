@@ -11,82 +11,42 @@
 </head>
 <body>
   <div id="main" class="container mt-2">
-    <div>
-      <audio id="1">
-        <source :src="`1.mp3`" type="audio/mp3">
-      </audio>
-      <audio id="2">
-        <source :src="`2.mp3`" type="audio/mp3">
-      </audio>
-      <audio id="3">
-        <source :src="`3.mp3`" type="audio/mp3">
-      </audio>
-      <audio id="4">
-        <source :src="`4.mp3`" type="audio/mp3">
-      </audio>
-      <audio id="5">
-        <source :src="`5.mp3`" type="audio/mp3">
-      </audio>
-      <audio id="6">
-        <source :src="`6.mp3`" type="audio/mp3">
-      </audio>
-      <audio id="7">
-        <source :src="`7.mp3`" type="audio/mp3">
-      </audio>
-      <audio id="8">
-        <source :src="`8.mp3`" type="audio/mp3">
-      </audio>
-      <audio id="9">
-        <source :src="`9.mp3`" type="audio/mp3">
-      </audio>
-      <audio id="10">
-        <source :src="`10.mp3`" type="audio/mp3">
-      </audio>
-      <audio id="11">
-        <source :src="`11.mp3`" type="audio/mp3">
-      </audio>
-      <audio id="12">
-        <source :src="`12.mp3`" type="audio/mp3">
-      </audio>
-      <audio id="13">
-        <source :src="`13.mp3`" type="audio/mp3">
-      </audio>
-      <audio id="14">
-        <source :src="`14.mp3`" type="audio/mp3">
-      </audio>
-      <audio id="15">
-        <source :src="`15.mp3`" type="audio/mp3">
-      </audio>
-      <audio id="16">
-        <source :src="`16.mp3`" type="audio/mp3">
-      </audio>
-      <audio id="17">
-        <source :src="`17.mp3`" type="audio/mp3">
-      </audio>
-      <audio id="18">
-        <source :src="`18.mp3`" type="audio/mp3">
-      </audio>
-      <audio id="19">
-        <source :src="`19.mp3`" type="audio/mp3">
-      </audio>
-      <audio id="20">
-        <source :src="`20.mp3`" type="audio/mp3">
-      </audio>
-    </div>
     <h1 class="text-center">Bingo do Codando</h1>
-    <div id="globo" class="circle" @click="sortearNumero()">{{ numeroSorteado }}</div>
+    <!-- <div id="globo" class="circle" @click="sortearNumero()">{{ numeroSorteado }}</div> -->
+    <div v-if="usuario.nomeOk">
+      <div v-if="usuario.nomeUsuario == 'adm_codando' && numeroSorteado == 'Play'" id="globo" style="cursor: pointer;" class="circle" @click="sortearNumero()">{{ numeroSorteado }}</div>
+      <!-- <div v-else id="globo" class="circle">{{ numeroSorteado == 'Play' ? '?' : numeroSorteado }}</div> -->
+      <div v-else id="globo" @click="sortearNumero()" class="circle">{{ numeroSorteado == 'Play' ? '?' : numeroSorteado }}</div>
+    </div>
     <div>{{ numerosSorteados }}</div>
     <br>
-    <div id="cartela">
-      <table class="table table-bordered">
-        <tr v-for="(linha, index) in cartela" :key="linha">
-          <td v-for="(i, index2) in linha" :key="i" class="text-center" @click="marcar(i)" :id="i == 'C' ? 'codando' : ''">{{ i }}</td>
-        </tr>
-      </table>
+    <div class="d-flex" id="identificacao" v-if="!usuario.nomeOk">
+      <input class="form-control" type="text" v-model="usuario.nomeUsuario" placeholder="Digite seu nome" @keyup.enter="entrar">
+      <button class="btn btn-primary" @click="entrar()">Entrar</button>
     </div>
-    <div class="container mt-4 d-flex justify-content-center">
-      <button type="button" class="btn btn-primary">Linha</button>
-      <button type="button" class="btn btn-secondary">Bingo</button>
+    <div v-else>
+      <div v-if="usuario.nomeUsuario == 'adm_codando'">
+        <div v-for="jogador in jogadores">
+          <p>{{ jogador.nome }}</p>
+          <table class="table table-bordered">
+            <tr v-for="(linha, index) in jogador.cartela" :key="linha">
+              <td v-for="(i, index2) in linha" :key="i" class="text-center" :id="i == 'C' ? 'codando' : numerosSorteados.includes(i) ? 'marcado' : ''">{{ i }}</td>
+            </tr>
+          </table>
+        </div>
+        <!-- {{ jogadores }} -->
+      </div>
+      <div v-else>
+        <table class="table table-bordered">
+          <tr v-for="(linha, index) in cartela" :key="linha">
+            <td v-for="(i, index2) in linha" :key="i" class="text-center" @click="marcar(i)" :id="i == 'C' ? 'codando' : ''">{{ i }}</td>
+          </tr>
+        </table>
+        <div class="container mt-4 d-flex justify-content-center">
+          <button type="button" @click="linha" class="btn btn-primary">Linha</button>
+          <button type="button" @click="bingo" class="btn btn-secondary">Bingo</button>
+        </div>
+      </div>
     </div>
   </div>
 </body>
@@ -96,48 +56,58 @@
     el: '#main',
     data() {
       return {
+        usuario: {
+          nomeUsuario: '',
+          nomeOk: null
+        },
+        jogadores: [],
         numeros: [],
+        intervaloSorteio: null,
         numeroSorteado: 'Play',
         numerosSorteados: [],
         cartela: [],
         dezenas: [],
-        tocar: 1,
         channel: ''
       }
     },
     mounted() {
       this.numeros = this.setNumeros()
       this.preencherCartela()
-      // this.pegarCartela()
-    //   var pieSocket = new PieSocket({
-    //     clusterId: "demo",
-    //     apiKey: "GsH6K7U9JnRvhJ4TNmdE8MUW8Zx9uX36i1cJwlSH",
-    //     notifySelf: true
-    //  });
+
       var chatLog = document.getElementById('main')
       var piesocket = new PieSocket({
-            clusterId: "demo",
-            apiKey: "GsH6K7U9JnRvhJ4TNmdE8MUW8Zx9uX36i1cJwlSH",
-            notifySelf: true,
-            presence: true,
-            // userId: username
-        });
+        clusterId: "demo",
+        apiKey: "GsH6K7U9JnRvhJ4TNmdE8MUW8Zx9uX36i1cJwlSH",
+        notifySelf: true,
+        presence: true,
+      });
+      
+      piesocket.subscribe("chat-room").then( ch => {
+        vm = this
+        vm.channel = ch
+        vm.channel.listen('sortear_numero', function(data, meta) {
+          if (vm.numeros[data.numeroSorteado] != 'C') {
+            vm.numeroSorteado = vm.numeros.splice(data.numeroSorteado, 1)[0]
+            vm.numerosSorteados.push(vm.numeroSorteado)
+          }
+        })
 
-        var channel;
-        piesocket.subscribe("chat-room").then( ch => {
-            channel = ch;
-            this.channel = channel
-            vm = this
-            channel.listen('sortear_numero', function(data, meta) {
-              vm.numeroSorteado = vm.numeros.splice(data.numeroSorteado, 1)[0]
-              // vm.numeroSorteado = data.numeroSorteado
-              vm.numerosSorteados.push(vm.numeroSorteado)
-            })
-
-        });
+        vm.channel.listen('entrar', function(data, meta) {
+          if (data.nomeUsuario != 'adm_codando') vm.jogadores.push({
+            nome: data.nomeUsuario, cartela: data.cartela
+          })
+        })
+      });
 
     },
     methods: {
+      entrar() {
+        this.usuario.nomeOk = true
+        this.channel.publish("entrar", {
+          nomeUsuario: this.usuario.nomeUsuario,
+          cartela: this.cartela
+        });
+      },
       setNumeros() {
         let numeros = []
         for (let i = 1; i <= 75; i++) {
@@ -147,33 +117,44 @@
       },
       sortearNumero() {
         let numeroAleatorio = Math.floor(Math.random() * this.numeros.length)
-        // this.numeroSorteado = this.numeros.splice(numeroAleatorio, 1)[0]
-        // this.numerosSorteados.push(this.numeroSorteado)
-        
+
+        //teste
+        // var x = this.cartela.flat()
+        // console.log(x)
+        // let numeroAleatorio = Math.floor(Math.random() * x.length)
+
+        //TESTE
+        // if (x[numeroAleatorio] != 'C') {
+        //   this.numeroSorteado = x.splice(numeroAleatorio, 1)[0]
+        //   this.numerosSorteados.push(this.numeroSorteado)
+        // }
+
         this.channel.publish("sortear_numero", {
             // sender: username,
             numeroSorteado: numeroAleatorio
         });
         // let audio = document.getElementById(this.numeroSorteado)
         // audio.play()
-        setInterval(()=>{
-          // console.log('oi')
+        this.intervaloSorteio = setInterval(()=>{
           let numeroAleatorio = Math.floor(Math.random() * this.numeros.length)
-          // this.numeroSorteado = this.numeros.splice(numeroAleatorio, 1)[0]
-          // this.numerosSorteados.push(this.numeroSorteado)
+
+          //teste
+          // let numeroAleatorio = Math.floor(Math.random() * x.length)
+
+          //TESTE
+          // if (x[numeroAleatorio] != 'C') {
+          //   this.numeroSorteado = x.splice(numeroAleatorio, 1)[0]
+          //   this.numerosSorteados.push(this.numeroSorteado)
+          // }
+        
           this.channel.publish("sortear_numero", {
-            // sender: username,
             numeroSorteado: numeroAleatorio
         });
           // let audio = document.getElementById(this.numeroSorteado)
           // audio.play()
           }, 5000)
-        
-        // console.log(this.numerosSorteados)
-        // return this.numeros.splice(numeroAleatorio, 1)[0]
       },
       preencherCartela() {
-        // let numeros = this.setNumeros()
         let numeros = [[], [], [], [], []]
         let j = 1
         let cont = 15
@@ -184,42 +165,98 @@
           j = cont + 1
           cont += 15
         }
-        this.dezenas = numeros
-        console.log(numeros)
         let cartelas = [[], [], [], [], []]
         for (let i = 0; i < 5; i++) {
           for (let j = 0; j < 5; j++) {
             if (i == 2 && j == 2) {
               cartelas[j].push('C')  
             } else {
-              // console.log(numeros)
               cartelas[j].push(numeros[i].splice([Math.floor(Math.random() * numeros[i].length)], 1)[0])
-              // cartelas[j].push(numeros[i][Math.floor(Math.random() * numeros.length)])
             }
           }
         }
-        console.log(cartelas)
         this.cartela = cartelas
-        // return cartelas
-      },
-      pegarCartela() {
-        // const eventSource = new EventSource('https://flpserver.000webhostapp.com/api_bingo.php');
-
-        // eventSource.onmessage = function (event) {
-        //     const data = JSON.parse(event.data);
-        //     console.log('Mensagem recebida:', data.message);
-
-        //     // Implemente a lógica para atualizar a interface do usuário conforme necessário
-        // };
-        fetch('https://flpserver.000webhostapp.com/api_bingo.php?req=pegarcartela')
-        .then(response => response.text())
-        .then(data => {
-          this.cartela = JSON.parse(data)
-        })
       },
       marcar(i) {
         if (this.numerosSorteados.includes(i)) {
           event.currentTarget.id = 'marcado'
+        }
+      },
+      linha() {
+        // let horizontal = []
+        // let vertical = []
+        // let diagonal = []
+        let linhas = []
+
+        // verifiacao das linhas horizontais
+        this.cartela.forEach(linha => {
+          let validacao = true
+          linha.forEach(element => {
+            if (element != 'C' && !this.numerosSorteados.includes(element)) {
+              validacao = false
+            }
+          })
+          linhas.push(validacao)
+        });
+
+        // verificacao das linhas verticais
+        for (let i = 0; i < 5; i++) {
+          let validacao = true
+          for (let j = 0; j < 5; j++) {
+            if (this.cartela[j][i] != 'C' && !this.numerosSorteados.includes(this.cartela[j][i])) {
+              validacao = false
+            }
+          }
+          linhas.push(validacao)
+        }
+
+        // verificacao das linhas diagonal para direita
+        let validacao = true
+        for (let i = 0; i < 5; i++) {
+          if (this.cartela[i][i] != 'C' && !this.numerosSorteados.includes(this.cartela[i][i])) {
+            validacao = false
+          }
+        }
+        linhas.push(validacao)
+        
+        // verificacao das linhas diagonal para esquerda
+        validacao = true
+        for (let i = 0, j = 4; i < 5 && j >= 0; i++, j--) {
+          console.log(this.cartela[j][i])
+          if (this.cartela[j][i] != 'C' && !this.numerosSorteados.includes(this.cartela[j][i])) {
+            validacao = false
+          }
+        }
+        linhas.push(validacao)
+
+        // verifica se alguma das linhas esta completa 
+        validacao = false
+        linhas.forEach(el => {
+          if (el ==  true) {
+            validacao = el
+          }
+        })
+
+        if (validacao) {
+          alert('parabéns, você fechou uma linha')
+        } else {
+          alert('não, você ainda não completou uma linha')
+        }
+      },
+      bingo() {
+        let numeros = this.cartela.flat()
+        validacao = true
+        numeros.forEach(element => {
+          if (element != 'C' && !this.numerosSorteados.includes(element)) {
+            validacao = false
+          }
+        })
+        if (validacao) {
+          clearInterval(this.intervaloSorteio)
+          alert('parabéns, bingoooo!')
+          return
+        } else {
+          alert('não, você ainda não completou a cartela')
         }
       }
     },
@@ -264,40 +301,5 @@
     color: red; /* Cor do X */
     font-size: 18px; /* Tamanho do X */
     font-weight: bold;
-  }
-  .cilindro {
-    width: 100px;
-    height: 200px;
-    background: linear-gradient(rgba(255, 255, 255, 0.7), rgba(255, 255, 255, 0.7)),
-                radial-gradient(circle closest-side, #3498db, #2980b9);
-    border-radius: 50%;
-    position: relative;
-  }
-
-  .circulo {
-    width: 50px;
-    height: 50px;
-    background-color: #e74c3c;
-    border-radius: 50%;
-    position: absolute;
-    left: 50%;
-    top: 50%;
-    transform: translate(-50%, -50%);
-  }
-
-  .circulo:nth-child(2) {
-    top: 30%;
-  }
-
-  .circulo:nth-child(3) {
-    top: 60%;
-  }
-
-  .circulo:nth-child(4) {
-    top: 90%;
-  }
-
-  .circulo:nth-child(5) {
-    top: 120%;
   }
 </style>
