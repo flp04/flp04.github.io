@@ -44,7 +44,9 @@ function palavraSecreta() {
 // fetch('http://127.0.0.1:5000/palavraSecreta')
 // .then(response => response.json())
 // .then(data => {
+  console.log('entrou')
   var data = palavraSecreta();
+  console.log('criou a palavra')
   document.getElementById('dica').textContent = data.dica
   let palavra = data.palavra
   let palavraFormada = []
