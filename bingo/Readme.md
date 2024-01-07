@@ -21,6 +21,7 @@ Requisitos não funcionais
 - Uma notificação de que o sistema tem fins recreativos, frente a proibição da exploração do bingo como jogo de azar
 
 Histórias de usuario
+Como administrador, eu preciso me autenticar
 Como administrador, eu quero poder iniciar o jogo
 Como administrador, eu quero poder visualizar os jogadores
 Como administrador, eu quero poder validar as vitórias (de linhas e bingo)

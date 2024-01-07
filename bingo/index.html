@@ -12,39 +12,41 @@
 <body>
   <div id="main" class="container mt-2">
     <h1 class="text-center">Bingo do Codando</h1>
-    <!-- <div id="globo" class="circle" @click="sortearNumero()">{{ numeroSorteado }}</div> -->
     <div v-if="usuario.nomeOk">
+      <h3 v-if="numeroSorteado == 'Play'">Olá {{ usuario.nomeUsuario }}! Aguarde o sorteio...</h3>
       <div v-if="usuario.nomeUsuario == 'adm_codando' && numeroSorteado == 'Play'" id="globo" style="cursor: pointer;" class="circle" @click="sortearNumero()">{{ numeroSorteado }}</div>
-      <!-- <div v-else id="globo" class="circle">{{ numeroSorteado == 'Play' ? '?' : numeroSorteado }}</div> -->
       <div v-else id="globo" @click="sortearNumero()" class="circle">{{ numeroSorteado == 'Play' ? '?' : numeroSorteado }}</div>
     </div>
     <div>{{ numerosSorteados }}</div>
     <br>
     <div class="d-flex" id="identificacao" v-if="!usuario.nomeOk">
-      <input class="form-control" type="text" v-model="usuario.nomeUsuario" placeholder="Digite seu nome" @keyup.enter="entrar">
-      <button class="btn btn-primary" @click="entrar()">Entrar</button>
+      <input class="form-control" type="text" ref="inputNome" placeholder="Digite seu nome" @keyup.enter="entrar($refs.inputNome.value)">
+      <button class="btn btn-primary" @click="entrar($refs.inputNome.value)">Entrar</button>
     </div>
     <div v-else>
       <div v-if="usuario.nomeUsuario == 'adm_codando'">
         <div v-for="jogador in jogadores">
           <p>{{ jogador.nome }}</p>
           <table class="table table-bordered">
-            <tr v-for="(linha, index) in jogador.cartela" :key="linha">
-              <td v-for="(i, index2) in linha" :key="i" class="text-center" :id="i == 'C' ? 'codando' : numerosSorteados.includes(i) ? 'marcado' : ''">{{ i }}</td>
+            <tr v-for="linha in jogador.cartela" :key="linha">
+              <td v-for="i in linha" :key="i" class="text-center" :id="i == 'C' ? 'codando' : numerosSorteados.includes(i) ? 'marcado' : ''">{{ i }}</td>
             </tr>
           </table>
         </div>
-        <!-- {{ jogadores }} -->
       </div>
       <div v-else>
         <table class="table table-bordered">
-          <tr v-for="(linha, index) in cartela" :key="linha">
-            <td v-for="(i, index2) in linha" :key="i" class="text-center" @click="marcar(i)" :id="i == 'C' ? 'codando' : ''">{{ i }}</td>
+          <tr v-for="linha in usuario.cartela" :key="linha">
+            <td v-for="i in linha" :key="i" class="text-center" @click="marcar(i)" :id="i == 'C' ? 'codando' : ''">{{ i }}</td>
           </tr>
         </table>
-        <div class="container mt-4 d-flex justify-content-center">
-          <button type="button" @click="linha" class="btn btn-primary">Linha</button>
-          <button type="button" @click="bingo" class="btn btn-secondary">Bingo</button>
+        <div class="row">
+          <div class="col-sm-6 text-center">
+            <button type="button" @click="linha" class="btn btn-primary">Linha</button>
+          </div>
+          <div class="col-sm-6 text-center">
+            <button type="button" @click="bingo" class="btn btn-secondary">Bingo</button>
+          </div>
         </div>
       </div>
     </div>
@@ -52,61 +54,172 @@
 </body>
 </html>
 <script>
+  class Usuario {
+    constructor (nome) {
+      this.nomeUsuario = nome
+      this.nomeOk = true
+      this.cartela = this.preencherCartela()
+    }
+    preencherCartela() {
+      // cria uma matriz com cinco listas de números, do primeiro ao décimo quinto, de forma consecutiva
+      let numeros = [[], [], [], [], []]
+      let j = 1
+      let cont = 15
+      for (let i = 0; i < 5; i++) {
+        for (j; j <= cont; j++) {
+          numeros[i].push(j)
+        }
+        j = cont + 1
+        cont += 15
+      }
+      // cria uma matriz de cinco linhas
+      let cartela = [[], [], [], [], []]
+      for (let i = 0; i < 5; i++) {
+        for (let j = 0; j < 5; j++) {
+          if (i == 2 && j == 2) {
+            cartela[j].push('C')  
+          } else {
+            cartela[j].push(numeros[i].splice([Math.floor(Math.random() * numeros[i].length)], 1)[0])
+          }
+        }
+      }
+      return cartela
+    }
+  }
+  class ApiPieSocket {
+    constructor () {
+      this.numeroSorteado = ''
+      this.piesocket = new PieSocket({
+        clusterId: "demo",
+        apiKey: "GsH6K7U9JnRvhJ4TNmdE8MUW8Zx9uX36i1cJwlSH",
+        notifySelf: true,
+        presence: true,
+      })
+      
+      this.piesocket.subscribe("chat-room").then( ch => {
+        let vm = this
+        vm.channel = ch
+        vm.channel.listen('sortear_numero', function(data, meta) {
+          return data.numeroSorteado
+        })
+
+        vm.channel.listen('entrar', function(data, meta) {
+          console.log(data)
+          // if (data.nomeUsuario != 'adm_codando') {
+          //   data.jogadores.push({
+          //     nome: data.nomeUsuario, cartela: data.cartela
+          //   })
+          // } else {
+          //   data.jogadores = data.jogadores
+          // }
+        })
+      })
+    }
+    publicarSorteio(numeroSorteado) {
+      this.channel.publish("sortear_numero", {
+        numeroSorteado: numeroSorteado
+      });
+    }
+    atualizarJogadores(usuario, jogadores) {
+      this.channel.publish("entrar", {
+        nomeUsuario: usuario.nomeUsuario,
+        cartela: usuario.cartela
+      })
+    }
+  }
+  class Bingo {
+    constructor() {
+      this.globo = this.setNumeros()
+      this.jogadores = []
+    }
+    setNumeros() {
+      let numeros = []
+      for (let i = 1; i <= 75; i++) {
+        numeros.push(i)
+      }
+      return numeros
+    }
+    setJogadores(jogador) {
+      this.jogadores.push(jogador)
+    }
+    sortearNumero() {
+      let numeroAleatorio = Math.floor(Math.random() * this.globo.length)
+      return this.globo.splice(numeroAleatorio, 1)[0]
+    }
+  }
   var vmSidebar = new Vue({
     el: '#main',
     data() {
       return {
-        usuario: {
-          nomeUsuario: '',
-          nomeOk: null
-        },
+        // usuario: {
+        //   nomeUsuario: '',
+        //   nomeOk: null
+        // },
+        jogo: {},
+        inputNome: '',
+        usuario: '',
         jogadores: [],
         numeros: [],
         intervaloSorteio: null,
         numeroSorteado: 'Play',
         numerosSorteados: [],
         cartela: [],
-        dezenas: [],
-        channel: ''
+        channel: '',
+        webSocketApi: new ApiPieSocket()
       }
     },
     mounted() {
+      // console.log(this.jogo)
+      // this.usuario.nome = 'Filipe', this.usuario.nomeOk = true
+      // teste
+      // this.usuario = new Usuario('adm_codando')
+      this.jogo = new Bingo()
       this.numeros = this.setNumeros()
-      this.preencherCartela()
+      // this.preencherCartela()
+      // console.log(this.usuario)
+      // this.cartela = this.usuario.cartela
 
-      var chatLog = document.getElementById('main')
       var piesocket = new PieSocket({
         clusterId: "demo",
         apiKey: "GsH6K7U9JnRvhJ4TNmdE8MUW8Zx9uX36i1cJwlSH",
         notifySelf: true,
         presence: true,
-      });
+      })
       
       piesocket.subscribe("chat-room").then( ch => {
         vm = this
         vm.channel = ch
         vm.channel.listen('sortear_numero', function(data, meta) {
           if (vm.numeros[data.numeroSorteado] != 'C') {
-            vm.numeroSorteado = vm.numeros.splice(data.numeroSorteado, 1)[0]
+            // vm.numeroSorteado = vm.numeros.splice(data.numeroSorteado, 1)[0]
+            vm.numeroSorteado = data.numeroSorteado
             vm.numerosSorteados.push(vm.numeroSorteado)
           }
         })
 
         vm.channel.listen('entrar', function(data, meta) {
-          if (data.nomeUsuario != 'adm_codando') vm.jogadores.push({
-            nome: data.nomeUsuario, cartela: data.cartela
-          })
+          if (data.nomeUsuario != 'adm_codando') {
+            vm.jogadores.push({
+              nome: data.nomeUsuario, cartela: data.cartela
+            })
+            vm.bingo
+          } else {
+            vm.jogadores = vm.jogadores
+          }
         })
       });
-
     },
     methods: {
-      entrar() {
-        this.usuario.nomeOk = true
+      entrar(nome) {
+        this.usuario = new Usuario(nome)
+        // this.jogo.
+        // this.usuario = new Usuario(this.inputNome)
+        // this.usuario.nomeOk = true
         this.channel.publish("entrar", {
           nomeUsuario: this.usuario.nomeUsuario,
-          cartela: this.cartela
-        });
+          cartela: this.usuario.cartela
+        })
+        this.webSocketApi.atualizarJogadores(this.usuario, this.bingo.jogadores)
       },
       setNumeros() {
         let numeros = []
@@ -116,9 +229,25 @@
         return numeros
       },
       sortearNumero() {
-        let numeroAleatorio = Math.floor(Math.random() * this.numeros.length)
+        let numeroSorteado = this.jogo.sortearNumero()
+        this.webSocketApi.publicarSorteio(numeroSorteado)
+        // let audio = document.getElementById(this.numeroSorteado)
+        // audio.play()
+        this.intervaloSorteio = setInterval(()=>{
+          if (this.jogo.globo.length > 0) {
+            let numeroSorteado = this.jogo.sortearNumero()
+            this.webSocketApi.publicarSorteio(numeroSorteado)
+          } else {
+            clearInterval(this.intervaloSorteio)
+          }
+          // this.publicarSorteio(this.jogo.sortearNumero())
+          // let audio = document.getElementById(this.numeroSorteado)
+          // audio.play()
+        }, 5000)
+        // //teste
+        // }, 100)
 
-        //teste
+          //teste
         // var x = this.cartela.flat()
         // console.log(x)
         // let numeroAleatorio = Math.floor(Math.random() * x.length)
@@ -129,15 +258,6 @@
         //   this.numerosSorteados.push(this.numeroSorteado)
         // }
 
-        this.channel.publish("sortear_numero", {
-            // sender: username,
-            numeroSorteado: numeroAleatorio
-        });
-        // let audio = document.getElementById(this.numeroSorteado)
-        // audio.play()
-        this.intervaloSorteio = setInterval(()=>{
-          let numeroAleatorio = Math.floor(Math.random() * this.numeros.length)
-
           //teste
           // let numeroAleatorio = Math.floor(Math.random() * x.length)
 
@@ -146,15 +266,17 @@
           //   this.numeroSorteado = x.splice(numeroAleatorio, 1)[0]
           //   this.numerosSorteados.push(this.numeroSorteado)
           // }
-        
-          this.channel.publish("sortear_numero", {
-            numeroSorteado: numeroAleatorio
-        });
           // let audio = document.getElementById(this.numeroSorteado)
           // audio.play()
-          }, 5000)
+
+      },
+      publicarSorteio(numeroAleatorio) {
+        this.channel.publish("sortear_numero", {
+            numeroSorteado: numeroAleatorio
+        });
       },
       preencherCartela() {
+        // cria uma matriz com cinco listas de números, do primeiro ao décimo quinto, de forma consecutiva
         let numeros = [[], [], [], [], []]
         let j = 1
         let cont = 15
@@ -165,6 +287,7 @@
           j = cont + 1
           cont += 15
         }
+        // cria uma matriz de cinco linhas
         let cartelas = [[], [], [], [], []]
         for (let i = 0; i < 5; i++) {
           for (let j = 0; j < 5; j++) {
@@ -189,7 +312,8 @@
         let linhas = []
 
         // verifiacao das linhas horizontais
-        this.cartela.forEach(linha => {
+        this.usuario.cartela.forEach(linha => {
+        // this.cartela.forEach(linha => {
           let validacao = true
           linha.forEach(element => {
             if (element != 'C' && !this.numerosSorteados.includes(element)) {
@@ -203,7 +327,7 @@
         for (let i = 0; i < 5; i++) {
           let validacao = true
           for (let j = 0; j < 5; j++) {
-            if (this.cartela[j][i] != 'C' && !this.numerosSorteados.includes(this.cartela[j][i])) {
+            if (this.usuario.cartela[j][i] != 'C' && !this.numerosSorteados.includes(this.usuario.cartela[j][i])) {
               validacao = false
             }
           }
@@ -213,7 +337,7 @@
         // verificacao das linhas diagonal para direita
         let validacao = true
         for (let i = 0; i < 5; i++) {
-          if (this.cartela[i][i] != 'C' && !this.numerosSorteados.includes(this.cartela[i][i])) {
+          if (this.usuario.cartela[i][i] != 'C' && !this.numerosSorteados.includes(this.usuario.cartela[i][i])) {
             validacao = false
           }
         }
@@ -222,8 +346,8 @@
         // verificacao das linhas diagonal para esquerda
         validacao = true
         for (let i = 0, j = 4; i < 5 && j >= 0; i++, j--) {
-          console.log(this.cartela[j][i])
-          if (this.cartela[j][i] != 'C' && !this.numerosSorteados.includes(this.cartela[j][i])) {
+          console.log(this.usuario.cartela[j][i])
+          if (this.usuario.cartela[j][i] != 'C' && !this.numerosSorteados.includes(this.usuario.cartela[j][i])) {
             validacao = false
           }
         }
@@ -244,7 +368,7 @@
         }
       },
       bingo() {
-        let numeros = this.cartela.flat()
+        let numeros = this.usuario.cartela.flat()
         validacao = true
         numeros.forEach(element => {
           if (element != 'C' && !this.numerosSorteados.includes(element)) {
