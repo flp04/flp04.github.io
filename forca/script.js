@@ -29,7 +29,10 @@ function palavraSecreta() {
     ]
   };
 
-  document.getElementById('inputTeclado').focus()
+  setTimeout(() => {
+    console.log('oi')
+    document.getElementById('inputTeclado').focus()
+  }, 100);
 
   var dicas = Object.keys(palavras);
   var dicaEscolhida = dicas[Math.floor(Math.random() * dicas.length)];
