@@ -1,7 +1,50 @@
+function palavraSecreta() {
+  var palavras = {
+    'Animal': [
+      'Gato',
+      'Tigre',
+      'Cachorro',
+      'Rato',
+      'Golfinho',
+      'Macaco',
+      'Gaivota',
+    ],
+    'Cor': [
+      'Amarelo',
+      'Azul',
+      'Vermelho',
+      'Verde',
+      'Laranja',
+      'Vermelho',
+      'Rosa',
+    ],
+    'Frutas': [
+      'Abacaxi',
+      'Banana',
+      'Melancia',
+      'Ameixa',
+      'Kiwi',
+      'Maracuja',
+      'Pessego'
+    ]
+  };
+
+  var dicas = Object.keys(palavras);
+  var dicaEscolhida = dicas[Math.floor(Math.random() * dicas.length)];
+
+  var palavrasDaDica = palavras[dicaEscolhida];
+  var palavraEscolhida = palavrasDaDica[Math.floor(Math.random() * palavrasDaDica.length)];
+
+  return { dica: dicaEscolhida, palavra: palavraEscolhida };
+}
+
+// Exemplo de uso
+
 // document.getElementById('inputTeclado').focus()
-fetch('http://127.0.0.1:5000/palavraSecreta')
-.then(response => response.json())
-.then(data => {
+// fetch('http://127.0.0.1:5000/palavraSecreta')
+// .then(response => response.json())
+// .then(data => {
+  var data = palavraSecreta();
   document.getElementById('dica').textContent = data.dica
   let palavra = data.palavra
   let palavraFormada = []
@@ -45,4 +88,4 @@ fetch('http://127.0.0.1:5000/palavraSecreta')
       }
     }
   })
-})
+// })
