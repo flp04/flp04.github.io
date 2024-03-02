@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="stylesheet" href="style.css">
+  <title>CG - Triangulo e Transformações</title>
+</head>
+<body>
+  <div>
+    <h3>CG - Triangulo e Transformações</h3>
+    <div class="ponto">
+      <span>A: </span>
+      <label for="">( x <input id="p1-x" type="number" value="0">, </label>
+      <label for="">y <input id="p1-y" type="number" value="0"> )</label>
+    </div>
+    <div class="ponto">
+      <!-- <label for="">Ponto 2</label> -->
+      <span>B: </span>
+      <label for="">( x <input id="p2-x" type="number" value="0">, </label>
+      <label for="">y <input id="p2-y" type="number" value="0"> )</label>
+    </div>
+    <div class="ponto">
+      <!-- <label for="">Ponto 3</label> -->
+      <span>C: </span>
+      <label for="">( x <input id="p3-x" type="number" value="0">, </label>
+      <label for="">y <input id="p3-y" type="number" value="0"> )</label>
+    </div>
+    <div class="botoes">
+      <button onclick="criar()">Criar</button>
+      <button onclick="escalar()">Escala</button>
+      <button onclick="transladar()">Translação</button>
+    </div>
+  </div>
+  <div class="canvas">
+    <canvas id="canvas" width="300" height="300"></canvas>
+  </div>
+  <script src="script.js"></script>
+</body>
+</html>

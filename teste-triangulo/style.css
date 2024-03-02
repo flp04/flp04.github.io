@@ -1,0 +1,35 @@
+input {
+  width: 40px;
+  border-radius: 5px;
+  text-align: center;
+}
+
+button {
+  border-radius: 5px;
+  margin: 5px;
+  padding: 5px;
+  background-color: cornflowerblue;
+  color: white;
+}
+
+.ponto {
+  text-align: center;
+  margin: 5px;
+}
+
+.botoes {
+  text-align: center;
+}
+
+.canvas {
+  text-align: center;
+  margin-top: 5px;
+}
+
+canvas {
+  border: solid black 1px;
+}
+
+h3 {
+  text-align: center;
+}
