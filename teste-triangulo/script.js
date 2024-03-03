@@ -1,3 +1,5 @@
+var controle = false
+
 class Ponto {
   constructor(x, y) {
     this.x = parseFloat(x);
@@ -11,20 +13,20 @@ class Ponto {
 
   transladar(valor, sentido) {
     switch (sentido) {
-      case '0': 
+      case 'direita': 
         this.x += valor
         break
-      case '1': 
+      case 'esquerda': 
         this.x -= valor
         break
-      case '2':
+      case 'cima':
         this.y -= valor
         break
-      case '3': 
+      case 'baixo': 
         this.y += valor    
         break
       default:
-        console.log('uai')
+        console.log(valor, sentido)
     }
   }
 }
@@ -45,19 +47,24 @@ isTriangulo() {
 }
 
 function criar () {
-let p1 = new Ponto(document.getElementById('p1-x').value, document.getElementById('p1-y').value)
-let p2 = new Ponto(document.getElementById('p2-x').value, document.getElementById('p2-y').value)
-let p3 = new Ponto(document.getElementById('p3-x').value, document.getElementById('p3-y').value)
-const triangulo = new Triangulo(p1, p2, p3);
-if (triangulo.isTriangulo()) {
-  draw(p1, p2, p3);
-} else {
-  alert('Estas cordenadas não formam um triangulo')
-}
+  let p1 = new Ponto(document.getElementById('p1-x').value, document.getElementById('p1-y').value)
+  let p2 = new Ponto(document.getElementById('p2-x').value, document.getElementById('p2-y').value)
+  let p3 = new Ponto(document.getElementById('p3-x').value, document.getElementById('p3-y').value)
+  const triangulo = new Triangulo(p1, p2, p3);
+  if (triangulo.isTriangulo()) {
+    draw(p1, p2, p3);
+    document.getElementById('escala').removeAttribute('hidden')
+    document.getElementById('translacao').removeAttribute('hidden')
+  } else {
+    alert('Estas cordenadas não formam um triangulo')
+  }
 }
 
 function escalar () {
-  let escala = parseFloat(prompt('Informe o número para escalar'))
+  // let escala = parseFloat(prompt('Informe o número para escalar'))
+  let escala = parseFloat(document.getElementById('valor-escala').value)
+  // let escala = document.getElementById('escala').value
+  // return console.log(escala)
   let p1 = new Ponto(document.getElementById('p1-x').value, document.getElementById('p1-y').value)
   let p2 = new Ponto(document.getElementById('p2-x').value, document.getElementById('p2-y').value)
   let p3 = new Ponto(document.getElementById('p3-x').value, document.getElementById('p3-y').value)
@@ -73,47 +80,59 @@ function escalar () {
   draw(p1, p2, p3)
 }
 
-function transladar () {
-  let options = [
-    'direita',
-    'esquerda',
-    'cima',
-    'baixo',
-  ]
-  let selectedOption;
-  Swal.fire({
-    title: 'Selecione a direçã da translação',
-    input: 'select',
-    inputOptions: options,
-    inputPlaceholder: 'Selecione',
-    showCancelButton: true,
-    inputValidator: (value) => {
-      if (!value) {
-        return 'Você precisa selecionar uma opção';
-      }
-    }
-  }).then((result) => {
-    if (result.isConfirmed) {
-      selectedOption = result.value;
-      let valor = parseFloat(prompt('Informe o número para escalar'))
-      let p1 = new Ponto(document.getElementById('p1-x').value, document.getElementById('p1-y').value)
-      let p2 = new Ponto(document.getElementById('p2-x').value, document.getElementById('p2-y').value)
-      let p3 = new Ponto(document.getElementById('p3-x').value, document.getElementById('p3-y').value)
-      p1.transladar(valor, selectedOption)
-      p2.transladar(valor, selectedOption)
-      p3.transladar(valor, selectedOption)
-      document.getElementById('p1-x').value = p1.x
-      document.getElementById('p1-y').value = p1.y
-      document.getElementById('p2-x').value = p2.x
-      document.getElementById('p2-y').value = p2.y
-      document.getElementById('p3-x').value = p3.x
-      document.getElementById('p3-y').value = p3.y
-      draw(p1, p2, p3)
-      console.log('Opção selecionada:', selectedOption);
-    }
-  })
-  
-
+function transladar (direcao) {
+  // let options = [
+  //   'direita',
+  //   'esquerda',
+  //   'cima',
+  //   'baixo',
+  // ]
+  // let selectedOption;
+  // Swal.fire({
+  //   title: 'Selecione a direção da translação',
+  //   input: 'select',
+  //   inputOptions: options,
+  //   inputPlaceholder: 'Selecione',
+  //   showCancelButton: true,
+  //   inputValidator: (value) => {
+  //     if (!value) {
+  //       return 'Você precisa selecionar uma opção';
+  //     }
+  //   }
+  // }).then((result) => {
+  //   if (result.isConfirmed) {
+  //     selectedOption = result.value;
+  //     let valor = parseFloat(prompt('Informe o número para transladar'))
+  //     let p1 = new Ponto(document.getElementById('p1-x').value, document.getElementById('p1-y').value)
+  //     let p2 = new Ponto(document.getElementById('p2-x').value, document.getElementById('p2-y').value)
+  //     let p3 = new Ponto(document.getElementById('p3-x').value, document.getElementById('p3-y').value)
+  //     p1.transladar(valor, selectedOption)
+  //     p2.transladar(valor, selectedOption)
+  //     p3.transladar(valor, selectedOption)
+  //     document.getElementById('p1-x').value = p1.x
+  //     document.getElementById('p1-y').value = p1.y
+  //     document.getElementById('p2-x').value = p2.x
+  //     document.getElementById('p2-y').value = p2.y
+  //     document.getElementById('p3-x').value = p3.x
+  //     document.getElementById('p3-y').value = p3.y
+  //     draw(p1, p2, p3)
+  //     console.log('Opção selecionada:', selectedOption);
+  //   }
+  // })
+    let valor = parseFloat(document.getElementById('valor-translacao').value)
+    let p1 = new Ponto(document.getElementById('p1-x').value, document.getElementById('p1-y').value)
+    let p2 = new Ponto(document.getElementById('p2-x').value, document.getElementById('p2-y').value)
+    let p3 = new Ponto(document.getElementById('p3-x').value, document.getElementById('p3-y').value)
+    p1.transladar(valor, direcao)
+    p2.transladar(valor, direcao)
+    p3.transladar(valor, direcao)
+    document.getElementById('p1-x').value = p1.x
+    document.getElementById('p1-y').value = p1.y
+    document.getElementById('p2-x').value = p2.x
+    document.getElementById('p2-y').value = p2.y
+    document.getElementById('p3-x').value = p3.x
+    document.getElementById('p3-y').value = p3.y
+    draw(p1, p2, p3)
   }
 
 function draw(p1, p2, p3) {
@@ -129,4 +148,39 @@ function draw(p1, p2, p3) {
 
     ctx.fill();
   }
+}
+
+
+// triangulo de teste
+document.getElementById('p1-x').value = 50
+document.getElementById('p1-y').value = 0
+document.getElementById('p2-x').value = 0
+document.getElementById('p2-y').value = 50
+document.getElementById('p3-x').value = 50
+document.getElementById('p3-y').value = 50
+let p1 = new Ponto(document.getElementById('p1-x').value, document.getElementById('p1-y').value)
+let p2 = new Ponto(document.getElementById('p2-x').value, document.getElementById('p2-y').value)
+let p3 = new Ponto(document.getElementById('p3-x').value, document.getElementById('p3-y').value)
+const triangulo = new Triangulo(p1, p2, p3);
+if (triangulo.isTriangulo()) {
+  draw(p1, p2, p3);
+  document.getElementById('escala').removeAttribute('hidden')
+  document.getElementById('translacao').removeAttribute('hidden')
+} else {
+  alert('Estas cordenadas não formam um triangulo')
+}
+
+function segurando() {
+  botao = document.getElementById('botao-cima').style.color = 'blue'
+  controle = true
+  // botao.s
+  console.log('segurou')
+  controle = true
+}
+
+function soltou() {
+  botao = document.getElementById('botao-cima').style.color = 'black'
+  controle = false
+  console.log('soltou')
+  controle = false
 }
