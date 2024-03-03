@@ -152,23 +152,23 @@ function draw(p1, p2, p3) {
 
 
 // triangulo de teste
-document.getElementById('p1-x').value = 50
-document.getElementById('p1-y').value = 0
-document.getElementById('p2-x').value = 0
-document.getElementById('p2-y').value = 50
-document.getElementById('p3-x').value = 50
-document.getElementById('p3-y').value = 50
-let p1 = new Ponto(document.getElementById('p1-x').value, document.getElementById('p1-y').value)
-let p2 = new Ponto(document.getElementById('p2-x').value, document.getElementById('p2-y').value)
-let p3 = new Ponto(document.getElementById('p3-x').value, document.getElementById('p3-y').value)
-const triangulo = new Triangulo(p1, p2, p3);
-if (triangulo.isTriangulo()) {
-  draw(p1, p2, p3);
-  document.getElementById('escala').removeAttribute('hidden')
-  document.getElementById('translacao').removeAttribute('hidden')
-} else {
-  alert('Estas cordenadas não formam um triangulo')
-}
+// document.getElementById('p1-x').value = 50
+// document.getElementById('p1-y').value = 0
+// document.getElementById('p2-x').value = 0
+// document.getElementById('p2-y').value = 50
+// document.getElementById('p3-x').value = 50
+// document.getElementById('p3-y').value = 50
+// let p1 = new Ponto(document.getElementById('p1-x').value, document.getElementById('p1-y').value)
+// let p2 = new Ponto(document.getElementById('p2-x').value, document.getElementById('p2-y').value)
+// let p3 = new Ponto(document.getElementById('p3-x').value, document.getElementById('p3-y').value)
+// const triangulo = new Triangulo(p1, p2, p3);
+// if (triangulo.isTriangulo()) {
+//   draw(p1, p2, p3);
+//   document.getElementById('escala').removeAttribute('hidden')
+//   document.getElementById('translacao').removeAttribute('hidden')
+// } else {
+//   alert('Estas cordenadas não formam um triangulo')
+// }
 
 function segurando() {
   botao = document.getElementById('botao-cima').style.color = 'blue'
