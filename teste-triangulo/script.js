@@ -60,6 +60,20 @@ function criar () {
   }
 }
 
+function apagar () {
+  let p1 = new Ponto(0, 0)
+  let p2 = new Ponto(0, 0)
+  let p3 = new Ponto(0, 0)
+  draw(p1, p2, p3);
+  document.getElementById('escala').removeAttribute('hidden')
+  document.getElementById('translacao').removeAttribute('hidden')
+  // const triangulo = new Triangulo(p1, p2, p3);
+  // if (triangulo.isTriangulo()) {
+  // } else {
+  //   alert('Estas cordenadas não formam um triangulo')
+  // }
+}
+
 function escalar () {
   // let escala = parseFloat(prompt('Informe o número para escalar'))
   let escala = parseFloat(document.getElementById('valor-escala').value)
@@ -150,6 +164,22 @@ function draw(p1, p2, p3) {
   }
 }
 
+let i = 1
+const canvas = document.getElementById("canvas")
+canvas.addEventListener('click', function(event) {
+  const rect = canvas.getBoundingClientRect(); // Obtém o tamanho e a posição do canvas na página
+  const x = event.clientX - rect.left; // Obtém a posição X do clique em relação ao canvas
+  const y = event.clientY - rect.top; // Obtém a posição Y do clique em relação ao canvas
+  document.getElementById(`p${i}-x`).value = x
+  document.getElementById(`p${i}-y`).value = y
+  if (i >= 3) {
+    i = 1
+  } else {
+    i++
+  }
+  // i = i >= 3 ? 0 : i++
+  console.log(i)
+})
 
 // triangulo de teste
 // document.getElementById('p1-x').value = 50
@@ -184,3 +214,16 @@ function soltou() {
   console.log('soltou')
   controle = false
 }
+
+
+document.addEventListener('keydown', function(event) {
+  if (event.key === "ArrowUp") {
+    transladar('cima')
+  } else if (event.key === "ArrowDown") {
+    transladar('baixo')
+  } else if (event.key === "ArrowLeft") {
+    transladar('esquerda')
+  } else if (event.key === "ArrowRight") {
+    transladar('direita')
+  }
+})
