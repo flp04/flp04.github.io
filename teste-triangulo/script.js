@@ -9,9 +9,23 @@ class Ponto {
     this.y *= valor
   }
 
-  transladar(valor) {
-    this.x += valor
-    this.y += valor
+  transladar(valor, sentido) {
+    switch (sentido) {
+      case '0': 
+        this.x += valor
+        break
+      case '1': 
+        this.x -= valor
+        break
+      case '2':
+        this.y -= valor
+        break
+      case '3': 
+        this.y += valor    
+        break
+      default:
+        console.log('uai')
+    }
   }
 }
 
@@ -43,50 +57,76 @@ if (triangulo.isTriangulo()) {
 }
 
 function escalar () {
-let escala = parseFloat(prompt('Informe o número para escalar'))
-let p1 = new Ponto(document.getElementById('p1-x').value, document.getElementById('p1-y').value)
-let p2 = new Ponto(document.getElementById('p2-x').value, document.getElementById('p2-y').value)
-let p3 = new Ponto(document.getElementById('p3-x').value, document.getElementById('p3-y').value)
-p1.escalar(escala)
-p2.escalar(escala)
-p3.escalar(escala)
-document.getElementById('p1-x').value = p1.x
-document.getElementById('p1-y').value = p1.y
-document.getElementById('p2-x').value = p2.x
-document.getElementById('p2-y').value = p2.y
-document.getElementById('p3-x').value = p3.x
-document.getElementById('p3-y').value = p3.y
-draw(p1, p2, p3)
+  let escala = parseFloat(prompt('Informe o número para escalar'))
+  let p1 = new Ponto(document.getElementById('p1-x').value, document.getElementById('p1-y').value)
+  let p2 = new Ponto(document.getElementById('p2-x').value, document.getElementById('p2-y').value)
+  let p3 = new Ponto(document.getElementById('p3-x').value, document.getElementById('p3-y').value)
+  p1.escalar(escala)
+  p2.escalar(escala)
+  p3.escalar(escala)
+  document.getElementById('p1-x').value = p1.x
+  document.getElementById('p1-y').value = p1.y
+  document.getElementById('p2-x').value = p2.x
+  document.getElementById('p2-y').value = p2.y
+  document.getElementById('p3-x').value = p3.x
+  document.getElementById('p3-y').value = p3.y
+  draw(p1, p2, p3)
 }
 
 function transladar () {
-let valor = parseFloat(prompt('Informe o número para escalar'))
-let p1 = new Ponto(document.getElementById('p1-x').value, document.getElementById('p1-y').value)
-let p2 = new Ponto(document.getElementById('p2-x').value, document.getElementById('p2-y').value)
-let p3 = new Ponto(document.getElementById('p3-x').value, document.getElementById('p3-y').value)
-p1.transladar(valor)
-p2.transladar(valor)
-p3.transladar(valor)
-document.getElementById('p1-x').value = p1.x
-document.getElementById('p1-y').value = p1.y
-document.getElementById('p2-x').value = p2.x
-document.getElementById('p2-y').value = p2.y
-document.getElementById('p3-x').value = p3.x
-document.getElementById('p3-y').value = p3.y
-draw(p1, p2, p3)
-}
+  let options = [
+    'direita',
+    'esquerda',
+    'cima',
+    'baixo',
+  ]
+  let selectedOption;
+  Swal.fire({
+    title: 'Selecione a direçã da translação',
+    input: 'select',
+    inputOptions: options,
+    inputPlaceholder: 'Selecione',
+    showCancelButton: true,
+    inputValidator: (value) => {
+      if (!value) {
+        return 'Você precisa selecionar uma opção';
+      }
+    }
+  }).then((result) => {
+    if (result.isConfirmed) {
+      selectedOption = result.value;
+      let valor = parseFloat(prompt('Informe o número para escalar'))
+      let p1 = new Ponto(document.getElementById('p1-x').value, document.getElementById('p1-y').value)
+      let p2 = new Ponto(document.getElementById('p2-x').value, document.getElementById('p2-y').value)
+      let p3 = new Ponto(document.getElementById('p3-x').value, document.getElementById('p3-y').value)
+      p1.transladar(valor, selectedOption)
+      p2.transladar(valor, selectedOption)
+      p3.transladar(valor, selectedOption)
+      document.getElementById('p1-x').value = p1.x
+      document.getElementById('p1-y').value = p1.y
+      document.getElementById('p2-x').value = p2.x
+      document.getElementById('p2-y').value = p2.y
+      document.getElementById('p3-x').value = p3.x
+      document.getElementById('p3-y').value = p3.y
+      draw(p1, p2, p3)
+      console.log('Opção selecionada:', selectedOption);
+    }
+  })
+  
+
+  }
 
 function draw(p1, p2, p3) {
-const canvas = document.getElementById("canvas");
-if (canvas.getContext) {
-  const ctx = canvas.getContext("2d");
-  ctx.clearRect(0, 0, canvas.width, canvas.height);
+  const canvas = document.getElementById("canvas");
+  if (canvas.getContext) {
+    const ctx = canvas.getContext("2d");
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
 
-  ctx.beginPath();
-  ctx.moveTo(p1.x, p1.y);
-  ctx.lineTo(p2.x, p2.y);
-  ctx.lineTo(p3.x, p3.y);
+    ctx.beginPath();
+    ctx.moveTo(p1.x, p1.y);
+    ctx.lineTo(p2.x, p2.y);
+    ctx.lineTo(p3.x, p3.y);
 
-  ctx.fill();
-}
+    ctx.fill();
+  }
 }
