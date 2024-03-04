@@ -54,3 +54,7 @@ h3 {
   vertical-align: top; /* Alinha as divs pela parte superior */
   /* Adicione outros estilos conforme necessário */
 }
+
+.observacoes {
+  text-align: center;
+}

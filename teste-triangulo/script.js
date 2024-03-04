@@ -33,18 +33,29 @@ class Ponto {
 }
 
 class Triangulo {
-constructor(p1, p2, p3) {
-  this.a = p1;
-  this.b = p2;
-  this.c = p3;
-}
+  constructor(p1, p2, p3) {
+    this.a = p1;
+    this.b = p2;
+    this.c = p3;
+    this.ab = Math.sqrt(Math.pow((this.a.x - this.b.x), 2) + Math.pow((this.a.y - this.b.y), 2))
+    this.bc = Math.sqrt(Math.pow((this.b.x - this.c.x), 2) + Math.pow((this.b.y - this.c.y), 2))
+    this.ca = Math.sqrt(Math.pow((this.c.x - this.a.x), 2) + Math.pow((this.c.y - this.a.y), 2))
+  }
 
-isTriangulo() {
-  const ab = Math.sqrt(Math.pow((this.a.x - this.b.x), 2) + Math.pow((this.a.y - this.b.y), 2));
-  const bc = Math.sqrt(Math.pow((this.b.x - this.c.x), 2) + Math.pow((this.b.y - this.c.y), 2));
-  const ca = Math.sqrt(Math.pow((this.c.x - this.a.x), 2) + Math.pow((this.c.y - this.a.y), 2));
-  return (ab < bc + ca) && (bc < ca + ab) && (ca < ab + bc) ? true : false;
-}
+  isTriangulo() {
+    const ab = Math.sqrt(Math.pow((this.a.x - this.b.x), 2) + Math.pow((this.a.y - this.b.y), 2));
+    const bc = Math.sqrt(Math.pow((this.b.x - this.c.x), 2) + Math.pow((this.b.y - this.c.y), 2));
+    const ca = Math.sqrt(Math.pow((this.c.x - this.a.x), 2) + Math.pow((this.c.y - this.a.y), 2));
+    return (ab < bc + ca) && (bc < ca + ab) && (ca < ab + bc) ? true : false;
+  }
+
+  tipo() {
+    if (this.ab == this.bc && this.bc == this.ca) {
+      return 'equilatero'
+    } else {
+      return 'não equilatero'
+    }
+  }
 }
 
 function criar () {
@@ -53,7 +64,9 @@ function criar () {
   let p3 = new Ponto(document.getElementById('p3-x').value, document.getElementById('p3-y').value)
   const triangulo = new Triangulo(p1, p2, p3);
   if (triangulo.isTriangulo()) {
+    // console.log(triangulo.tipo())
     draw(p1, p2, p3);
+    document.getElementById('orientacao-criacao').setAttribute('hidden', true)
     document.getElementById('escala').removeAttribute('hidden')
     document.getElementById('translacao').removeAttribute('hidden')
     document.getElementById('orientacao-transformacoes').removeAttribute('hidden')
@@ -67,9 +80,12 @@ function apagar () {
   let p2 = new Ponto(0, 0)
   let p3 = new Ponto(0, 0)
   draw(p1, p2, p3);
+  document.getElementById('valor-translacao').value = 1
+
   document.getElementById('escala').setAttribute('hidden', true)
   document.getElementById('translacao').setAttribute('hidden', true)
   document.getElementById('orientacao-transformacoes').setAttribute('hidden', true)
+  document.getElementById('orientacao-criacao').removeAttribute('hidden')
   document.getElementById('p1-x').value = p1.x
   document.getElementById('p1-y').value = p1.y
   document.getElementById('p2-x').value = p2.x
