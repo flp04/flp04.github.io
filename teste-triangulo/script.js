@@ -1,4 +1,5 @@
 var controle = false
+var escala = 1
 
 class Ponto {
   constructor(x, y) {
@@ -55,6 +56,7 @@ function criar () {
     draw(p1, p2, p3);
     document.getElementById('escala').removeAttribute('hidden')
     document.getElementById('translacao').removeAttribute('hidden')
+    document.getElementById('orientacao-transformacoes').removeAttribute('hidden')
   } else {
     alert('Estas cordenadas não formam um triangulo')
   }
@@ -65,8 +67,15 @@ function apagar () {
   let p2 = new Ponto(0, 0)
   let p3 = new Ponto(0, 0)
   draw(p1, p2, p3);
-  document.getElementById('escala').removeAttribute('hidden')
-  document.getElementById('translacao').removeAttribute('hidden')
+  document.getElementById('escala').setAttribute('hidden', true)
+  document.getElementById('translacao').setAttribute('hidden', true)
+  document.getElementById('orientacao-transformacoes').setAttribute('hidden', true)
+  document.getElementById('p1-x').value = p1.x
+  document.getElementById('p1-y').value = p1.y
+  document.getElementById('p2-x').value = p2.x
+  document.getElementById('p2-y').value = p2.y
+  document.getElementById('p3-x').value = p3.x
+  document.getElementById('p3-y').value = p3.y
   // const triangulo = new Triangulo(p1, p2, p3);
   // if (triangulo.isTriangulo()) {
   // } else {
@@ -76,15 +85,17 @@ function apagar () {
 
 function escalar () {
   // let escala = parseFloat(prompt('Informe o número para escalar'))
-  let escala = parseFloat(document.getElementById('valor-escala').value)
+  let novaEscala = parseFloat(document.getElementById('valor-escala').value)
   // let escala = document.getElementById('escala').value
   // return console.log(escala)
   let p1 = new Ponto(document.getElementById('p1-x').value, document.getElementById('p1-y').value)
   let p2 = new Ponto(document.getElementById('p2-x').value, document.getElementById('p2-y').value)
   let p3 = new Ponto(document.getElementById('p3-x').value, document.getElementById('p3-y').value)
-  p1.escalar(escala)
-  p2.escalar(escala)
-  p3.escalar(escala)
+  p1.escalar(novaEscala)
+  p2.escalar(novaEscala)
+  p3.escalar(novaEscala)
+  escala = novaEscala
+  document.getElementById('valor-escala').value = 1
   document.getElementById('p1-x').value = p1.x
   document.getElementById('p1-y').value = p1.y
   document.getElementById('p2-x').value = p2.x

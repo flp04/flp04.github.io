@@ -10,6 +10,14 @@
 <body>
   <div>
     <h3>CG - Triangulo e Transformações</h3>
+    <p style="text-align: center;">
+      <span>Insira os valores de três pares ordenados (x, y), ou clique em três pontos do quadro.</span>
+      <span>Estes irão representar três coordenadas (A, B, C), que ao clicar em Criar, irão renderizar um triângulo</span>
+    </p>
+    <p id="orientacao-transformacoes" hidden style="text-align: center;">
+      <span>Insira um valor para escalar o triângulo clicando em Aplicar.</span>
+      <span>Clique nas setas para mover o triângulo, podendo escolher o tamanho da translação.</span>
+    </p>
     <div class="container-wrapper">
       <div class="container">
         <div class="col-6">
@@ -39,6 +47,7 @@
           <br>
           <!-- <div style="text-align: left;"> -->
           <div id="escala" hidden>
+            <!-- <label for="">Escalar <input type="number" id="valor-escala" value="1" step="0.1" onchange="escalar()" /></label> -->
             <label for="">Escalar <input type="number" id="valor-escala" value="1" step="0.1" /></label>
             <button onclick="escalar()">Aplicar</button>
           </div>
