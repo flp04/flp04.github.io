@@ -4,17 +4,16 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <link rel="stylesheet" href="style.css">
-  <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-  <title>CG - Triângulo e Transformações</title>
+  <title>Computação Gráfica - Planos e Coordenadas</title>
 </head>
 <body>
   <div>
     <h3>CG - Triângulo e Transformações</h3>
-    <p id="orientacao-criacao" style="text-align: center;">
+    <p id="orientacao-criacao" class="observacoes">
       <span>Insira o valor de três pares ordenados (x, y), ou clique em três pontos do quadro.</span>
       <span>Estes representarão três coordenadas (A, B, C), que ao clicar em <strong>criar</strong>, irão renderizar um triângulo</span>
     </p>
-    <p id="orientacao-transformacoes" hidden style="text-align: center;">
+    <p id="orientacao-transformacoes" hidden class="observacoes">
       <span>Insira um valor para escalar e clique em <strong>aplicar</strong> para aumentar ou diminuir o triângulo.</span>
       <span>Clique nas <strong>setas</strong>, ou use as do teclado, para mover o triângulo, podendo escolher o tamanho da translação.</span>
     </p>
@@ -23,42 +22,35 @@
         <div class="col-6">
           <div class="ponto">
             <span>A = </span>
-            <label for="">( x: <input id="p1-x" type="number" value="0" min="0">, </label>
-            <label for="">y: <input id="p1-y" type="number" value="0" min="0" > )</label>
+            <label for="p1-x">( x: <input id="p1-x" type="number" value="0" min="0" onchange="main.setPonto('p1')">, </label>
+            <label for="p1-y">y: <input id="p1-y" type="number" value="0" min="0" onchange="main.setPonto('p1')" > )</label>
           </div>
           <div class="ponto">
-            <!-- <label for="">Ponto 2</label> -->
             <span>B = </span>
-            <label for="">( x: <input id="p2-x" type="number" value="0" min="0" >, </label>
-            <label for="">y: <input id="p2-y" type="number" value="0" min="0" > )</label>
+            <label for="p2-x">( x: <input id="p2-x" type="number" value="0" min="0" onchange="main.setPonto('p2')" >, </label>
+            <label for="p2-y">y: <input id="p2-y" type="number" value="0" min="0" onchange="main.setPonto('p2')" > )</label>
           </div>
           <div class="ponto">
-            <!-- <label for="">Ponto 3</label> -->
             <span>C = </span>
-            <label for="">( x: <input id="p3-x" type="number" value="0" min="0" >, </label>
-            <label for="">y: <input id="p3-y" type="number" value="0" min="0" > )</label>
+            <label for="p3-x">( x: <input id="p3-x" type="number" value="0" min="0" onchange="main.setPonto('p3')" >, </label>
+            <label for="p3-y">y: <input id="p3-y" type="number" value="0" min="0" onchange="main.setPonto('p3')" > )</label>
           </div>
           <div class="botoes">
-            <button onclick="criar()">Criar</button>
+            <button onclick="main.renderizarTriangulo()">Criar</button>
             <button onclick="apagar()">Apagar</button>
-            <!-- <button onclick="escalar()">Escala</button>
-            <button onclick="transladar()">Translação</button> -->
           </div>
           <br>
-          <!-- <div style="text-align: left;"> -->
           <div id="escala" hidden>
-            <!-- <label for="">Escalar <input type="number" id="valor-escala" value="1" step="0.1" onchange="escalar()" /></label> -->
-            <label for="">Escala <input type="number" id="valor-escala" value="1" step="0.1" /></label>
+            <label for="">Escala <input type="number" id="input-escala" value="1" step="0.1" /></label>
             <button onclick="escalar()">Aplicar</button>
           </div>
           <br>
           <div id="translacao" hidden>
             <div>
-              <label for="">Translação <input type="number" id="valor-translacao" value="1" /></label>
+              <label for="">Translação <input type="number" id="input-translacao" value="1" /></label>
             </div>
             <br>
             <div>
-              <!-- <svg id="botao-cima" onmousedown="segurando()" onmouseup="soltou()" xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor" class="bi bi-arrow-up-circle-fill" viewBox="0 0 16 16"> -->
               <svg id="botao-cima" onclick="transladar('cima')" xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor" class="bi bi-arrow-up-circle-fill" viewBox="0 0 16 16">
                 <path d="M16 8A8 8 0 1 0 0 8a8 8 0 0 0 16 0m-7.5 3.5a.5.5 0 0 1-1 0V5.707L5.354 7.854a.5.5 0 1 1-.708-.708l3-3a.5.5 0 0 1 .708 0l3 3a.5.5 0 0 1-.708.708L8.5 5.707z"/>
               </svg>
@@ -84,7 +76,7 @@
         </div>
       </div>
     </div>
-    <p style="text-align: center;">
+    <p class="observacoes">
       <span><strong>Limite do quadro:</strong> (300, 300). <strong>Ponto de origem:</strong> canto superior esquerdo.</span>
     </p>
   <script src="script.js"></script>
