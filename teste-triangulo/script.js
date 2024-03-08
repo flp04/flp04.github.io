@@ -1,3 +1,18 @@
+// Verifica se o dispositivo é um celular
+function isMobileDevice() {
+  return /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
+}
+
+// Verifica se o dispositivo é um tablet
+function isTabletDevice() {
+  return /iPad|Android/.test(navigator.userAgent) && !isMobileDevice();
+}
+
+// Verifica se o dispositivo é um desktop ou laptop
+function isDesktopDevice() {
+  return !isMobileDevice() && !isTabletDevice();
+}
+
 var controle = false
 var escala = 1
 
@@ -246,115 +261,122 @@ function soltou() {
   controle = false
 }
 
+console.warn(isMobileDevice())
+console.warn(isTabletDevice())
 
-document.addEventListener('keydown', function(event) {
-  if (event.key === "ArrowUp") {
-    transladar('cima')
-  } else if (event.key === "ArrowDown") {
-    transladar('baixo')
-  } else if (event.key === "ArrowLeft") {
-    transladar('esquerda')
-  } else if (event.key === "ArrowRight") {
-    transladar('direita')
-  }
-})
+if (isDesktopDevice()) {
+  // document.getElementById('orientacao-escala').innerHTML = 
+  //   'Insira um valor no campo escala e clique em <strong>aplicar</strong> para aumentar ou diminuir o triângulo de forma uniforme. Para escalar de forma não uniforme, clique na ponta do triângulo e arraste.<br>'
 
-canvas.addEventListener('mousemove', function(event) {
-  const rect = canvas.getBoundingClientRect();
-  const mouseX = event.clientX - rect.left;
-  const mouseY = event.clientY - rect.top;
-  // console.log(mouseX, mouseY)
-  const ctx = canvas.getContext("2d")
-  let raio = 5
-  let distancia = Math.sqrt(Math.pow(mouseX - main.p1.x, 2) + Math.pow(mouseY - main.p1.y, 2));
-  if (distancia <= raio) {
-    // console.log('achou danado')
-  }
-  // ctx.clearRect(0, 0, canvas.width, canvas.height);
-  ctx.beginPath();
-  ctx.arc(mouseX, mouseY, 5, 0, Math.PI * 2);
-  ctx.fillStyle = 'blue';
-  // ctx.fill();
-})
+  document.addEventListener('keydown', function(event) {
+    if (event.key === "ArrowUp") {
+      transladar('cima')
+    } else if (event.key === "ArrowDown") {
+      transladar('baixo')
+    } else if (event.key === "ArrowLeft") {
+      transladar('esquerda')
+    } else if (event.key === "ArrowRight") {
+      transladar('direita')
+    }
+  })
 
-let escalaSoltinha = null
-
-canvas.addEventListener('mousedown', function(event) {
-  if (!main.triangulo) {
-    const rect = canvas.getBoundingClientRect();
-    const mouseX = event.clientX - rect.left;
-    const mouseY = event.clientY - rect.top;
-    console.log(mouseX, mouseY)
-    const ctx = canvas.getContext("2d")
-    // ctx.clearRect(0, 0, canvas.width, canvas.height);
-    ctx.beginPath();
-    ctx.arc(mouseX, mouseY, 5, 0, Math.PI * 2);
-    ctx.fillStyle = 'blue';
-    ctx.fill();
-  } else {
+  canvas.addEventListener('mousemove', function(event) {
     const rect = canvas.getBoundingClientRect();
     const mouseX = event.clientX - rect.left;
     const mouseY = event.clientY - rect.top;
     // console.log(mouseX, mouseY)
     const ctx = canvas.getContext("2d")
     let raio = 5
-    let distanciaP1 = Math.sqrt(Math.pow(mouseX - main.p1.x, 2) + Math.pow(mouseY - main.p1.y, 2));
-    let distanciaP2 = Math.sqrt(Math.pow(mouseX - main.p2.x, 2) + Math.pow(mouseY - main.p2.y, 2));
-    let distanciaP3 = Math.sqrt(Math.pow(mouseX - main.p3.x, 2) + Math.pow(mouseY - main.p3.y, 2));
-    ctx.beginPath();
-    ctx.arc(mouseX, mouseY, 5, 0, Math.PI * 2);
-    if (distanciaP1 <= raio) {
-      // soltei()
-      console.log('achou danado 1')
-      // ctx.clearRect(0, 0, canvas.width, canvas.height);
-      // ctx.fillStyle = 'blue';
-      // ctx.fill();
-      // ctx.arc(main.p1.x, main.p1.x, 5, 0, Math.PI * 2);
-      ctx.strokeStyle = 'red';
-      ctx.stroke();
-      escalaSoltinha = 'p1'
-    } else if (distanciaP2 <= raio) {
-      console.log('achou danado 2')
-      // ctx.arc(main.p2.x, main.p2.x, 5, 0, Math.PI * 2);
-      ctx.strokeStyle = 'red';
-      ctx.stroke();
-      escalaSoltinha = 'p2'
-    } else if (distanciaP3 <= raio) {
-      // ctx.arc(main.p3.x, main.p3.x, 5, 0, Math.PI * 2);
-      console.log('achou danado 3')
-      ctx.strokeStyle = 'red';
-      ctx.stroke();
-      escalaSoltinha = 'p3'
-    } else {
-      escalaSoltinha = null
+    let distancia = Math.sqrt(Math.pow(mouseX - main.p1.x, 2) + Math.pow(mouseY - main.p1.y, 2));
+    if (distancia <= raio) {
+      // console.log('achou danado')
     }
     // ctx.clearRect(0, 0, canvas.width, canvas.height);
     ctx.beginPath();
     ctx.arc(mouseX, mouseY, 5, 0, Math.PI * 2);
     ctx.fillStyle = 'blue';
     // ctx.fill();
-  }
-})
+  })
 
-canvas.addEventListener('mouseup', function(event) {
-  if (escalaSoltinha) {
-    console.log('eitcha')
-    const rect = canvas.getBoundingClientRect();
-    const mouseX = event.clientX - rect.left;
-    const mouseY = event.clientY - rect.top;
-    switch (escalaSoltinha) {
-      case 'p1':
-        main.p1.set(mouseX, mouseY)
-        break
-      case 'p2':
-        main.p2.set(mouseX, mouseY)
-        break
-      case 'p3':
-        main.p3.set(mouseX, mouseY)
-        break
+  let escalaSoltinha = null
+
+  canvas.addEventListener('mousedown', function(event) {
+    if (!main.triangulo) {
+      const rect = canvas.getBoundingClientRect();
+      const mouseX = event.clientX - rect.left;
+      const mouseY = event.clientY - rect.top;
+      console.log(mouseX, mouseY)
+      const ctx = canvas.getContext("2d")
+      // ctx.clearRect(0, 0, canvas.width, canvas.height);
+      ctx.beginPath();
+      ctx.arc(mouseX, mouseY, 5, 0, Math.PI * 2);
+      ctx.fillStyle = 'blue';
+      ctx.fill();
+    } else {
+      const rect = canvas.getBoundingClientRect();
+      const mouseX = event.clientX - rect.left;
+      const mouseY = event.clientY - rect.top;
+      // console.log(mouseX, mouseY)
+      const ctx = canvas.getContext("2d")
+      let raio = 5
+      let distanciaP1 = Math.sqrt(Math.pow(mouseX - main.p1.x, 2) + Math.pow(mouseY - main.p1.y, 2));
+      let distanciaP2 = Math.sqrt(Math.pow(mouseX - main.p2.x, 2) + Math.pow(mouseY - main.p2.y, 2));
+      let distanciaP3 = Math.sqrt(Math.pow(mouseX - main.p3.x, 2) + Math.pow(mouseY - main.p3.y, 2));
+      ctx.beginPath();
+      ctx.arc(mouseX, mouseY, 5, 0, Math.PI * 2);
+      if (distanciaP1 <= raio) {
+        // soltei()
+        console.log('achou danado 1')
+        // ctx.clearRect(0, 0, canvas.width, canvas.height);
+        // ctx.fillStyle = 'blue';
+        // ctx.fill();
+        // ctx.arc(main.p1.x, main.p1.x, 5, 0, Math.PI * 2);
+        ctx.strokeStyle = 'red';
+        ctx.stroke();
+        escalaSoltinha = 'p1'
+      } else if (distanciaP2 <= raio) {
+        console.log('achou danado 2')
+        // ctx.arc(main.p2.x, main.p2.x, 5, 0, Math.PI * 2);
+        ctx.strokeStyle = 'red';
+        ctx.stroke();
+        escalaSoltinha = 'p2'
+      } else if (distanciaP3 <= raio) {
+        // ctx.arc(main.p3.x, main.p3.x, 5, 0, Math.PI * 2);
+        console.log('achou danado 3')
+        ctx.strokeStyle = 'red';
+        ctx.stroke();
+        escalaSoltinha = 'p3'
+      } else {
+        escalaSoltinha = null
+      }
+      // ctx.clearRect(0, 0, canvas.width, canvas.height);
+      ctx.beginPath();
+      ctx.arc(mouseX, mouseY, 5, 0, Math.PI * 2);
+      ctx.fillStyle = 'blue';
+      // ctx.fill();
     }
-    main.atualizarInputsPonto()
-    main.renderizarTriangulo()
-  }
-  console.log('soltei')
-})
+  })
+
+  canvas.addEventListener('mouseup', function(event) {
+    if (escalaSoltinha) {
+      console.log('eitcha')
+      const rect = canvas.getBoundingClientRect();
+      const mouseX = event.clientX - rect.left;
+      const mouseY = event.clientY - rect.top;
+      switch (escalaSoltinha) {
+        case 'p1':
+          main.p1.set(mouseX, mouseY)
+          break
+        case 'p2':
+          main.p2.set(mouseX, mouseY)
+          break
+        case 'p3':
+          main.p3.set(mouseX, mouseY)
+          break
+      }
+      main.atualizarInputsPonto()
+      main.renderizarTriangulo()
+    }
+    console.log('soltei')
+  })
+}
