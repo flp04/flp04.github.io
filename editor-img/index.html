@@ -45,6 +45,11 @@
                 Filtro Tons de Cinza
             </button>
         </div>
+        <div class="m-2">
+            <button id="btnTonsSepia" class="bg-gray-300 px-1 rounded hover:bg-gray-400">
+                Filtro Tons de Sépia
+            </button>
+        </div>
     </div>
 
     <!-- CANVAS DAS IMAGENS -->
@@ -171,6 +176,7 @@ document.getElementById('btnFiltroVermelho').addEventListener('click', filtroVer
 document.getElementById('btnFiltroVerde').addEventListener('click', filtroVerde);
 document.getElementById('btnFiltroAzul').addEventListener('click', filtroAzul);
 document.getElementById('btnTonsCinza').addEventListener('click', filtroTonsCinza);
+document.getElementById('btnTonsSepia').addEventListener('click', filtroTonsSepia);
 
 function filtroTonsCinza() {
     for(let y=1; y <= imageLab.image1.height; y++) {
@@ -182,6 +188,23 @@ function filtroTonsCinza() {
                 imageLab.image2.setPixel(x, y, pixel)
                 // console.log(pixel)
             // }
+            // processamento de cada pixel da imagem
+        }
+    }
+    imageLab.image2.refresh()
+}
+
+function filtroTonsSepia() {
+    for(let y=1; y <= imageLab.image1.height; y++) {
+        for(let x=1; x <= imageLab.image1.width; x++) {
+            let pixel = imageLab.image1.getPixel(x,y)
+            let r = pixel.r
+            let g = pixel.g
+            let b = pixel.b
+            pixel.r = 0.393*r + 0.769*g + 0.189*b 
+            pixel.g = 0.349*r + 0.686*g + 0.168*b
+            pixel.b = 0.272*r + 0.534*g + 0.131*b
+            imageLab.image2.setPixel(x, y, pixel)
             // processamento de cada pixel da imagem
         }
     }
