@@ -1,0 +1,274 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Image Lab</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body>
+
+    <div class="m-1 p-1 border rounded bg-blue-200 font-bold">
+        Image Lab
+    </div>
+    <div class="m-2">
+        <input type="file" id="btnLoad" />
+    </div>
+    <div class="m-2">
+        <label for="inputTransparencia">Transparência: 
+            <input id="inputTransparencia" type="range" min="0" max="255" step="5" value="255" onchange="transparencia()" style="border: 1px solid black;">
+        </label>
+    </div>
+    <div class="m-2">
+        <label for="inputTransparencia">Brilho: 
+            <input id="inputBrilho" type="range" value="1" step="0.1" min="0" max="3" onchange="brilho()" style="border: 1px solid black;">
+        </label>
+    </div>
+    <div class="flex">
+        <div class="m-2">
+            <button id="btnFiltroVermelho" class="bg-gray-300 px-1 rounded hover:bg-gray-400">
+                Filtro Vermelho
+            </button>
+        </div>
+        <div class="m-2">
+            <button disabled id="btnFiltroVerde" class="bg-gray-300 px-1 rounded hover:bg-gray-400">
+                Filtro Verde
+            </button>
+        </div>
+        <div class="m-2">
+            <button id="btnFiltroAzul" class="bg-gray-300 px-1 rounded hover:bg-gray-400">
+                Filtro Azul
+            </button>
+        </div>
+        <div class="m-2">
+            <button id="btnTonsCinza" class="bg-gray-300 px-1 rounded hover:bg-gray-400">
+                Filtro Tons de Cinza
+            </button>
+        </div>
+    </div>
+
+    <!-- CANVAS DAS IMAGENS -->
+    <div class="m-1 flex items-center gap-2">
+        <div class="border rounded p-1">
+            <div class="text-xs">
+                Source
+            </div>
+            <canvas width="100" height="100" id="canvas_source"></canvas>
+        </div>
+        <div class="border rounded p-1">
+            <div class="text-xs">
+                Dest
+            </div>
+            <canvas width="100" height="100" id="canvas_dest"></canvas>
+        </div>
+    </div>
+    <!-- FIM - CANVAS DAS IMAGENS -->
+
+    <!-- <script type="module" src="/main.js"></script> -->
+    <script>
+        
+const imageLab = {
+    image01: {},
+    image02: {},
+
+    async toBase64(file) {
+        return new Promise((resolve, reject) => {
+            const reader = new FileReader();
+            reader.readAsDataURL(file);
+            reader.onload = () => resolve(reader.result);
+            reader.onerror = error => reject(error);
+        });
+    },
+
+    init() {
+        let value = localStorage.getItem('imageLab_img1')
+        if (value) {
+            console.log('🖼️ image01 already exist!');
+            imageLab.loadImageFromBase64(value)
+        } else {
+            console.log('image01 not found');
+        }
+    },
+
+    async loadImageFromBase64(base64) {
+        //console.log(base64)
+        imageLab.image1 = imageLab.newImage(base64)
+        imageLab.image2 = imageLab.newImage(base64)
+        let img = new Image()
+        img.onload = function () {
+            let { width, height } = this
+            //console.log({ width, height })
+            let canvas = document.getElementById("canvas_source");
+            let canvas2 = document.getElementById("canvas_dest");
+            canvas.width = width
+            canvas.height = height
+            canvas2.width = width
+            canvas2.height = height
+            let ctx = canvas.getContext("2d");
+            let ctx2 = canvas2.getContext("2d");
+            ctx.drawImage(img, 0, 0);
+            ctx2.drawImage(img, 0, 0);
+            let data = ctx.getImageData(1, 1, width, height);
+            let data2 = ctx2.getImageData(1, 1, width, height);
+            //console.log('data', data);
+            imageLab.image1.data = data.data
+            imageLab.image1.width = data.width
+            imageLab.image1.height = data.height
+            imageLab.image1.ctx = ctx
+            imageLab.image2.data = data2.data
+            imageLab.image2.width = data2.width
+            imageLab.image2.height = data2.height
+            imageLab.image2.ctx = ctx2
+            let value = imageLab.image1.base64
+            localStorage.setItem('imageLab_img1', value)
+        }
+        img.src = base64;
+    },
+
+    setLoadButtonID(btnID) {
+        document.getElementById(btnID).addEventListener("change", async (e) => {
+            let files = e.target.files
+            //console.log('files', files);
+            const base64 = await imageLab.toBase64(files[0]);
+            imageLab.loadImageFromBase64(base64)
+        })
+    },
+
+    newImage(base64) {
+        let image = { 
+            base64,
+            getPixel(x, y) {
+                let pos = ((y - 1) * image.width)*4 + ((x - 1) * 4)
+                return {
+                    r: image.data[pos],
+                    g: image.data[pos + 1],
+                    b: image.data[pos + 2],
+                    a: image.data[pos + 3],
+                }
+            },
+            setPixel(x, y, pixel) {
+                let pos = ((y - 1) * image.width)*4 + ((x - 1) * 4)
+                image.data[pos] = pixel.r
+                image.data[pos+1] = pixel.g
+                image.data[pos+2] = pixel.b
+                image.data[pos+3] = pixel.a
+            },
+            refresh() {
+                let imageData = new ImageData(image.data, image.width, image.height)
+                //console.log('imageData',imageData);
+                image.ctx.putImageData(imageData,0,0);
+            }
+        }
+        return image
+    }
+}
+
+imageLab.init()
+console.log('imageLab', imageLab);
+imageLab.setLoadButtonID('btnLoad')
+
+document.getElementById('btnFiltroVermelho').addEventListener('click', filtroVermelho);
+document.getElementById('btnFiltroVerde').addEventListener('click', filtroVerde);
+document.getElementById('btnFiltroAzul').addEventListener('click', filtroAzul);
+document.getElementById('btnTonsCinza').addEventListener('click', filtroTonsCinza);
+
+function filtroTonsCinza() {
+    for(let y=1; y <= imageLab.image1.height; y++) {
+        for(let x=1; x <= imageLab.image1.width; x++) {
+            let pixel = imageLab.image1.getPixel(x,y)
+            let media = (pixel.r + pixel.g + pixel.b) / 3
+            // if (y < 10) {
+                pixel.r = pixel.g = pixel.b = media
+                imageLab.image2.setPixel(x, y, pixel)
+                // console.log(pixel)
+            // }
+            // processamento de cada pixel da imagem
+        }
+    }
+    imageLab.image2.refresh()
+}
+
+function filtroVermelho() {
+    for(let y=1; y <= imageLab.image1.height; y++) {
+        for(let x=1; x <= imageLab.image1.width; x++) {
+            let pixel = imageLab.image1.getPixel(x,y)
+            // if (y < 10) {
+                pixel.r = 255
+                // pixel.r = (pixel.r + pixel.g + pixel.b) / 3
+                imageLab.image2.setPixel(x, y, pixel)
+                // console.log(pixel)
+            // }
+            // processamento de cada pixel da imagem
+        }
+    }
+    imageLab.image2.refresh()
+}
+
+function filtroVerde() {
+    for(let y=1; y <= imageLab.image1.height; y++) {
+        for(let x=1; x <= imageLab.image1.width; x++) {
+            let pixel = imageLab.image1.getPixel(x,y)
+            // if (y < 10) {
+                pixel.g = 255
+                imageLab.image2.setPixel(x, y, pixel)
+                // console.log(pixel)
+            // }
+            // processamento de cada pixel da imagem
+        }
+    }
+    imageLab.image2.refresh()
+}
+
+function filtroAzul() {
+    for(let y=1; y <= imageLab.image1.height; y++) {
+        for(let x=1; x <= imageLab.image1.width; x++) {
+            let pixel = imageLab.image1.getPixel(x,y)
+            // if (y < 10) {
+                pixel.b = 255
+                imageLab.image2.setPixel(x, y, pixel)
+                // console.log(pixel)
+            // }
+            // processamento de cada pixel da imagem
+        }
+    }
+    imageLab.image2.refresh()
+}
+
+function transparencia() {
+    for(let y=1; y <= imageLab.image1.height; y++) {
+        for(let x=1; x <= imageLab.image1.width; x++) {
+            let pixel = imageLab.image1.getPixel(x,y)
+            // if (y < 10) {
+            let transparencia = document.getElementById('inputTransparencia')
+                pixel.a = transparencia.value
+                imageLab.image2.setPixel(x, y, pixel)
+                // console.log(pixel)
+            // }
+            // processamento de cada pixel da imagem
+        }
+    }
+    imageLab.image2.refresh()
+}
+
+function brilho() {
+    for(let y=1; y <= imageLab.image1.height; y++) {
+        for(let x=1; x <= imageLab.image1.width; x++) {
+            let pixel = imageLab.image1.getPixel(x,y)
+            // if (y < 10) {
+            let brilho = parseFloat(document.getElementById('inputBrilho').value)
+            // console.log(brilho)
+                pixel.r *= brilho
+                pixel.g *= brilho
+                pixel.b *= brilho
+                imageLab.image2.setPixel(x, y, pixel)
+                // console.log(pixel)
+            // }
+            // processamento de cada pixel da imagem
+        }
+    }
+    imageLab.image2.refresh()
+}
+    </script>
+</body>
+
+</html>
