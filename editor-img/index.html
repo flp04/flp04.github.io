@@ -71,7 +71,9 @@
 
     <!-- <script type="module" src="/main.js"></script> -->
     <script>
-        
+        var imgOriginal
+
+
 const imageLab = {
     image01: {},
     image02: {},
@@ -86,7 +88,8 @@ const imageLab = {
     },
 
     init() {
-        let value = localStorage.getItem('imageLab_img1')
+        // let value = localStorage.getItem('imageLab_img1')
+        let value = imgOriginal
         if (value) {
             console.log('🖼️ image01 already exist!');
             imageLab.loadImageFromBase64(value)
@@ -125,7 +128,8 @@ const imageLab = {
             imageLab.image2.height = data2.height
             imageLab.image2.ctx = ctx2
             let value = imageLab.image1.base64
-            localStorage.setItem('imageLab_img1', value)
+            // localStorage.setItem('imageLab_img1', value)
+            imgOriginal = value
         }
         img.src = base64;
     },
