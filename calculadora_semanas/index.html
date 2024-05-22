@@ -8,17 +8,34 @@
 <body>
   <div>
     <label for="semanas">Semanas</label>
-    <input type="number" id="semanas">
+    <input type="number" value="0" id="semanas">
   </div>
+  <br>
+  <div>
+    <label for="dias">Dias</label>
+    <input type="number" value="0" id="dias">
+  </div>
+  <br>
   <button onclick="calcular()">Calcular</button>
   <div>
     <p id="meses"></p>
   </div>
+  <div>
+    <p id="provavel_data"></p>
+  </div>
   <script>
     function calcular () {
-      let semanas = document.getElementById('semanas').value
-      let meses = semanas / 4
-      document.getElementById('meses').innerText = meses
+      let semanas = parseInt(document.getElementById('semanas').value) > 0 ? parseInt(document.getElementById('semanas').value) : 0
+      let dias = parseInt(document.getElementById('dias').value) > 0 ? parseInt(document.getElementById('dias').value) : 0
+      let meses = ((semanas * 7) + dias) / 30
+      if (semanas > 0 | dias > 0) {
+        document.getElementById('meses').innerText = `Tempo de gestação: ${parseInt(meses)} meses`
+        let hoje = new Date()
+        let faltam_dias = (40 * 7) - ((semanas * 7) + dias)
+        hoje.setDate(hoje.getDate() + faltam_dias)
+        let provavel_data = `${hoje.getDate()}/${hoje.getMonth()+1}/${hoje.getFullYear()}`
+        document.getElementById('provavel_data').innerText = `Data provável do parto: ${provavel_data}`
+      }
     }
   </script>
 </body>
