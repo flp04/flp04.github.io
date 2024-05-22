@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Document</title>
+</head>
+<body>
+  <div>
+    <label for="semanas">Semanas</label>
+    <input type="number" id="semanas">
+  </div>
+  <button onclick="calcular()">Calcular</button>
+  <div>
+    <p id="meses"></p>
+  </div>
+  <script>
+    function calcular () {
+      let semanas = document.getElementById('semanas').value
+      let meses = semanas / 4
+      document.getElementById('meses').innerText = meses
+    }
+  </script>
+</body>
+</html>
