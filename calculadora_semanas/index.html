@@ -22,6 +22,7 @@
   </div>
   <div>
     <p id="provavel_data"></p>
+    <p id="entre_datas"></p>
   </div>
   <script>
     function calcular () {
@@ -32,9 +33,18 @@
         document.getElementById('meses').innerText = `Tempo de gestação: ${parseInt(meses)} meses`
         let hoje = new Date()
         let faltam_dias = (40 * 7) - ((semanas * 7) + dias)
+        let data_minima = (37 * 7) - ((semanas * 7) + dias)
+        let data_maxima = (42 * 7) - ((semanas * 7) + dias)
         hoje.setDate(hoje.getDate() + faltam_dias)
         let provavel_data = `${hoje.getDate()}/${hoje.getMonth()+1}/${hoje.getFullYear()}`
         document.getElementById('provavel_data').innerText = `Data provável do parto: ${provavel_data}`
+        let nova_data_minima = new Date()
+        nova_data_minima.setDate(nova_data_minima.getDate() + data_minima)
+        provavel_data_minima = `${nova_data_minima.getDate()}/${nova_data_minima.getMonth()+1}/${nova_data_minima.getFullYear()}`
+        let nova_data_maxima = new Date()
+        nova_data_maxima.setDate(nova_data_maxima.getDate() + data_maxima)
+        provavel_data_maxima = `${nova_data_maxima.getDate()}/${nova_data_maxima.getMonth()+1}/${nova_data_maxima.getFullYear()}`
+        document.getElementById('entre_datas').innerText = `Também podendo acontecer entre: ${provavel_data_minima} e ${provavel_data_maxima}`
       }
     }
   </script>
