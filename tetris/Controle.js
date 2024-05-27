@@ -3,13 +3,16 @@ import Peca from "./classes/Peca.js";
 
 export default class Controle {
   constructor () {
+    this.looping = null
     this.pecas = []
     this.pecasJogo = []
     this.pecaEmQueda = null
+    this.linhasCompletas = []
     const canvas = document.getElementById("canvas");
     if (canvas.getContext) {
       this.ctx = canvas.getContext("2d");
     }
+    this.criarPecas()
   }
 
   criarPecas () {
@@ -24,7 +27,7 @@ export default class Controle {
     for (let i; i < 13; i++) {
       peca1.transladar('direita')
     }
-    this.setPecasJogo(peca1)
+    // this.setPecasJogo(peca1)
     
     // S
     let novasPosicoes = [
@@ -35,7 +38,7 @@ export default class Controle {
     for (let i; i < 13; i++) {
       peca1.transladar('direita')
     }
-    this.setPecasJogo(novaPeca)
+    // this.setPecasJogo(novaPeca)
     
     // S (invertido)
     novasPosicoes = [
@@ -46,12 +49,12 @@ export default class Controle {
     for (let i; i < 13; i++) {
       peca1.transladar('direita')
     }
-    this.setPecasJogo(novaPeca)
+    // this.setPecasJogo(novaPeca)
     
     // |
     novasPosicoes = [
-      ['baixo', 'baixo', 'baixo', 'baixo'],
       ['direita', 'direita', 'esquerda', 'esquerda', 'esquerda', 'esquerda'],
+      ['baixo', 'baixo', 'baixo', 'baixo'],
     ]
     novaPeca = new Peca(novasPosicoes)
     for (let i; i < 13; i++) {
@@ -67,7 +70,7 @@ export default class Controle {
     for (let i; i < 13; i++) {
       peca1.transladar('direita')
     }
-    this.setPecasJogo(novaPeca)
+    // this.setPecasJogo(novaPeca)
     
     // L invertido
     novasPosicoes = [
@@ -80,7 +83,7 @@ export default class Controle {
     for (let i; i < 13; i++) {
       peca1.transladar('direita')
     }
-    this.setPecasJogo(novaPeca)
+    // this.setPecasJogo(novaPeca)
     
     // L
     novasPosicoes = [
@@ -92,7 +95,22 @@ export default class Controle {
     for (let i; i < 13; i++) {
       peca1.transladar('direita')
     }
-    this.setPecasJogo(novaPeca)
+    // this.setPecasJogo(novaPeca)
+  }
+
+  play () {
+    this.looping = setInterval(() => {
+      if (controle.pecaEmQueda && (!controle.pecaEmQueda.verificarTocouBase() && !controle.verificarTocouOutraPeca())) {
+        controle.pecaEmQueda.transladar('baixo')
+      } else {
+        let novaPeca = new Peca(controle.pecasJogo[Math.floor(Math.random() * (controle.pecasJogo.length))].posicoes)
+        controle.pecaEmQueda = novaPeca
+        controle.setPeca(novaPeca)
+      }
+      controle.verificarLinhaCompleta()
+      // console.log(controle.verificarLinhaCompleta())
+      return controle.desenhar()
+    }, 100);
   }
 
   setPecasJogo (peca) {
@@ -111,12 +129,12 @@ export default class Controle {
     novaPeca.transladar('direita')
     novaPeca.transladar('direita')
     novaPeca.transladar('direita')
-    novaPeca.transladar('direita')
-    novaPeca.transladar('direita')
-    novaPeca.transladar('direita')
-    novaPeca.transladar('direita')
-    novaPeca.transladar('direita')
-    novaPeca.transladar('direita')
+    // novaPeca.transladar('direita')
+    // novaPeca.transladar('direita')
+    // novaPeca.transladar('direita')
+    // novaPeca.transladar('direita')
+    // novaPeca.transladar('direita')
+    // novaPeca.transladar('direita')
     this.pecas.push(novaPeca)
     this.pecaEmQueda = novaPeca
   }
@@ -129,12 +147,23 @@ export default class Controle {
   desenhar () { // peca = array de quadrados
     this.ctx.clearRect(0, 0, canvas.width, canvas.height)
     this.ctx.beginPath()
+    // this.pecas.forEach(element => {
+    //   element.coordenadas.filter(el => {
+    //     this.linhasCompletas.includes(el.p1y)
+    //   })
+    // })
     this.pecas.forEach(element => {
       element.coordenadas.forEach(el => {
-        this.ctx.moveTo(el.p1.x, el.p1.y)
-        this.ctx.lineTo(el.p2.x, el.p2.y)
-        this.ctx.lineTo(el.p3.x, el.p3.y)
-        this.ctx.lineTo(el.p4.x, el.p4.y)
+        // el.pontos.
+        if (!this.linhasCompletas.includes(el.p1.y)) {
+          // console.log('oi')
+          // this.ctx.fillRect = 'red';
+          this.ctx.moveTo(el.p1.x, el.p1.y)
+          this.ctx.lineTo(el.p2.x, el.p2.y)
+          this.ctx.lineTo(el.p3.x, el.p3.y)
+          this.ctx.lineTo(el.p4.x, el.p4.y)
+        }
+        // console.log(el)
       })
     });
     this.ctx.fillStyle = 'black'
@@ -164,125 +193,34 @@ export default class Controle {
   }
 
   verificarLinhaCompleta () {
-    for (let i = 0; i <=299; i++) {
-      let peguei = controle.ctx.getImageData(0, i, 300, 1)
-      for (let j = 0; j < peguei.data.length; j += 4) {
-        if (peguei.data[j + 3] == 0) {
-          return false
+    // this.ctx.fillStyle = 'black';
+    // this.ctx.fillRect(0, 290, 150, 10);
+    for (let i = 0; i <= 290; i+=10) {
+      let resultado = true
+      let linha = this.ctx.getImageData(0, i, 150, 10)
+      for (let i = 3; i <= linha.data.length; i += 4) {
+        if (linha.data[i] == 0) {
+          resultado = false
         }
       }
-      return true
+      if (resultado) {
+        this.marcarLinha(i)
+        this.ctx.fillStyle = 'red';
+        this.ctx.fillRect(0, i, 150, 10);
+      }
+      // console.log(i, resultado)
     }
+  }
+    
+  marcarLinha (linha) {
+    this.linhasCompletas.push(linha)
   }
 
 }
 
 let controle = new Controle()
 
-controle.criarPecas()
-
-function criarPecas () {
-
-  // _|_
-  let posicoes = [
-    ['direita', 'direita', 'esquerda', 'baixo'],
-    ['baixo', 'baixo', 'cima', 'esquerda'],
-    ['direita', 'direita', 'esquerda', 'cima'],
-    ['baixo', 'baixo', 'cima', 'direita'],
-  ]
-  let peca1 = new Peca(posicoes)
-  for (let i; i < 13; i++) {
-    peca1.transladar('direita')
-  }
-  controle.setPecasJogo(peca1)
-  
-  // S
-  let novasPosicoes = [
-    ['baixo', 'direita', 'baixo'],
-    ['esquerda', 'baixo', 'esquerda'],
-  ]
-  let novaPeca = new Peca(novasPosicoes)
-  for (let i; i < 13; i++) {
-    peca1.transladar('direita')
-  }
-  controle.setPecasJogo(novaPeca)
-  
-  // S (invertido)
-  novasPosicoes = [
-    ['baixo', 'esquerda', 'baixo'],
-    ['direita', 'baixo', 'direita'],
-  ]
-  novaPeca = new Peca(novasPosicoes)
-  for (let i; i < 13; i++) {
-    peca1.transladar('direita')
-  }
-  controle.setPecasJogo(novaPeca)
-  
-  // |
-  novasPosicoes = [
-    ['baixo', 'baixo', 'baixo', 'baixo'],
-    ['direita', 'direita', 'esquerda', 'esquerda', 'esquerda', 'esquerda'],
-  ]
-  novaPeca = new Peca(novasPosicoes)
-  for (let i; i < 13; i++) {
-    peca1.transladar('direita')
-  }
-  controle.setPecasJogo(novaPeca)
-  
-  // O
-  novasPosicoes = [
-    ['direita', 'baixo', 'esquerda', 'cima'],
-  ]
-  novaPeca = new Peca(novasPosicoes)
-  for (let i; i < 13; i++) {
-    peca1.transladar('direita')
-  }
-  controle.setPecasJogo(novaPeca)
-  
-  // L invertido
-  novasPosicoes = [
-    ['direita', 'esquerda', 'baixo', 'baixo'],
-    ['baixo', 'direita', 'direita'],
-    ['baixo', 'baixo', 'esquerda'],
-    // ['direita', 'direita', 'baixo'],
-  ]
-  novaPeca = new Peca(novasPosicoes)
-  for (let i; i < 13; i++) {
-    peca1.transladar('direita')
-  }
-  controle.setPecasJogo(novaPeca)
-  
-  // L
-  novasPosicoes = [
-    ['esquerda', 'direita', 'baixo', 'baixo'],
-    ['esquerda', 'esquerda', 'cima'],
-    ['baixo', 'baixo', 'direita'],
-  ]
-  novaPeca = new Peca(novasPosicoes)
-  for (let i; i < 13; i++) {
-    peca1.transladar('direita')
-  }
-  controle.setPecasJogo(novaPeca)
-}
-
 controle.iniciarJogo()
-
-let looping = null
-
-function play () {
-  looping = setInterval(() => {
-    if (controle.pecaEmQueda && (!controle.pecaEmQueda.verificarTocouBase() && !controle.verificarTocouOutraPeca())) {
-      controle.pecaEmQueda.transladar('baixo')
-    } else {
-      novaPeca = new Peca(controle.pecasJogo[Math.floor(Math.random() * (controle.pecasJogo.length))].posicoes)
-      controle.pecaEmQueda = novaPeca
-      controle.setPeca(novaPeca)
-      console.log(controle.pecasJogo[Math.floor(Math.random() * (controle.pecasJogo.length))])
-    }
-    // console.log(controle.verificarLinhaCompleta())
-    return controle.desenhar()
-  }, 500);
-}
 
 document.addEventListener('keydown', function(event) {
   if (controle.pecaEmQueda) {
@@ -297,11 +235,11 @@ document.addEventListener('keydown', function(event) {
     }
   }
   if (event.key == 'Enter') {
-    if (looping) {
-      clearInterval(looping)
-      looping = null
+    if (controle.looping) {
+      clearInterval(controle.looping)
+      controle.looping = null
     } else {
-      play()
+      controle.play()
     }
   }
 })
