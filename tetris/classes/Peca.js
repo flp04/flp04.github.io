@@ -10,6 +10,9 @@ export default class Peca {
     this.posicoes[this.posicao].forEach(el => {
       this.novoQuadrado(el)
     })
+    for (let i; i < 13; i++) {
+      this.transladar('direita')
+    }
   }
 
   novoQuadrado (sentido) {
@@ -31,25 +34,6 @@ export default class Peca {
     });
   }
 
-  calcularCentroDaPeca() {
-    console.log(this.coordenadas)
-    let somaX = 0
-    let somaY = 0
-    let acumulado = 0
-    this.coordenadas.forEach(quadrado => {
-      console.log(quadrado.pontos)
-      quadrado.pontos.forEach(ponto => {
-        somaX += ponto.x
-        somaY += ponto.y
-        acumulado += 1
-      })
-    })
-    return new Ponto(parseInt(somaX / acumulado), parseInt(somaY / acumulado))
-    let pontoCentro = console.log(somaX / acumulado, somaY / acumulado)
-    return new Ponto(3, 2)
-    // console.log(pontoCentro)
-  }
-
   girar () {
     this.coordenadas = [this.coordenadas[0]]
     if (this.posicao >= this.posicoes.length - 1) {
@@ -61,20 +45,6 @@ export default class Peca {
       this.novoQuadrado(el)
     })
   }
-
-
-// Função para rotacionar todos os pontos de um polígono em torno do seu centro
-rotacionar(angulo) {
-  this.coordenadas.forEach(quadrado => {
-    quadrado.pontos.forEach(ponto => {
-      console.log(this.calcularCentroDaPeca())
-      ponto.rotacionar(angulo, this.calcularCentroDaPeca())
-    })
-    // quadrado.pontos.map(ponto => ponto.rotacionar(angulo, this.calcularCentroDaPeca()))
-  })
-  // let pontoDeRotacao = this.calcularCentroDaPeca();
-  // return poligono.map(ponto => rotacionarPonto(ponto, angulo, pontoDeRotacao));
-}
 
   verificarTocouBase () {
     let resultado = false
@@ -106,5 +76,51 @@ rotacionar(angulo) {
       })
     })
     return resultado
+  }
+
+  static criarTetraminos () {
+    let pecas = []
+    let posicoes = []
+    posicoes.push([
+      ['direita', 'direita', 'esquerda', 'baixo'],
+      ['baixo', 'baixo', 'cima', 'esquerda'],
+      ['direita', 'direita', 'esquerda', 'cima'],
+      ['baixo', 'baixo', 'cima', 'direita'],
+    ]) // t
+    posicoes.push([
+      ['baixo', 'direita', 'baixo'],
+      ['esquerda', 'baixo', 'esquerda'],
+    ]) // s
+    posicoes.push([
+      ['baixo', 'esquerda', 'baixo'],
+      ['direita', 'baixo', 'direita'],
+    ]) // z
+    posicoes.push([
+      ['direita', 'direita', 'esquerda', 'esquerda', 'esquerda', 'esquerda'],
+      ['baixo', 'baixo', 'baixo', 'baixo'],
+    ]) // i
+    posicoes.push([
+      ['direita', 'baixo', 'esquerda', 'cima'],
+    ]) // o
+    posicoes.push([
+      ['direita', 'esquerda', 'baixo', 'baixo'],
+      ['baixo', 'direita', 'direita'],
+      ['baixo', 'baixo', 'esquerda'],
+      // ['direita', 'direita', 'baixo'],
+    ]) // j
+    posicoes.push([
+      ['esquerda', 'direita', 'baixo', 'baixo'],
+      ['cima', 'esquerda', 'esquerda'],
+      ['baixo', 'baixo', 'direita'],
+    ]) // l
+    posicoes.forEach(el => {
+      pecas.push(new Peca(el))
+    })
+    return pecas
+    // novaPeca = new Peca(novasPosicoes)
+    // for (let i; i < 13; i++) {
+    //   peca1.transladar('direita')
+    // }
+    // this.setPecasJogo(novaPeca)
   }
 }

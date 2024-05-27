@@ -1,101 +1,19 @@
 import Quadrado from "./classes/Quadrado.js";
 import Peca from "./classes/Peca.js";
 
+
 export default class Controle {
   constructor () {
     this.looping = null
+    this.pecasJogo = Peca.criarTetraminos()
     this.pecas = []
-    this.pecasJogo = []
     this.pecaEmQueda = null
     this.linhasCompletas = []
     const canvas = document.getElementById("canvas");
     if (canvas.getContext) {
       this.ctx = canvas.getContext("2d");
     }
-    this.criarPecas()
-  }
-
-  criarPecas () {
-    // _|_
-    let posicoes = [
-      ['direita', 'direita', 'esquerda', 'baixo'],
-      ['baixo', 'baixo', 'cima', 'esquerda'],
-      ['direita', 'direita', 'esquerda', 'cima'],
-      ['baixo', 'baixo', 'cima', 'direita'],
-    ]
-    let peca1 = new Peca(posicoes)
-    for (let i; i < 13; i++) {
-      peca1.transladar('direita')
-    }
-    // this.setPecasJogo(peca1)
-    
-    // S
-    let novasPosicoes = [
-      ['baixo', 'direita', 'baixo'],
-      ['esquerda', 'baixo', 'esquerda'],
-    ]
-    let novaPeca = new Peca(novasPosicoes)
-    for (let i; i < 13; i++) {
-      peca1.transladar('direita')
-    }
-    // this.setPecasJogo(novaPeca)
-    
-    // S (invertido)
-    novasPosicoes = [
-      ['baixo', 'esquerda', 'baixo'],
-      ['direita', 'baixo', 'direita'],
-    ]
-    novaPeca = new Peca(novasPosicoes)
-    for (let i; i < 13; i++) {
-      peca1.transladar('direita')
-    }
-    // this.setPecasJogo(novaPeca)
-    
-    // |
-    novasPosicoes = [
-      ['direita', 'direita', 'esquerda', 'esquerda', 'esquerda', 'esquerda'],
-      ['baixo', 'baixo', 'baixo', 'baixo'],
-    ]
-    novaPeca = new Peca(novasPosicoes)
-    for (let i; i < 13; i++) {
-      peca1.transladar('direita')
-    }
-    this.setPecasJogo(novaPeca)
-    
-    // O
-    novasPosicoes = [
-      ['direita', 'baixo', 'esquerda', 'cima'],
-    ]
-    novaPeca = new Peca(novasPosicoes)
-    for (let i; i < 13; i++) {
-      peca1.transladar('direita')
-    }
-    // this.setPecasJogo(novaPeca)
-    
-    // L invertido
-    novasPosicoes = [
-      ['direita', 'esquerda', 'baixo', 'baixo'],
-      ['baixo', 'direita', 'direita'],
-      ['baixo', 'baixo', 'esquerda'],
-      // ['direita', 'direita', 'baixo'],
-    ]
-    novaPeca = new Peca(novasPosicoes)
-    for (let i; i < 13; i++) {
-      peca1.transladar('direita')
-    }
-    // this.setPecasJogo(novaPeca)
-    
-    // L
-    novasPosicoes = [
-      ['esquerda', 'direita', 'baixo', 'baixo'],
-      ['esquerda', 'esquerda', 'cima'],
-      ['baixo', 'baixo', 'direita'],
-    ]
-    novaPeca = new Peca(novasPosicoes)
-    for (let i; i < 13; i++) {
-      peca1.transladar('direita')
-    }
-    // this.setPecasJogo(novaPeca)
+    // this.criarPecas()
   }
 
   play () {
@@ -110,7 +28,7 @@ export default class Controle {
       controle.verificarLinhaCompleta()
       // console.log(controle.verificarLinhaCompleta())
       return controle.desenhar()
-    }, 100);
+    }, 400);
   }
 
   setPecasJogo (peca) {
@@ -149,19 +67,20 @@ export default class Controle {
     this.ctx.beginPath()
     // this.pecas.forEach(element => {
     //   element.coordenadas.filter(el => {
-    //     this.linhasCompletas.includes(el.p1y)
+    //     console.log(el)
+    //     // this.linhasCompletas.includes(el.p1.y)
     //   })
     // })
     this.pecas.forEach(element => {
       element.coordenadas.forEach(el => {
         // el.pontos.
+        this.ctx.moveTo(el.p1.x, el.p1.y)
+        this.ctx.lineTo(el.p2.x, el.p2.y)
+        this.ctx.lineTo(el.p3.x, el.p3.y)
+        this.ctx.lineTo(el.p4.x, el.p4.y)
         if (!this.linhasCompletas.includes(el.p1.y)) {
           // console.log('oi')
           // this.ctx.fillRect = 'red';
-          this.ctx.moveTo(el.p1.x, el.p1.y)
-          this.ctx.lineTo(el.p2.x, el.p2.y)
-          this.ctx.lineTo(el.p3.x, el.p3.y)
-          this.ctx.lineTo(el.p4.x, el.p4.y)
         }
         // console.log(el)
       })
@@ -205,10 +124,20 @@ export default class Controle {
       }
       if (resultado) {
         this.marcarLinha(i)
-        this.ctx.fillStyle = 'red';
-        this.ctx.fillRect(0, i, 150, 10);
+        let newCoordenadas = []
+        this.pecas.forEach(element => {
+          element.coordenadas = element.coordenadas.filter(el => {
+            return el.p1.y != i
+          })
+        })
+        this.pecas.forEach(element => {
+          element.coordenadas.forEach(el => {
+            if (el.p1.y < i) {
+              element.transladar('baixo')
+            }
+          })
+        })
       }
-      // console.log(i, resultado)
     }
   }
     
