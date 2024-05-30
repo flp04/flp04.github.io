@@ -151,7 +151,18 @@ let controle = new Controle()
 
 controle.iniciarJogo()
 
+// Verifica se o dispositivo é um celular
+function isMobileDevice() {
+  return /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
+}
 
+if (isMobileDevice()) {
+  document.getElementById('controle').style.display = 'block'
+} else {
+  document.getElementById('controle').style.display = 'none'
+}
+
+// ('hidden', true)
 
 document.addEventListener('keydown', function(event) {
   if (controle.pecaEmQueda) {
