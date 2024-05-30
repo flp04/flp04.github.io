@@ -151,6 +151,8 @@ let controle = new Controle()
 
 controle.iniciarJogo()
 
+
+
 document.addEventListener('keydown', function(event) {
   if (controle.pecaEmQueda) {
     if (event.key === "ArrowUp") {
@@ -172,3 +174,41 @@ document.addEventListener('keydown', function(event) {
     }
   }
 })
+
+document.getElementById('botao-cima').addEventListener('click', function() {
+  controle.pecaEmQueda.girar()
+})
+
+document.getElementById('botao-esquerda').addEventListener('click', function() {
+  controle.pecaEmQueda.transladar('esquerda')
+})
+
+document.getElementById('botao-direita').addEventListener('click', function() {
+  controle.pecaEmQueda.transladar('direita')
+})
+
+document.getElementById('botao-baixo').addEventListener('click', function() {
+  controle.pecaEmQueda.transladar('baixo')
+})
+
+// document.addEventListener('keydown', function(event) {
+//   if (controle.pecaEmQueda) {
+//     if (event.key === "ArrowUp") {
+//       controle.pecaEmQueda.girar()
+//     } else if (event.key === "ArrowDown") {
+//       controle.pecaEmQueda.transladar('baixo')
+//     } else if (event.key === "ArrowLeft") {
+//       controle.pecaEmQueda.transladar('esquerda')
+//     } else if (event.key === "ArrowRight") {
+//       controle.pecaEmQueda.transladar('direita')
+//     }
+//   }
+//   if (event.key == 'Enter') {
+//     if (controle.looping) {
+//       clearInterval(controle.looping)
+//       controle.looping = null
+//     } else {
+//       controle.play()
+//     }
+//   }
+// })
