@@ -1,99 +1,79 @@
-import Quadrado from "./classes/Quadrado.js";
 import Peca from "./classes/Peca.js";
-
+import Canvas from "./classes/Canvas.js";
+import ControlesUsuario from "./classes/Controle.js";
+// import Quadrado from "./classes/Quadrado.js";
 
 export default class Controle {
   constructor () {
+    // atributo para armazenar o setInterval responsável por gerar peças aleatórias e as derrubar na tela
     this.looping = null
+    // atributo para armazenar objeto de controles do usuario
+    this.controlesUsuario = new ControlesUsuario(this)
+    // atributo para armazenar as peças do jogo geradas de tetraminós
     this.pecasJogo = Peca.criarTetraminos()
-    this.pecas = []
+    // atributo para armazenar a próxima peça a cair
+    this.proximaPecaCair = null
+    // atributo para armazenar a peça que está em queda
     this.pecaEmQueda = null
-    this.linhasCompletas = []
-    const canvas = document.getElementById("canvas");
-    if (canvas.getContext) {
-      this.ctx = canvas.getContext("2d");
-    }
-    // this.criarPecas()
+    // atributo para armazenar as pecas que ja cairam no jogo
+    this.pecasAcumuladas = []
+    // atributo para armazenar a tela do canva
+    this.canvas = new Canvas()
+    // atributo para armazenar os pontos acumulados
+    this.pontos = 0
+    document.getElementById('pontos').innerHTML = `Pontos: ${this.pontos}`
   }
 
-  play () {
+  iniciarJogo () {
     this.looping = setInterval(() => {
-      if (controle.pecaEmQueda && (!controle.pecaEmQueda.verificarTocouBase() && !controle.verificarTocouOutraPeca())) {
-        controle.pecaEmQueda.transladar('baixo')
+      // console.log(this.pecaEmQueda)
+      if (this.pecaEmQueda && !this.pecaEmQueda.verificarTocouBase() && !this.verificarTocouOutraPeca()) {
+        this.pecaEmQueda.transladar('baixo')
       } else {
-        let novaPeca = new Peca(controle.pecasJogo[Math.floor(Math.random() * (controle.pecasJogo.length))].posicoes)
-        controle.pecaEmQueda = novaPeca
-        controle.setPeca(novaPeca)
+        if (this.pecaEmQueda && this.pecaEmQueda.verificarTocouTopo()) {
+          clearInterval(this.looping)
+          return alert('perdeeu')
+        }
+        this.setProximaPeca()
       }
-      controle.verificarLinhaCompleta()
-      // console.log(controle.verificarLinhaCompleta())
-      return controle.desenhar()
-    }, 400);
+      this.verificarLinhaCompleta()
+      return this.canvas.desenhar(this.pecasAcumuladas)
+    }, 800);
   }
 
-  setPecasJogo (peca) {
-    this.pecasJogo.push(peca)
-    // this.pecaEmQueda = peca
-    // this.desenhar()
+  setProximaPeca() {
+    let numeroAleatorio = Math.floor(Math.random() * (this.pecasJogo.length))
+    let novaPeca = new Peca(this.pecasJogo[numeroAleatorio].posicoes, this.pecasJogo[numeroAleatorio].nome)
+    if (this.proximaPecaCair) {
+      this.setPecaQueda(this.proximaPecaCair)
+      this.pecasAcumuladas.push(this.proximaPecaCair)
+    } else {
+      this.setPecaQueda(novaPeca)
+      this.pecasAcumuladas.push(novaPeca)
+    }
+    numeroAleatorio = Math.floor(Math.random() * (this.pecasJogo.length))
+    novaPeca = new Peca(this.pecasJogo[numeroAleatorio].posicoes, this.pecasJogo[numeroAleatorio].nome)
+    this.proximaPecaCair = novaPeca
+    this.canvas.desenharProximaPeca(this.proximaPecaCair)
+  }
+
+  setPecaQueda (peca) {
+    this.pecaEmQueda = peca
   }
 
   setPeca (peca) {
     let novaPeca = new Peca(peca.posicoes)
-    console.log(novaPeca)
-    novaPeca.transladar('direita')
-    novaPeca.transladar('direita')
-    novaPeca.transladar('direita')
-    novaPeca.transladar('direita')
-    novaPeca.transladar('direita')
-    novaPeca.transladar('direita')
-    novaPeca.transladar('direita')
-    // novaPeca.transladar('direita')
-    // novaPeca.transladar('direita')
-    // novaPeca.transladar('direita')
-    // novaPeca.transladar('direita')
-    // novaPeca.transladar('direita')
-    // novaPeca.transladar('direita')
-    this.pecas.push(novaPeca)
-    this.pecaEmQueda = novaPeca
-  }
-  
-  iniciarJogo() {
-    this.setPeca(this.pecasJogo[Math.floor(Math.random() * (this.pecasJogo.length))]) 
-    this.pecaEmQueda = !this.pecaEmQueda ? this.pecas[0] : this.pecaEmQueda 
-  }
-
-  desenhar () { // peca = array de quadrados
-    this.ctx.clearRect(0, 0, canvas.width, canvas.height)
-    this.ctx.beginPath()
-    // this.pecas.forEach(element => {
-    //   element.coordenadas.filter(el => {
-    //     console.log(el)
-    //     // this.linhasCompletas.includes(el.p1.y)
-    //   })
-    // })
-    this.pecas.forEach(element => {
-      element.coordenadas.forEach(el => {
-        // el.pontos.
-        this.ctx.moveTo(el.p1.x, el.p1.y)
-        this.ctx.lineTo(el.p2.x, el.p2.y)
-        this.ctx.lineTo(el.p3.x, el.p3.y)
-        this.ctx.lineTo(el.p4.x, el.p4.y)
-        if (!this.linhasCompletas.includes(el.p1.y)) {
-          // console.log('oi')
-          // this.ctx.fillRect = 'red';
-        }
-        // console.log(el)
-      })
-    });
-    this.ctx.fillStyle = 'black'
-    this.ctx.fill()
+    // for (let i = 0; i < 7; i++) {
+      // novaPeca.transladar('direita')
+    // }
+    this.pecasAcumuladas.push(novaPeca)
   }
 
   verificarTocouOutraPeca () {
     let resultado = false
     this.pecaEmQueda.coordenadas.forEach(quadrado => {
       quadrado.pontos.forEach(el => {
-        this.pecas.forEach(peca => {
+        this.pecasAcumuladas.forEach(peca => {
           if (peca != this.pecaEmQueda) {
             peca.coordenadas.forEach(segundoQuadrado => {
               segundoQuadrado.pontos.forEach(el2 => {
@@ -112,114 +92,92 @@ export default class Controle {
   }
 
   verificarLinhaCompleta () {
-    // this.ctx.fillStyle = 'black';
-    // this.ctx.fillRect(0, 290, 150, 10);
-    for (let i = 0; i <= 290; i+=10) {
+    for (let i = 0; i <= 285 ; i+=15) {
       let resultado = true
-      let linha = this.ctx.getImageData(0, i, 150, 10)
+      let linha = this.canvas.ctx.getImageData(0, i, 150, 15)
       for (let i = 3; i <= linha.data.length; i += 4) {
         if (linha.data[i] == 0) {
           resultado = false
         }
       }
       if (resultado) {
-        this.marcarLinha(i)
-        let newCoordenadas = []
-        this.pecas.forEach(element => {
+        this.pecasAcumuladas.forEach(element => {
           element.coordenadas = element.coordenadas.filter(el => {
             return el.p1.y != i
           })
         })
-        this.pecas.forEach(element => {
+        this.pecasAcumuladas.forEach(element => {
           element.coordenadas.forEach(el => {
             if (el.p1.y < i) {
               element.transladar('baixo')
             }
           })
         })
+        // atualiza e exibe os pontos na tela
+        this.pontos += 100
+        document.getElementById('pontos').innerHTML = `Pontos: ${this.pontos}`
       }
     }
   }
-    
-  marcarLinha (linha) {
-    this.linhasCompletas.push(linha)
-  }
-
 }
-
-let controle = new Controle()
-
-controle.iniciarJogo()
 
 // Verifica se o dispositivo é um celular
 function isMobileDevice() {
   return /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
 }
 
+// Exibe o controle se o dispositivo for um celular
 if (isMobileDevice()) {
   document.getElementById('controle').style.display = 'block'
 } else {
   document.getElementById('controle').style.display = 'none'
 }
 
-// ('hidden', true)
+let controle = new Controle()
 
-document.addEventListener('keydown', function(event) {
-  if (controle.pecaEmQueda) {
-    if (event.key === "ArrowUp") {
-      controle.pecaEmQueda.girar()
-    } else if (event.key === "ArrowDown") {
-      controle.pecaEmQueda.transladar('baixo')
-    } else if (event.key === "ArrowLeft") {
-      controle.pecaEmQueda.transladar('esquerda')
-    } else if (event.key === "ArrowRight") {
-      controle.pecaEmQueda.transladar('direita')
-    }
-  }
-  if (event.key == 'Enter') {
-    if (controle.looping) {
-      clearInterval(controle.looping)
-      controle.looping = null
-    } else {
-      controle.play()
-    }
-  }
-})
 
-document.getElementById('botao-cima').addEventListener('click', function() {
-  controle.pecaEmQueda.girar()
-})
-
-document.getElementById('botao-esquerda').addEventListener('click', function() {
-  controle.pecaEmQueda.transladar('esquerda')
-})
-
-document.getElementById('botao-direita').addEventListener('click', function() {
-  controle.pecaEmQueda.transladar('direita')
-})
-
-document.getElementById('botao-baixo').addEventListener('click', function() {
-  controle.pecaEmQueda.transladar('baixo')
-})
-
+// // CONTROLES DO TECLADO
 // document.addEventListener('keydown', function(event) {
-//   if (controle.pecaEmQueda) {
+//   if (event.key == 'Enter') {
+//     if (controle.looping) {
+//       // parar looping
+//       clearInterval(controle.looping)
+//       controle.looping = null
+//     } else {
+//       // iniciar/continuar looping
+//       controle.iniciarJogo()
+//     }
+//   }
+
+//   /* TODO 
+//     COLOCAR UMA SEGUNDA CONDIÇÃO PARA VERIFICAR SE A PEÇA SAIRÁ DA TELA
+//     */
+//   if (controle.pecaEmQueda) { 
 //     if (event.key === "ArrowUp") {
 //       controle.pecaEmQueda.girar()
 //     } else if (event.key === "ArrowDown") {
 //       controle.pecaEmQueda.transladar('baixo')
+//       // atualiza e exibe os pontos
+//       controle.pontos += 1
+//       document.getElementById('pontos').innerHTML = `Pontos: ${controle.pontos}`
 //     } else if (event.key === "ArrowLeft") {
 //       controle.pecaEmQueda.transladar('esquerda')
 //     } else if (event.key === "ArrowRight") {
 //       controle.pecaEmQueda.transladar('direita')
 //     }
 //   }
-//   if (event.key == 'Enter') {
-//     if (controle.looping) {
-//       clearInterval(controle.looping)
-//       controle.looping = null
-//     } else {
-//       controle.play()
-//     }
-//   }
+// })
+
+// // CONTROLES DO CELULAR
+// document.getElementById('botao-cima').addEventListener('click', function() {
+//   controle.pecaEmQueda.girar()
+// })
+// document.getElementById('botao-esquerda').addEventListener('click', function() {
+//   controle.pecaEmQueda.transladar('esquerda')
+// })
+// document.getElementById('botao-direita').addEventListener('click', function() {
+//   controle.pecaEmQueda.transladar('direita')
+// })
+// document.getElementById('botao-baixo').addEventListener('click', function() {
+//   controle.pecaEmQueda.transladar('baixo')
 // })

@@ -7,18 +7,52 @@ export default class Ponto {
   transladar (sentido) {
     switch (sentido) {
       case 'direita': 
-        this.x += 10
+        this.x += 15
         break
       case 'esquerda': 
-        this.x -= 10
+        this.x -= 15
         break
       case 'cima':
-        this.y -= 10
+        this.y -= 15
         break
       case 'baixo': 
-        this.y += 10    
+        this.y += 15    
         break
     }
+  }
+
+  testarTransladar (sentido, controle = null) {
+    let x = this.x
+    let y = this.y
+    switch (sentido) {
+      case 'direita':
+        x += 15
+        break
+      case 'esquerda': 
+        x -= 15
+        break
+      case 'cima':
+        y -= 15
+        break
+      case 'baixo': 
+        y += 15
+        break
+    }
+    let resultado = false
+    if (controle) { // verifica se a peça irá tocar em outra
+      controle.pecasAcumuladas.forEach(peca => {
+        if (peca != controle.pecaEmQueda) {
+          peca.coordenadas.forEach(quadrado => {
+            quadrado.pontos.forEach(ponto => {
+              if (ponto.x == x && ponto.y == y) {
+                resultado = true
+              }
+            })
+          })
+        }
+      })
+    }
+    return !resultado && x <= 150 && x >= 0 && y >= 0 && y <= 300
   }
 
   rotacionar (angulo, pontoDeRotacao) {

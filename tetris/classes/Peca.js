@@ -1,18 +1,15 @@
 import Quadrado from "./Quadrado.js"
-import Ponto from "./Ponto.js"
 
 export default class Peca {
-  constructor (posicoes) { // coordenadas iniciais
-    let quadrado = new Quadrado(0, 0, 10, 0, 10, 10, 0, 10)
+  constructor (posicoes, nome) { // coordenadas iniciais
+    let quadrado = new Quadrado(0 + 60, 0, 15 + 60, 0, 15 + 60, 15, 0 + 60, 15)
     this.coordenadas = [quadrado]
     this.posicoes = posicoes
+    this.nome = nome
     this.posicao = 0
     this.posicoes[this.posicao].forEach(el => {
       this.novoQuadrado(el)
     })
-    for (let i; i < 13; i++) {
-      this.transladar('direita')
-    }
   }
 
   novoQuadrado (sentido) {
@@ -25,13 +22,22 @@ export default class Peca {
     this.coordenadas.push(novoQuadrado)
   }
 
-  transladar (sentido) {
+  transladar (sentido, controle) {
+    let resultados = []
     this.coordenadas.forEach(el => {
-      el.p1.transladar(sentido)
-      el.p2.transladar(sentido)
-      el.p3.transladar(sentido)
-      el.p4.transladar(sentido)
-    });
+      resultados.push(el.p1.testarTransladar(sentido, controle))
+      resultados.push(el.p2.testarTransladar(sentido, controle))
+      resultados.push(el.p3.testarTransladar(sentido, controle))
+      resultados.push(el.p4.testarTransladar(sentido, controle))
+    })
+    if (!resultados.includes(false)) {
+      this.coordenadas.forEach(el => {
+        el.p1.transladar(sentido)
+        el.p2.transladar(sentido)
+        el.p3.transladar(sentido)
+        el.p4.transladar(sentido)
+      })
+    }
   }
 
   girar () {
@@ -58,15 +64,25 @@ export default class Peca {
     return resultado
   }
 
+  verificarTocouTopo () {
+    let resultado = false
+    this.coordenadas.forEach(quadrado => {
+      quadrado.pontos.forEach(el => {
+        if (el.y == 0) {
+          resultado = true
+        }
+      })
+    })
+    return resultado
+  }
+
   verificarTocouOutraPeca (pecas) {
     let resultado = false
     this.coordenadas.forEach(quadrado => {
       quadrado.pontos.forEach(el => {
         pecas.forEach(peca => {
           peca.coordenadas.forEach(segundoQuadrado => {
-            console.log(quadrado != segundoQuadrado)
             segundoQuadrado.pontos.forEach(el2 => {
-              console.log(el.y)
               if (el.y >= el2.y) {
                 resultado = true
               }
@@ -81,46 +97,48 @@ export default class Peca {
   static criarTetraminos () {
     let pecas = []
     let posicoes = []
-    posicoes.push([
+    posicoes.push([[
       ['direita', 'direita', 'esquerda', 'baixo'],
       ['baixo', 'baixo', 'cima', 'esquerda'],
       ['direita', 'direita', 'esquerda', 'cima'],
       ['baixo', 'baixo', 'cima', 'direita'],
-    ]) // t
-    posicoes.push([
+    ], 't']) // t
+    posicoes.push([[
       ['baixo', 'direita', 'baixo'],
       ['esquerda', 'baixo', 'esquerda'],
-    ]) // s
-    posicoes.push([
-      ['baixo', 'esquerda', 'baixo'],
+    ], 's']) // s
+    posicoes.push([[
       ['direita', 'baixo', 'direita'],
-    ]) // z
-    posicoes.push([
-      ['direita', 'direita', 'esquerda', 'esquerda', 'esquerda', 'esquerda'],
-      ['baixo', 'baixo', 'baixo', 'baixo'],
-    ]) // i
-    posicoes.push([
+      ['baixo', 'esquerda', 'baixo'],
+    ], 'z']) // z
+    posicoes.push([[
+      ['direita', 'direita', 'esquerda', 'esquerda', 'esquerda'],
+      ['baixo', 'baixo', 'baixo'],
+      // ['direita', 'direita', 'esquerda', 'esquerda', 'esquerda', 'esquerda'],
+      // ['baixo', 'baixo', 'baixo', 'baixo'],
+    ], 'i']) // i
+    posicoes.push([[
       ['direita', 'baixo', 'esquerda', 'cima'],
-    ]) // o
-    posicoes.push([
+    ], 'o']) // o
+    posicoes.push([[
       ['direita', 'esquerda', 'baixo', 'baixo'],
-      ['baixo', 'direita', 'direita'],
-      ['baixo', 'baixo', 'esquerda'],
-      // ['direita', 'direita', 'baixo'],
-    ]) // j
-    posicoes.push([
-      ['esquerda', 'direita', 'baixo', 'baixo'],
       ['cima', 'esquerda', 'esquerda'],
+      ['baixo', 'baixo', 'esquerda'],
+      ['baixo', 'direita', 'direita'],
+      // ['direita', 'direita', 'baixo'],
+    ], 'j']) // j
+    posicoes.push([[
       ['baixo', 'baixo', 'direita'],
-    ]) // l
+      ['cima', 'direita', 'direita'],
+      ['esquerda', 'direita', 'baixo', 'baixo'],
+      ['baixo', 'esquerda', 'esquerda'],
+    ], 'l']) // l
     posicoes.forEach(el => {
-      pecas.push(new Peca(el))
+      pecas.push(new Peca(el[0], el[1]))
+      // if (['s', 't'].includes(el[1])) {
+      //   pecas.push(new Peca(el[0], el[1]))
+      // }
     })
     return pecas
-    // novaPeca = new Peca(novasPosicoes)
-    // for (let i; i < 13; i++) {
-    //   peca1.transladar('direita')
-    // }
-    // this.setPecasJogo(novaPeca)
   }
 }

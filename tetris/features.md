@@ -1,4 +1,5 @@
-Tetris (1985) é um jogo eletronico de quebra cabeça que utiliza tetraminós, segundo a regra dos poliminós. Utilizamos sete tetraminós livres - que a partir daqui chamaremos de peças -, com liberdade para rotacionar e espelhar. Sua figura e simétrica contam como uma só. [I, O, T, J, L, S, Z].
+
+Tetris (1985) é um jogo eletronico de quebra cabeça que utiliza tetraminós, segundo a regra dos poliminós, como peças. Utilizamos sete tetraminós livres, com liberdade para rotacionar e espelhar. Sua figura e simétrica contam como uma só. Os símbolos que representam o conjunto de tetraminós que formam as peças do Tetris é composto por {I, O, T, J, L, S, Z}.
 O jogo consiste em empilhar as peças que descem na tela de forma que completem linhas horizontais. Quando uma linha se forma, ela se desintegra, as camadas superiores descem e o jogador ganha pontos.
 
 Tela de jogo
