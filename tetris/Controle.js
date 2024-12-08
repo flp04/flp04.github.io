@@ -1,6 +1,7 @@
 import Peca from "./classes/Peca.js";
 import Canvas from "./classes/Canvas.js";
 import ControlesUsuario from "./classes/Controle.js";
+import Placar from "./classes/Placar.js";
 // import Quadrado from "./classes/Quadrado.js";
 
 export default class Controle {
@@ -20,25 +21,28 @@ export default class Controle {
     // atributo para armazenar a tela do canva
     this.canvas = new Canvas()
     // atributo para armazenar os pontos acumulados
-    this.pontos = 0
-    document.getElementById('pontos').innerHTML = `Pontos: ${this.pontos}`
+    this.placar = new Placar()
   }
 
   iniciarJogo () {
+    let x = 400 - this.placar.level * 200
     this.looping = setInterval(() => {
-      // console.log(this.pecaEmQueda)
+      // console.log(1000 - (this.placar.level * 100))
       if (this.pecaEmQueda && !this.pecaEmQueda.verificarTocouBase() && !this.verificarTocouOutraPeca()) {
-        this.pecaEmQueda.transladar('baixo')
+        this.pecaEmQueda.transladar('baixo', this)
       } else {
+        // verifica se a próxima peça a cair irá tocar o topo
         if (this.pecaEmQueda && this.pecaEmQueda.verificarTocouTopo()) {
           clearInterval(this.looping)
-          return alert('perdeeu')
+          return alert('GAME OVER')
         }
+        this.verificarLinhaCompleta()
         this.setProximaPeca()
       }
+      this.canvas.desenhar(this.pecasAcumuladas)
       this.verificarLinhaCompleta()
-      return this.canvas.desenhar(this.pecasAcumuladas)
-    }, 800);
+      console.log(x)
+    }, x);
   }
 
   setProximaPeca() {
@@ -63,9 +67,6 @@ export default class Controle {
 
   setPeca (peca) {
     let novaPeca = new Peca(peca.posicoes)
-    // for (let i = 0; i < 7; i++) {
-      // novaPeca.transladar('direita')
-    // }
     this.pecasAcumuladas.push(novaPeca)
   }
 
@@ -92,11 +93,12 @@ export default class Controle {
   }
 
   verificarLinhaCompleta () {
-    for (let i = 0; i <= 285 ; i+=15) {
+    for (let i = 285; i >= 0; i-=15) {
       let resultado = true
       let linha = this.canvas.ctx.getImageData(0, i, 150, 15)
-      for (let i = 3; i <= linha.data.length; i += 4) {
-        if (linha.data[i] == 0) {
+      // faz a varredura horizontal
+      for (let x = 3; x <= linha.data.length; x += 4) {
+        if (linha.data[x] == 0 && linha.data[x-1] == 0 && linha.data[x-2] == 0) {
           resultado = false
         }
       }
@@ -107,15 +109,16 @@ export default class Controle {
           })
         })
         this.pecasAcumuladas.forEach(element => {
-          element.coordenadas.forEach(el => {
-            if (el.p1.y < i) {
-              element.transladar('baixo')
-            }
+          element.coordenadas.forEach(quadrado => {
+            quadrado.pontos.forEach(coordenada => {
+              // let z = this.canvas.ctx.getImageData(coordenada.x, coordenada.y, 1, 1)
+              if (coordenada.y <= i) {
+                coordenada.y += 15
+              }
+            })
           })
         })
-        // atualiza e exibe os pontos na tela
-        this.pontos += 100
-        document.getElementById('pontos').innerHTML = `Pontos: ${this.pontos}`
+        this.placar.setPontos(100)
       }
     }
   }
@@ -134,7 +137,6 @@ if (isMobileDevice()) {
 }
 
 let controle = new Controle()
-
 
 // // CONTROLES DO TECLADO
 // document.addEventListener('keydown', function(event) {

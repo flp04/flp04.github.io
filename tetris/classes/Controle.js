@@ -14,21 +14,20 @@ export default class ControlesUsuario {
       }
     
       /* TODO 
-        COLOCAR UMA SEGUNDA CONDIÇÃO PARA VERIFICAR SE A PEÇA SAIRÁ DA TELA
+        COLOCAR UMA SEGUNDA CONDIÇÃO PARA VERIFICAR SE A PEÇA SAIRÁ DA TELA AO GIRAR
         */
       if (controle.pecaEmQueda) { 
         if (event.key === "ArrowUp") {
           controle.pecaEmQueda.girar()
         } else if (event.key === "ArrowDown") {
           controle.pecaEmQueda.transladar('baixo', controle)
-          // atualiza e exibe os pontos
-          controle.pontos += 1
-          document.getElementById('pontos').innerHTML = `Pontos: ${controle.pontos}`
+          controle.placar.setPontos(1)
         } else if (event.key === "ArrowLeft") {
           controle.pecaEmQueda.transladar('esquerda', controle)
         } else if (event.key === "ArrowRight") {
           controle.pecaEmQueda.transladar('direita', controle)
         }
+        controle.canvas.desenhar(controle.pecasAcumuladas)
       }
     })
 
