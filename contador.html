@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>CONTADOR</title>
+  <style>
+    body, html {
+      margin: 0;
+      padding: 0;
+      height: 100%;
+      display: flex;
+      flex-direction: column; /* Alinha os elementos verticalmente */
+      justify-content: center; /* Centraliza na vertical */
+      align-items: center; /* Centraliza na horizontal */
+    }
+    .rounded-square {
+      width: 100px; /* Largura do quadrado */
+      height: 100px; /* Altura do quadrado */
+      background-color: #3498db; /* Cor de fundo */
+      border-radius: 12px; /* Bordas arredondadas */
+      display: flex; /* Flexbox para centralizar o conteúdo */
+      justify-content: center; /* Centraliza horizontalmente o valor */
+      align-items: center; /* Centraliza verticalmente o valor */
+      font-size: 36px; /* Tamanho do texto */
+      color: white; /* Cor do texto */
+      font-weight: bold; /* Deixa o texto em negrito */
+      margin-bottom: 20px; /* Espaço entre o quadrado e o botão */
+    }
+    .center-button {
+      padding: 10px 20px; /* Tamanho do botão */
+      background-color: red; /* Cor do botão */
+      border: none; /* Remove a borda padrão */
+      border-radius: 6px; /* Bordas arredondadas do botão */
+      color: white; /* Cor do texto */
+      font-size: 16px; /* Tamanho da fonte */
+      cursor: pointer; /* Mostra o cursor de clique */
+      box-shadow: 0px 2px 5px rgba(0, 0, 0, 0.2); /* Sombra para o botão */
+    }
+  </style>
+</head>
+<body>
+  <div class="rounded-square">0</div>
+  <button class="center-button">Zerar</button>
+  <!-- <script>
+    fetch('https://flp04.pythonanywhere.com/barbeiros')
+      .then(response => {
+        if (!response.ok) {
+          throw new Error(`Erro ao buscar dados: ${response.statusText}`);
+        }
+        return response.json(); // Converte a resposta para JSON
+      })
+      .then(data => {
+        console.log("Dados recebidos:", data); // Exibe os dados no console
+      })
+      .catch(error => {
+        console.error("Erro:", error); // Captura e exibe erros
+      });
+  </script> -->
+</body>
+</html>

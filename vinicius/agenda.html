@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Document</title>
+</head>
+<body>
+  <!-- <button onclick="abrirData()">Abrir data</button> -->
+  <input type="date" name="" id="" onchange="abrirHorarios()">
+  <div id="horarios">
+    <label for=""><input type="checkbox" class="horario" name="" id="">9:00</label>
+    <label for=""><input type="checkbox" class="horario" name="" id="">9:30</label>
+    <label for=""><input type="checkbox" class="horario" name="" id="">10:00</label>
+    <label for=""><input type="checkbox" class="horario" name="" id="">10:30</label>
+    <label for=""><input type="checkbox" class="horario" name="" id="">11:00</label>
+    <label for=""><input type="checkbox" class="horario" name="" id="">11:30</label>
+    <label for=""><input type="checkbox" class="horario" name="" id="">12:00</label>
+    <label for=""><input type="checkbox" class="horario" name="" id="">12:30</label>
+    <label for=""><input type="checkbox" class="horario" name="" id="">13:00</label>
+    <label for=""><input type="checkbox" class="horario" name="" id="">13:30</label>
+    <label for=""><input type="checkbox" class="horario" name="" id="">14:00</label>
+    <label for=""><input type="checkbox" class="horario" name="" id="">14:30</label>
+    <label for=""><input type="checkbox" class="horario" name="" id="">15:00</label>
+    <label for=""><input type="checkbox" class="horario" name="" id="">15:30</label>
+    <label for=""><input type="checkbox" class="horario" name="" id="">16:00</label>
+    <label for=""><input type="checkbox" class="horario" name="" id="">16:30</label>
+    <label for=""><input type="checkbox" class="horario" name="" id="">17:00</label>
+    <label for=""><input type="checkbox" class="horario" name="" id="">17:30</label>
+    <label for=""><input type="checkbox" class="horario" name="" id="">18:00</label>
+    <label for=""><input type="checkbox" class="horario" name="" id="">18:30</label>
+    <label for=""><input type="checkbox" class="" name="" id="marcar-todos" onchange="marcarTodos()">Marcar todos</label>
+
+  </div>
+  <button>Salvar agenda</button>
+  <script>
+
+    const salvarServico = async () => {
+      try {
+        const response = await fetch('/agenda', {
+          method: 'GET',
+          headers: {
+            'Content-Type': 'application/json',
+          }
+        })
+        const data = await response.json();
+
+        const result = await response.json();
+        if (response.ok) {
+          console.log(data); // Exibe "Serviço salvo com sucesso"
+        } else {
+          console.error(result.error);
+        }
+      } catch (error) {
+        console.error("Erro ao enviar a requisição:", error);
+      }
+    }
+
+    inputsHorario = document.getElementsByClassName('horario')
+    inputMarcarTodos = document.getElementById('marcar-todos')
+    function abrirHorarios () {
+      for (let i in inputsHorario) {
+        inputsHorario[i].checked = false
+        inputMarcarTodos.checked = false
+      }
+    }
+    function marcarTodos () {
+      inputsHorario = document.getElementsByClassName('horario')
+      for (let i in inputsHorario) {
+        inputsHorario[i].checked = inputMarcarTodos.checked
+      }
+    }
+
+    marcarTodos()
+  </script>
+</body>
+</html>

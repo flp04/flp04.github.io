@@ -1,0 +1,258 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Timepicker Example</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
+  <link rel="stylesheet" href="style.css">
+  <script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
+  <script src="script.js"></script>
+</head>
+<body>
+  <div class="text-center m-4">
+    <h4 id="mes">Mês</h4>
+    <button class="btn btn-warning" onclick="voltar()"><</button>
+    <button class="dia btn btn-warning" onclick="mostrarBarbeiros(this)"></button>
+    <button class="dia btn btn-warning" onclick="mostrarBarbeiros(this)"></button>
+    <button class="dia btn btn-warning" onclick="mostrarBarbeiros(this)"></button>
+    <button class="dia btn btn-warning" onclick="mostrarBarbeiros(this)"></button>
+    <button class="dia btn btn-warning" onclick="mostrarBarbeiros(this)"></button>
+    <button class="dia btn btn-warning" onclick="mostrarBarbeiros(this)"></button>
+    <button class="dia btn btn-warning" onclick="mostrarBarbeiros(this)"></button>
+    <button class="btn btn-warning" onclick="avancar()">></button>
+  </div>
+  <div id="barbeiros" class="text-center"></div>
+  <br>
+  <div id="horariosDisponiveis" class="text-center"></div>
+  <br>
+  <div style="display: none;" id="formularioCliente" class="text-center">
+    <label for="inputNome" style="color: white;">Nome <input type="text" id="nome"></label>
+    <label for="inputContato" style="color: white;">Contato <input type="text" id="contato"></label>
+    <div class="text-center">
+      <button class="btn btn-warning text-center m-3">Agendar</button>
+    </div>
+  </div>
+  <script>
+    hoje = new Date()
+    hoje.setDate(hoje.getDate() - 1)
+    diasMostrados = document.getElementsByClassName('dia')
+    divMes = document.getElementById('mes')
+    let mes = new Set()
+    let dataSelecionada = null
+    let horarioSelecionado = null
+    let barbeiroSelecionado = null
+    let divBarbeiros = document.getElementById('barbeiros')
+    let divHorariosDisponiveis = document.getElementById('horariosDisponiveis')
+    let divFormularioCliente = document.getElementById('formularioCliente')
+
+    for (let i in diasMostrados) {
+      hoje.setDate(hoje.getDate() + 1)
+      mes.add(hoje.getMonth())
+      diasMostrados[i].value = hoje.toLocaleDateString('pt-br')
+      // diasMostrados[i].innerHTML = hoje.toLocaleDateString('pt-br')
+      diasMostrados[i].innerHTML = hoje.getDate()
+      diasMostrados[i].innerHTML += `, ${converterDiaSemana(hoje.getDay()).slice(0, 3)}`
+    }
+    if (mes.size == 1) {
+      mes.forEach(element => {
+        divMes.innerHTML = converterMes(element)
+      })
+    } else {
+      for (let i = 0; i < 2; i++) {
+          if (i == 0) {
+            divMes.innerHTML = converterMes(Array.from(mes)[i])
+          } else {
+            divMes.innerHTML += ` / ${converterMes(Array.from(mes)[i])}`
+          }
+      }
+    }
+    function converterMes (numero_mes) {
+      switch (numero_mes) {
+        case 0:
+          return 'Janeiro'
+        case 1:
+          return 'Fevereiro'
+        case 2:
+          return 'Março'
+        case 3:
+          return 'Abril'
+        case 4:
+          return 'Maio'
+        case 5:
+          return 'Junho'
+        case 6:
+          return 'Julho'
+        case 7:
+          return 'Agosto'
+        case 8:
+          return 'Setembro'
+        case 9:
+          return 'Outubro'
+        case 10:
+          return 'Novembro'
+        case 11:
+          return 'Dezembro'
+      }
+    }
+    function converterDiaSemana(numero_dia) {
+      switch (numero_dia) {
+        case 0:
+          return 'Domingo'
+        case 1:
+          return 'Segunda'
+        case 2:
+          return 'Terça'
+        case 3:
+          return 'Quarta'
+        case 4:
+          return 'Quinta'
+        case 5:
+          return 'Sexta'
+        case 6:
+          return 'Sábado'
+      }
+    }
+    function voltar() {
+      mes = new Set()
+      diasMostrados = document.getElementsByClassName('dia')
+      data = diasMostrados[0].value.split('/')
+      data = new Date(data[2], data[1]-1, data[0])
+      data.setDate(data.getDate() - 2)
+      for (let i in diasMostrados) {
+        data.setDate(data.getDate() + 1)
+        mes.add(data.getMonth())
+        divMes.innerHTML = mes[0]
+        diasMostrados[i].value = data.toLocaleDateString('pt-br')
+        diasMostrados[i].innerHTML = data.getDate()
+        diasMostrados[i].innerHTML += `, ${converterDiaSemana(data.getDay()).slice(0, 3)}`
+      }
+      if (mes.size == 1) {
+        mes.forEach(element => {
+          divMes.innerHTML = converterMes(element)
+        })
+      } else {
+        for (let i = 0; i < 2; i++) {
+            if (i == 0) {
+              divMes.innerHTML = converterMes(Array.from(mes)[i])
+            } else {
+              divMes.innerHTML += ` / ${converterMes(Array.from(mes)[i])}`
+            }
+        }
+      }
+    }
+    function avancar () {
+      mes = new Set()
+      diasMostrados = document.getElementsByClassName('dia')
+      data = diasMostrados[0].value.split('/')
+      data = new Date(data[2], data[1]-1, data[0])
+      for (let i in diasMostrados) {
+        data.setDate(data.getDate() + 1)
+        mes.add(data.getMonth())
+        divMes.innerHTML = mes[0]
+        diasMostrados[i].value = data.toLocaleDateString('pt-br')
+        diasMostrados[i].innerHTML = data.getDate()
+        diasMostrados[i].innerHTML += `, ${converterDiaSemana(data.getDay()).slice(0, 3)}`
+      }
+      if (mes.size == 1) {
+        mes.forEach(element => {
+          divMes.innerHTML = converterMes(element)
+        })
+      } else {
+        for (let i = 0; i < 2; i++) {
+            if (i == 0) {
+              divMes.innerHTML = converterMes(Array.from(mes)[i])
+            } else {
+              divMes.innerHTML += ` / ${converterMes(Array.from(mes)[i])}`
+            }
+        }
+      }
+    }
+    function mostrarBarbeiros (event) {
+      dataSelecionada = event.value
+      selecionarDia(event)
+      divBarbeiros.innerHTML = ''
+      divHorariosDisponiveis.innerHTML = ''
+      divFormularioCliente.style.display = 'none'
+      let hSelecioneBarbeiro = document.createElement('h4')
+      hSelecioneBarbeiro.style.color = '#ffc107'
+      hSelecioneBarbeiro.innerHTML = 'Selecione o barbeiro' 
+      divBarbeiros.appendChild(hSelecioneBarbeiro)
+      let barbeiros = [
+        {
+          id: 1,
+          nome: 'Vinicius',
+          contato: '129...'
+        },
+        {
+          id: 2,
+          nome: 'Lucas',
+          contato: '129...'
+        }
+      ]
+      barbeiros.forEach(barbeiro => {
+        let buttonBarbeiro = document.createElement('button')
+        buttonBarbeiro.innerHTML = barbeiro.nome
+        buttonBarbeiro.className = 'btn btn-warning m-2'
+        buttonBarbeiro.onclick = () => mostrarHorarios(barbeiro)
+        divBarbeiros.appendChild(buttonBarbeiro)
+      })
+    }
+    function selecionarDia (event) {
+      console.log(event.value)
+    }
+    function mostrarHorarios (barbeiro) {
+      barbeiroSelecionado = barbeiro.id
+      divHorariosDisponiveis.innerHTML = ''
+      let hSelecioneHorario = document.createElement('h4')
+      hSelecioneHorario.style.color = '#ffc107'
+      hSelecioneHorario.innerHTML = 'Selecione o horário' 
+      divHorariosDisponiveis.appendChild(hSelecioneHorario)
+      let horarios = [
+        {
+          id: 1,
+          dia: '27/12/2024',
+          horarios: [
+            '9:00', '9:30', '10:00', '10:30'
+          ]
+        },
+        {
+          id: 2,
+          dia: '28/12/2024',
+          horarios: [
+            '9:00', '9:30', '10:00', '10:30'
+          ]
+        },
+        {
+          id: 3,
+          dia: '29/12/2024',
+          horarios: [
+            '9:00', '9:30', '10:00', '10:30'
+          ]
+        },
+      ]
+      horarios.forEach(element => {
+        console.log(element.dia, dataSelecionada)
+        if (element.dia == dataSelecionada) {
+          element.horarios.forEach(el => {
+            let buttonHorario = document.createElement('button')
+            buttonHorario.innerHTML = el
+            buttonHorario.className = 'btn btn-warning m-2'
+            buttonHorario.onclick = () => selecionarHorario(el)
+            divHorariosDisponiveis.appendChild(buttonHorario)
+          })
+        }
+      })
+      if (divHorariosDisponiveis.children.length == 1) {
+        divHorariosDisponiveis.children[0].innerHTML = 'Não há horários disponíveis nesta data'
+      }
+    }
+    function selecionarHorario (horario) {
+      horarioSelecionado = horario
+      console.log(divFormularioCliente)
+      divFormularioCliente.style.display = 'block'
+    }
+  </script>
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous"></script>
+</body>
+</html>

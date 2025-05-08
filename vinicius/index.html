@@ -3,10 +3,81 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
   <title>Document</title>
 </head>
 <body>
-  <button>Corte</button>
-  <button>Platinado</button>
+  <h3>Cadastrar comanda</h3>
+  <select style="width: 500px;" class="form-select" name="" id="">
+    <option value="corte">Corte</option>
+  </select>
+  <!-- <button onclick="salvarServico('Corte', 30)">Corte</button>
+  <button onclick="salvarServico('Platinado', 90)">Platinado</button> -->
+  <table>
+    <tbody id="barbeiros-table tbody"></tbody>
+  </table>
+  <script>
+    // const fetchBarbeiros = async () => {
+    //     try {
+    //         const response = await fetch('https://flp04.pythonanywhere.com/servicos'); // Substitua pela URL da sua API
+    //         const data = await response.json();
+    //             console.log(response)
+    //         if (response.ok) {
+    //             // Preenche a tabela com os dados
+    //             const tbody = document.getElementById('barbeiros-table tbody');
+    //             let soma = 0
+    //             tbody.innerHTML = ''; // Limpa a tabela antes de adicionar novos dados
+    //             data.forEach(servico => {
+    //                 console.log(servico)
+    //                 const row = document.createElement('tr');
+    //                 row.innerHTML = `
+    //                     <td>${servico.id}</td>
+    //                     <td>${servico.nome}</td>
+    //                     <td>${servico.preco}</td>
+    //                 `;
+    //                 soma += parseFloat(servico.preco)
+    //                 tbody.appendChild(row);
+    //             });
+    //             const row = document.createElement('tr');
+    //             row.innerHTML = `
+    //                 <td></td>
+    //                 <td>Soma</td>
+    //                 <td>${soma}</td>
+    //             `;
+
+    //             tbody.appendChild(row);
+    //         } else {
+    //             console.error('Erro ao buscar barbeiros');
+    //         }
+    //     } catch (error) {
+    //         console.error('Erro ao fazer a requisição:', error);
+    //     }
+    // }
+
+    // const salvarServico = async (nome, preco) => {
+    //   try {
+    //     const response = await fetch('/servicos', {
+    //       method: 'POST',
+    //       headers: {
+    //         'Content-Type': 'application/json',
+    //       },
+    //       body: JSON.stringify({ nome, preco }),
+    //     });
+
+    //     const result = await response.json();
+    //     if (response.ok) {
+    //       alert(`${nome} registrado!`)
+    //       fetchBarbeiros()
+    //       console.log(result.message); // Exibe "Serviço salvo com sucesso"
+    //     } else {
+    //       console.error(result.error);
+    //     }
+    //   } catch (error) {
+    //     console.error("Erro ao enviar a requisição:", error);
+    //   }
+    // }
+
+    // fetchBarbeiros()
+  </script>
 </body>
 </html>
