@@ -1,4 +1,4 @@
-var x = prompt()
+var x = prompt('qual seu nome?')
 alert(x)
 
 function nomeDaFuncao() {
