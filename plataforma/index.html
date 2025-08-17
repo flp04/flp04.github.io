@@ -65,6 +65,13 @@ document.addEventListener("keydown", (event) => {
   }
 });
 
+// Pulo com clique/touch na tela
+document.addEventListener("click", () => {
+  if (!isJumping) {
+    jump();
+  }
+});
+
 function jump() {
   isJumping = true;
   let upInterval = setInterval(() => {
