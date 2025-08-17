@@ -4,11 +4,9 @@ export default class ControlesUsuario {
     document.addEventListener('keydown', function(event) {
       if (event.key == 'Enter') {
         if (controle.looping) {
-          // parar looping
           clearInterval(controle.looping)
           controle.looping = null
         } else {
-          // iniciar/continuar looping
           controle.iniciarJogo()
         }
       }
